@@ -1,0 +1,5 @@
+rootProject.name = 'feel-eats'
+
+include("external")
+include("rest-api")
+include("batch")
