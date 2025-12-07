@@ -147,7 +147,6 @@ Temporary Items
 # iCloud generated files
 *.icloud
 
-# End of https://www.toptal.com/developers/gitignore/api/intellij,macos
 
 # OS (Mac)
 .DS_Store
@@ -159,3 +158,8 @@ Temporary Items
 # Gradle
 .gradle/
 build/
+
+# infrastructure
+infrastructure/db/
+
+# End of https://www.toptal.com/developers/gitignore/api/intellij,macos
