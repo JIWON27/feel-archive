@@ -1,0 +1,17 @@
+### 회원가입
+POST http://localhost:8080/api/v1/users
+Content-Type: application/json
+
+{
+  "name": "테스터",
+  "email": "test@test.com",
+  "password": "testpassword!",
+  "nickname": "test",
+  "birthDate": "2001-05-12",
+  "gender": "FEMALE",
+  "phone": "010-1234-5678"
+}
+
+### 회원정보 조회
+GET http://localhost:8080/api/v1/users/1
+Authorization: Bearer {{accessToken}}
