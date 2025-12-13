@@ -1,6 +1,6 @@
 package com.feeleats.api;
 
-import com.feeleats.api.auth.infra.jwt.TokenProperties;
+import com.feeleats.api.auth.jwt.TokenProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

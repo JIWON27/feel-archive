@@ -1,6 +1,6 @@
 package com.feeleats.api.auth.exception;
 
-import com.feeleats.api.global.exception.ExceptionCode;
+import com.feeleats.api.exception.ExceptionCode;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;

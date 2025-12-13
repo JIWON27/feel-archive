@@ -1,6 +1,6 @@
 package com.feeleats.api.user.domain.vo;
 
-import com.feeleats.api.global.exception.BusinessException;
+import com.feeleats.api.exception.BusinessException;
 import com.feeleats.api.user.exception.UserExceptionCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

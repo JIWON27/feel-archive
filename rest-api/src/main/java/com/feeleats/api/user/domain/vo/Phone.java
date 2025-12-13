@@ -3,7 +3,7 @@ package com.feeleats.api.user.domain.vo;
 import static com.feeleats.api.user.exception.UserExceptionCode.INVALID_PHONE_FORMAT;
 import static com.feeleats.api.user.exception.UserExceptionCode.PHONE_REQUIRED;
 
-import com.feeleats.api.global.exception.BusinessException;
+import com.feeleats.api.exception.BusinessException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;

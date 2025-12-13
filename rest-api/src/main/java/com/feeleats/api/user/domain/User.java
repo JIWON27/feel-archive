@@ -1,6 +1,6 @@
 package com.feeleats.api.user.domain;
 
-import com.feeleats.api.global.exception.BusinessException;
+import com.feeleats.api.exception.BusinessException;
 import com.feeleats.api.user.domain.vo.BirthDate;
 import com.feeleats.api.user.domain.vo.Email;
 import com.feeleats.api.user.domain.vo.Nickname;
