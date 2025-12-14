@@ -43,7 +43,7 @@ public class Phone {
       throw new BusinessException(INVALID_PHONE_FORMAT);
     }
 
-    if (!(phone.startsWith("010") || phone.startsWith("011"))) {
+    if (!(phone.startsWith("010"))) {
       throw new BusinessException(INVALID_PHONE_FORMAT);
     }
   }
