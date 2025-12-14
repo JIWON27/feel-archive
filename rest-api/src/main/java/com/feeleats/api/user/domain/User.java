@@ -103,7 +103,7 @@ public class User {
 
   private void validateGender(Gender gender) {
     if (gender == null) {
-      throw new BusinessException(UserExceptionCode.EMAIL_REQUIRED);
+      throw new BusinessException(UserExceptionCode.GENDER_REQUIRED);
     }
   }
 
