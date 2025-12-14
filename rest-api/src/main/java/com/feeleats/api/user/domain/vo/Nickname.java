@@ -26,10 +26,10 @@ public class Nickname {
 
   private void validateNickname(String nickname) {
     if (nickname == null || nickname.isBlank()) {
-      throw new BusinessException(UserExceptionCode.EMAIL_REQUIRED);
+      throw new BusinessException(UserExceptionCode.NICKNAME_REQUIRED);
     }
     if (nickname.length() < 2 || nickname.length() > 10) {
-      throw new BusinessException(UserExceptionCode.EMAIL_REQUIRED);
+      throw new BusinessException(UserExceptionCode.NICKNAME_LENGTH_INVALID);
     }
     // TODO 닉네임 추가 정책
   }
