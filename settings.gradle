@@ -1,4 +1,4 @@
-rootProject.name = 'feel-eats'
+rootProject.name = 'feel-archive'
 
 include("external")
 include("rest-api")
