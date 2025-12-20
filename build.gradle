@@ -1,7 +1,7 @@
 subprojects {
-    group = 'com.feeleats'
+    group = 'com.feel-archive'
     version = '0.0.1-SNAPSHOT'
-    description = 'feel-eats'
+    description = 'feel-archive'
 
     apply plugin: 'java'
 
