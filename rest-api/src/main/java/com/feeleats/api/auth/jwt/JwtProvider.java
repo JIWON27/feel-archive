@@ -3,6 +3,7 @@ package com.feeleats.api.auth.jwt;
 import static com.feeleats.api.auth.exception.AuthExceptionCode.EMPTY_TOKEN;
 import static com.feeleats.api.auth.exception.AuthExceptionCode.INVALID_TOKEN;
 
+import com.feeleats.api.config.auth.TokenProperties;
 import com.feeleats.api.exception.BusinessException;
 import com.feeleats.api.user.domain.User;
 import io.jsonwebtoken.Claims;

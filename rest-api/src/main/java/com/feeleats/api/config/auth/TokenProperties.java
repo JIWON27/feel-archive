@@ -1,4 +1,4 @@
-package com.feeleats.api.auth.jwt;
+package com.feeleats.api.config.auth;
 
 import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
