@@ -3,6 +3,7 @@ package com.feeleats.api.auth.controller;
 import com.feeleats.api.auth.controller.request.LoginRequest;
 import com.feeleats.api.auth.controller.response.LoginResponse;
 import com.feeleats.api.auth.service.AuthService;
+import com.feeleats.api.config.auth.CookieProperties;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
   private final AuthService authService;
+  private final CookieProperties cookieProperties;
 
   @PostMapping("/login")
   public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request){
@@ -28,8 +30,8 @@ public class AuthController {
 
     ResponseCookie cookie = ResponseCookie.from("refreshToken", response.getRefreshToken())
         .httpOnly(true)
-        .secure(false) // TODO 로컬이라 일단 False
-        .sameSite("None")
+        .secure(cookieProperties.isRefreshSecure())
+        .sameSite(cookieProperties.getRefreshSamesite())
         .path("/")
         .maxAge(7 * 24 * 60 * 60)
         .build();
@@ -45,8 +47,8 @@ public class AuthController {
 
     ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
         .httpOnly(true)
-        .secure(false) // TODO 로컬이라 일단 False
-        .sameSite("None")
+        .secure(cookieProperties.isRefreshSecure())
+        .sameSite(cookieProperties.getRefreshSamesite())
         .path("/")
         .maxAge(0)
         .build();
@@ -62,8 +64,8 @@ public class AuthController {
 
     ResponseCookie cookie = ResponseCookie.from("refreshToken", response.getRefreshToken())
         .httpOnly(true)
-        .secure(false) // TODO 로컬이라 일단 False
-        .sameSite("None")
+        .secure(cookieProperties.isRefreshSecure())
+        .sameSite(cookieProperties.getRefreshSamesite())
         .path("/")
         .maxAge(7 * 24 * 60 * 60)
         .build();
