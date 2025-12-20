@@ -3,6 +3,7 @@ package com.feelarchive.api.auth.jwt;
 import static com.feelarchive.api.auth.exception.AuthExceptionCode.EMPTY_TOKEN;
 import static com.feelarchive.api.auth.exception.AuthExceptionCode.INVALID_TOKEN;
 
+import com.feelarchive.api.config.auth.TokenProperties;
 import com.feelarchive.api.exception.BusinessException;
 import com.feelarchive.api.user.domain.User;
 import io.jsonwebtoken.Claims;

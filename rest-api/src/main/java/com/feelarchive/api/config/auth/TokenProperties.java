@@ -1,4 +1,4 @@
-package com.feelarchive.api.auth.jwt;
+package com.feelarchive.api.config.auth;
 
 import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
