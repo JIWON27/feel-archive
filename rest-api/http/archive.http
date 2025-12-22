@@ -1,0 +1,39 @@
+### 아카이브 생성
+POST http://127.0.0.1:8080/api/v1/archives
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "emotion": "ANXIOUS",
+  "content": "인생의 노잼시기가 왔다..",
+  "visibility": "PRIVATE",
+  "location": {
+    "latitude": 37.566535,
+    "longitude": 126.977969,
+    "locationLabel": "시청역"
+  }
+}
+
+### 아카이브 생성
+POST http://127.0.0.1:8080/api/v1/archives
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "emotion": "ANXIOUS",
+  "content": "인생의 노잼시기가 왔다..",
+  "visibility": "PRIVATE",
+  "location": null
+}
+
+### [예외] 아카이브 생성
+POST http://127.0.0.1:8080/api/v1/archives
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "emotion": null,
+  "content": null,
+  "visibility": "PRIVATE",
+  "location": null
+}

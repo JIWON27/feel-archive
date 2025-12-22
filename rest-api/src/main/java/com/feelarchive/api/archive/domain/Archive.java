@@ -17,6 +17,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -69,4 +70,13 @@ public class Archive {
 
   @Column(name = "deleted_at")
   LocalDateTime deletedAt;
+
+  @Builder
+  public Archive(User user, Emotion emotion, String content, Visibility visibility, Location location) {
+    this.user = user;
+    this.emotion = emotion;
+    this.content = content;
+    this.visibility = visibility;
+    this.location = location;
+  }
 }
