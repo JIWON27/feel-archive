@@ -1,5 +1,10 @@
 package com.feelarchive.api.archive.domain.vo;
 
+import static com.feelarchive.api.archive.exception.ArchiveExceptionCode.LATITUDE_OUT_OF_RANGE;
+import static com.feelarchive.api.archive.exception.ArchiveExceptionCode.LOCATION_COORDINATES_REQUIRED;
+import static com.feelarchive.api.archive.exception.ArchiveExceptionCode.LONGITUDE_OUT_OF_RANGE;
+
+import com.feelarchive.api.exception.BusinessException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.math.BigDecimal;
@@ -42,15 +47,15 @@ public class Location {
     if (lat == null && lon == null) return;
 
     if (lat == null || lon == null) {
-      throw new IllegalArgumentException("위치 정보는 위도/경도가 함께 있어야 합니다.");
+      throw new BusinessException(LOCATION_COORDINATES_REQUIRED);
     }
 
     if (lat.compareTo(MIN_LAT) < 0 || lat.compareTo(MAX_LAT) > 0) {
-      throw new IllegalArgumentException("위도는 -90 이상 90 이하여야 합니다.");
+      throw new BusinessException(LATITUDE_OUT_OF_RANGE);
     }
 
     if (lon.compareTo(MIN_LON) < 0 || lon.compareTo(MAX_LON) > 0) {
-      throw new IllegalArgumentException("경도는 -180 이상 180 이하여야 합니다.");
+      throw new BusinessException(LONGITUDE_OUT_OF_RANGE);
     }
   }
 }
