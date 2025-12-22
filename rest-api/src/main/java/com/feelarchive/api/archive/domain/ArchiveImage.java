@@ -1,6 +1,6 @@
 package com.feelarchive.api.archive.domain;
 
-import com.feelarchive.common.file.FileMeta;
+import com.feelarchive.api.common.file.FileMeta;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
