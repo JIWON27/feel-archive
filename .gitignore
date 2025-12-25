@@ -165,4 +165,6 @@ infrastructure/db/
 # service
 *.yml
 upload
+rest-api/http/*.png
+
 # End of https://www.toptal.com/developers/gitignore/api/intellij,macos
