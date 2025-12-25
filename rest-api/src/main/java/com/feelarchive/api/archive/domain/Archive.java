@@ -79,4 +79,13 @@ public class Archive {
     this.visibility = visibility;
     this.location = location;
   }
+
+  public boolean isOwner(Long userId) {
+    return this.user.getId().equals(userId);
+  }
+
+  public boolean isPublic() {
+    return visibility == Visibility.PUBLIC;
+  }
+
 }
