@@ -1,5 +1,6 @@
 package com.feelarchive.api.exception;
 
+import com.feelarchive.api.common.file.FileException;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,17 @@ public class GlobalExceptionHandler {
         e.getExceptionCode().getMessage()
     );
     return ResponseEntity.status(e.getExceptionCode().getStatus()).body(body);
+  }
+
+  @ExceptionHandler(FileException.class)
+  public ResponseEntity<ExceptionResponse> handleFileException(FileException e) {
+    log.warn("[파일 예외] status={} code={} custom_msg={} exception_msg={}",
+        e.getExceptionCode().getStatus(),
+        e.getExceptionCode().getCode(),
+        e.getExceptionCode().getMessage(),
+        e.getMessage());
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body(new ExceptionResponse("FILE_ERROR", "파일 처리 중 오류가 발생했습니다."));
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
