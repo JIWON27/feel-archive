@@ -53,8 +53,7 @@ public class ArchiveImage {
   LocalDateTime deletedAt;
 
   @Builder
-  public ArchiveImage(Long id, Archive archive, FileMeta fileMeta) {
-    this.id = id;
+  public ArchiveImage(Archive archive, FileMeta fileMeta) {
     this.archive = archive;
     this.fileMeta = fileMeta;
   }
