@@ -2,6 +2,7 @@ package com.feelarchive.api.archive.controller;
 
 import com.feelarchive.api.archive.controller.request.ArchiveRequest;
 import com.feelarchive.api.archive.controller.request.ArchiveSearchCondition;
+import com.feelarchive.api.archive.controller.request.ArchiveStatusUpdateRequest;
 import com.feelarchive.api.archive.controller.response.ArchiveDetailResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveImageDownloadResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveImageResponse;
@@ -21,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -108,5 +110,15 @@ public class ArchiveController {
   {
     PagingResponse<ArchiveSummaryResponse> response = archiveService.getMyArchives(userId, condition, pageable);
     return ResponseEntity.ok().body(response);
+  }
+
+  @PatchMapping("/{archiveId}/status")
+  public ResponseEntity<Void> updateArchiveStatus(
+      @AuthenticationPrincipal Long userId,
+      @PathVariable Long archiveId,
+      @RequestBody @Valid ArchiveStatusUpdateRequest request
+  ) {
+    archiveService.updateStatus(archiveId, userId, request);
+    return ResponseEntity.ok().build();
   }
 }

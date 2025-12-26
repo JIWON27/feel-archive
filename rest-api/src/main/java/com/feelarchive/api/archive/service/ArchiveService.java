@@ -2,6 +2,7 @@ package com.feelarchive.api.archive.service;
 
 import com.feelarchive.api.archive.controller.request.ArchiveRequest;
 import com.feelarchive.api.archive.controller.request.ArchiveSearchCondition;
+import com.feelarchive.api.archive.controller.request.ArchiveStatusUpdateRequest;
 import com.feelarchive.api.archive.controller.response.ArchiveDetailResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveImageResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveSummaryResponse;
@@ -61,5 +62,13 @@ public class ArchiveService {
     List<ArchiveImageResponse> images = archiveImageService.getImages(archive);
     boolean isOwner = archive.getUser().getId().equals(userId);
     return archiveMapper.toDetail(archive, images, isOwner);
+  }
+
+  @Transactional
+  public void updateStatus(Long archiveId, Long userId, ArchiveStatusUpdateRequest request) {
+    Archive archive = archiveReader.getById(archiveId);
+    archive.validateOwner(userId);
+
+    archive.updateVisibility(request.getVisibility());
   }
 }
