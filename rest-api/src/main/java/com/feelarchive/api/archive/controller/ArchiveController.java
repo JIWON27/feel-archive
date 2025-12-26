@@ -1,17 +1,20 @@
 package com.feelarchive.api.archive.controller;
 
 import com.feelarchive.api.archive.controller.request.ArchiveRequest;
+import com.feelarchive.api.archive.controller.request.ArchiveSearchCondition;
 import com.feelarchive.api.archive.controller.response.ArchiveDetailResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveImageDownloadResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveImageResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveSummaryResponse;
 import com.feelarchive.api.archive.service.ArchiveImageService;
 import com.feelarchive.api.archive.service.ArchiveService;
+import com.feelarchive.api.common.response.PagingResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -80,8 +83,12 @@ public class ArchiveController {
   }
 
   @GetMapping
-  public ResponseEntity<List<ArchiveSummaryResponse>> getPublicArchives() {
-    return null;
+  public ResponseEntity<PagingResponse<ArchiveSummaryResponse>> getPublicArchives(
+      ArchiveSearchCondition archiveSearchCondition,
+      Pageable pageable)
+  {
+    PagingResponse<ArchiveSummaryResponse> response = archiveService.getPublicArchives(archiveSearchCondition, pageable);
+    return ResponseEntity.ok().body(response);
   }
 
   @GetMapping("/{archiveId}")

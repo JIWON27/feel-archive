@@ -3,16 +3,21 @@ package com.feelarchive.api.archive.service;
 import static com.feelarchive.api.archive.exception.ArchiveExceptionCode.ARCHIVE_FORBIDDEN;
 
 import com.feelarchive.api.archive.controller.request.ArchiveRequest;
+import com.feelarchive.api.archive.controller.request.ArchiveSearchCondition;
 import com.feelarchive.api.archive.controller.response.ArchiveDetailResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveImageResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveSummaryResponse;
 import com.feelarchive.api.archive.domain.Archive;
+import com.feelarchive.api.archive.repository.ArchiveQueryRepository;
 import com.feelarchive.api.archive.repository.ArchiveRepository;
+import com.feelarchive.api.common.response.PagingResponse;
 import com.feelarchive.api.exception.BusinessException;
 import com.feelarchive.api.user.domain.User;
 import com.feelarchive.api.user.service.UserReader;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ArchiveService {
 
   private final ArchiveRepository archiveRepository;
+  private final ArchiveQueryRepository archiveQueryRepository;
   private final ArchiveImageService archiveImageService;
   private final ArchiveMapper archiveMapper;
   private final ArchiveReader archiveReader;
@@ -42,8 +48,10 @@ public class ArchiveService {
   }
 
   @Transactional(readOnly = true)
-  public List<ArchiveSummaryResponse> getPublicArchives() {
-    return null;
+  public PagingResponse<ArchiveSummaryResponse> getPublicArchives(ArchiveSearchCondition archiveSearchCondition, Pageable pageable) {
+    Page<Archive> pages = archiveQueryRepository.search(archiveSearchCondition, pageable);
+    Page<ArchiveSummaryResponse> summaryResponses = pages.map(archiveMapper::toSummary);
+    return PagingResponse.of(summaryResponses);
   }
 
   @Transactional(readOnly = true)
