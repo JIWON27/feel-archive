@@ -30,7 +30,7 @@ public class ArchiveQueryRepository {
   public Page<Archive> search(ArchiveSearchCondition condition, Pageable pageable) {
     List<Archive> archives = jpaQueryFactory
         .selectFrom(archive)
-        .where(containsKeyword(condition.getKeyword()), emotionEq(condition.getEmotion()), isPublic())
+        .where(containsKeyword(condition.getKeyword()), emotionEq(condition.getEmotion()), filterUserOrVisibility(condition))
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize())
         .orderBy(getOrderSpecifiers(condition.getSortType()))
@@ -39,7 +39,7 @@ public class ArchiveQueryRepository {
     JPAQuery<Long> countQuery = jpaQueryFactory
         .select(archive.count())
         .from(archive)
-        .where(containsKeyword(condition.getKeyword()), emotionEq(condition.getEmotion()), isPublic());
+        .where(containsKeyword(condition.getKeyword()), emotionEq(condition.getEmotion()), filterUserOrVisibility(condition));
 
     return PageableExecutionUtils.getPage(archives, pageable, countQuery::fetchOne);
   }
@@ -58,8 +58,12 @@ public class ArchiveQueryRepository {
     return archive.emotion.eq(emotion);
   }
 
-  private BooleanExpression isPublic() {
-    return archive.visibility.eq(Visibility.PUBLIC);
+  private BooleanExpression filterUserOrVisibility(ArchiveSearchCondition condition) {
+    if (Objects.nonNull(condition.getUserId())) {
+      return archive.user.id.eq(condition.getUserId());
+    } else {
+      return archive.visibility.eq(Visibility.PUBLIC);
+    }
   }
 
   private OrderSpecifier<?>[] getOrderSpecifiers(ArchiveSortType sortType) {

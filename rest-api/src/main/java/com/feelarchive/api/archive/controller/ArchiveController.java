@@ -84,10 +84,10 @@ public class ArchiveController {
 
   @GetMapping
   public ResponseEntity<PagingResponse<ArchiveSummaryResponse>> getPublicArchives(
-      ArchiveSearchCondition archiveSearchCondition,
+      ArchiveSearchCondition condition,
       Pageable pageable)
   {
-    PagingResponse<ArchiveSummaryResponse> response = archiveService.getPublicArchives(archiveSearchCondition, pageable);
+    PagingResponse<ArchiveSummaryResponse> response = archiveService.getPublicArchives(condition, pageable);
     return ResponseEntity.ok().body(response);
   }
 
@@ -101,9 +101,12 @@ public class ArchiveController {
   }
 
   @GetMapping("/me")
-  public ResponseEntity<List<ArchiveSummaryResponse>> getMyArchives(@AuthenticationPrincipal Long userId) {
-    List<ArchiveSummaryResponse> archives = archiveService.getMyArchives(userId);
-    return ResponseEntity.ok().body(archives);
+  public ResponseEntity<PagingResponse<ArchiveSummaryResponse>> getMyArchives(
+      @AuthenticationPrincipal Long userId,
+      ArchiveSearchCondition condition,
+      Pageable pageable)
+  {
+    PagingResponse<ArchiveSummaryResponse> response = archiveService.getMyArchives(userId, condition, pageable);
+    return ResponseEntity.ok().body(response);
   }
-
 }

@@ -1,7 +1,5 @@
 package com.feelarchive.api.archive.service;
 
-import static com.feelarchive.api.archive.exception.ArchiveExceptionCode.ARCHIVE_FORBIDDEN;
-
 import com.feelarchive.api.archive.controller.request.ArchiveRequest;
 import com.feelarchive.api.archive.controller.request.ArchiveSearchCondition;
 import com.feelarchive.api.archive.controller.response.ArchiveDetailResponse;
@@ -11,7 +9,6 @@ import com.feelarchive.api.archive.domain.Archive;
 import com.feelarchive.api.archive.repository.ArchiveQueryRepository;
 import com.feelarchive.api.archive.repository.ArchiveRepository;
 import com.feelarchive.api.common.response.PagingResponse;
-import com.feelarchive.api.exception.BusinessException;
 import com.feelarchive.api.user.domain.User;
 import com.feelarchive.api.user.service.UserReader;
 import java.util.List;
@@ -41,15 +38,17 @@ public class ArchiveService {
   }
 
   @Transactional(readOnly = true)
-  public List<ArchiveSummaryResponse> getMyArchives(Long userId) {
-    User user = userReader.getById(userId);
-    List<Archive> archives = archiveRepository.findByUser(user);
-    return archives.stream().map(archiveMapper::toSummary).toList();
+  public PagingResponse<ArchiveSummaryResponse> getMyArchives(Long userId, ArchiveSearchCondition condition, Pageable pageable) {
+    condition.setUserId(userId);
+    Page<Archive> pages = archiveQueryRepository.search(condition, pageable);
+    Page<ArchiveSummaryResponse> summaryResponses = pages.map(archiveMapper::toSummary);
+    return PagingResponse.of(summaryResponses);
   }
 
   @Transactional(readOnly = true)
-  public PagingResponse<ArchiveSummaryResponse> getPublicArchives(ArchiveSearchCondition archiveSearchCondition, Pageable pageable) {
-    Page<Archive> pages = archiveQueryRepository.search(archiveSearchCondition, pageable);
+  public PagingResponse<ArchiveSummaryResponse> getPublicArchives(ArchiveSearchCondition condition, Pageable pageable) {
+    condition.setUserId(null);
+    Page<Archive> pages = archiveQueryRepository.search(condition, pageable);
     Page<ArchiveSummaryResponse> summaryResponses = pages.map(archiveMapper::toSummary);
     return PagingResponse.of(summaryResponses);
   }
@@ -57,19 +56,10 @@ public class ArchiveService {
   @Transactional(readOnly = true)
   public ArchiveDetailResponse getArchiveDetail(Long archiveId, Long userId) {
     Archive archive = archiveReader.getById(archiveId);
-    checkAccess(archive, userId);
+    archive.validateReadAuth(userId);
 
     List<ArchiveImageResponse> images = archiveImageService.getImages(archive);
     boolean isOwner = archive.getUser().getId().equals(userId);
     return archiveMapper.toDetail(archive, images, isOwner);
   }
-
-  private void checkAccess(Archive archive, Long userId) {
-    boolean isOwner = archive.getUser().getId().equals(userId);
-
-    if (!isOwner && !archive.isPublic()) {
-      throw new BusinessException(ARCHIVE_FORBIDDEN);
-    }
-  }
-
 }
