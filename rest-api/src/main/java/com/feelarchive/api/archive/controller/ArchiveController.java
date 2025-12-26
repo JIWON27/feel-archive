@@ -1,8 +1,10 @@
 package com.feelarchive.api.archive.controller;
 
 import com.feelarchive.api.archive.controller.request.ArchiveRequest;
+import com.feelarchive.api.archive.controller.response.ArchiveDetailResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveImageDownloadResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveImageResponse;
+import com.feelarchive.api.archive.controller.response.ArchiveSummaryResponse;
 import com.feelarchive.api.archive.service.ArchiveImageService;
 import com.feelarchive.api.archive.service.ArchiveService;
 import jakarta.validation.Valid;
@@ -75,6 +77,26 @@ public class ArchiveController {
         .header(HttpHeaders.CONTENT_DISPOSITION,
             "inline; filename=\"" + response.getFileMeta().getOriginalName() + "\"")
         .body(response.getResource());
+  }
+
+  @GetMapping
+  public ResponseEntity<List<ArchiveSummaryResponse>> getPublicArchives() {
+    return null;
+  }
+
+  @GetMapping("/{archiveId}")
+  public ResponseEntity<ArchiveDetailResponse> getArchiveDetail(
+      @AuthenticationPrincipal Long userId,
+      @PathVariable Long archiveId)
+  {
+    ArchiveDetailResponse archives = archiveService.getArchiveDetail(archiveId, userId);
+    return ResponseEntity.ok().body(archives);
+  }
+
+  @GetMapping("/me")
+  public ResponseEntity<List<ArchiveSummaryResponse>> getMyArchives(@AuthenticationPrincipal Long userId) {
+    List<ArchiveSummaryResponse> archives = archiveService.getMyArchives(userId);
+    return ResponseEntity.ok().body(archives);
   }
 
 }

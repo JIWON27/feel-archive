@@ -90,6 +90,14 @@ public class ArchiveImageService {
     }
   }
 
+  @Transactional(readOnly = true)
+  public List<ArchiveImageResponse> getImages(Archive archive) {
+    List<ArchiveImage> archiveImages = archiveImageRepository.findByArchive(archive);
+    return archiveImages.stream()
+        .map(archiveImage -> ArchiveImageResponse.of(archiveImage.getId(), generateDownloadUrl(archive.getId(), archiveImage)))
+        .toList();
+  }
+
   private ArchiveImage getArchiveImage(Long archiveId, Long imageId) {
     return archiveImageRepository.findByIdAndArchive_Id(imageId, archiveId)
         .orElseThrow(() -> new BusinessException(ARCHIVE_IMAGE_NOT_FOUND));

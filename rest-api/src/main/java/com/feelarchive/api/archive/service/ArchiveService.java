@@ -1,10 +1,17 @@
 package com.feelarchive.api.archive.service;
 
+import static com.feelarchive.api.archive.exception.ArchiveExceptionCode.ARCHIVE_FORBIDDEN;
+
 import com.feelarchive.api.archive.controller.request.ArchiveRequest;
+import com.feelarchive.api.archive.controller.response.ArchiveDetailResponse;
+import com.feelarchive.api.archive.controller.response.ArchiveImageResponse;
+import com.feelarchive.api.archive.controller.response.ArchiveSummaryResponse;
 import com.feelarchive.api.archive.domain.Archive;
 import com.feelarchive.api.archive.repository.ArchiveRepository;
+import com.feelarchive.api.exception.BusinessException;
 import com.feelarchive.api.user.domain.User;
 import com.feelarchive.api.user.service.UserReader;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class ArchiveService {
 
   private final ArchiveRepository archiveRepository;
+  private final ArchiveImageService archiveImageService;
   private final ArchiveMapper archiveMapper;
+  private final ArchiveReader archiveReader;
   private final UserReader userReader;
 
   @Transactional
@@ -23,6 +32,36 @@ public class ArchiveService {
     Archive archive = archiveMapper.toArchive(user, request);
     Archive saved = archiveRepository.save(archive);
     return saved.getId();
+  }
+
+  @Transactional(readOnly = true)
+  public List<ArchiveSummaryResponse> getMyArchives(Long userId) {
+    User user = userReader.getById(userId);
+    List<Archive> archives = archiveRepository.findByUser(user);
+    return archives.stream().map(archiveMapper::toSummary).toList();
+  }
+
+  @Transactional(readOnly = true)
+  public List<ArchiveSummaryResponse> getPublicArchives() {
+    return null;
+  }
+
+  @Transactional(readOnly = true)
+  public ArchiveDetailResponse getArchiveDetail(Long archiveId, Long userId) {
+    Archive archive = archiveReader.getById(archiveId);
+    checkAccess(archive, userId);
+
+    List<ArchiveImageResponse> images = archiveImageService.getImages(archive);
+    boolean isOwner = archive.getUser().getId().equals(userId);
+    return archiveMapper.toDetail(archive, images, isOwner);
+  }
+
+  private void checkAccess(Archive archive, Long userId) {
+    boolean isOwner = archive.getUser().getId().equals(userId);
+
+    if (!isOwner && !archive.isPublic()) {
+      throw new BusinessException(ARCHIVE_FORBIDDEN);
+    }
   }
 
 }
