@@ -1,7 +1,10 @@
 package com.feelarchive.api.archive.domain;
 
+import static com.feelarchive.api.archive.exception.ArchiveExceptionCode.ARCHIVE_FORBIDDEN;
+
 import com.feelarchive.api.archive.domain.vo.Location;
 import com.feelarchive.api.emotion.domain.Emotion;
+import com.feelarchive.api.exception.BusinessException;
 import com.feelarchive.api.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -86,6 +89,24 @@ public class Archive {
 
   public boolean isPublic() {
     return visibility == Visibility.PUBLIC;
+  }
+
+  public void updateVisibility(Visibility visibility) {
+    this.visibility = visibility;
+  }
+
+  public void validateReadAuth(Long userId) {
+    boolean isOwner = this.getUser().getId().equals(userId);
+
+    if (!isOwner && !this.isPublic()) {
+      throw new BusinessException(ARCHIVE_FORBIDDEN);
+    }
+  }
+
+  public void validateOwner(Long userId) {
+    if (!this.getUser().getId().equals(userId)) {
+      throw new BusinessException(ARCHIVE_FORBIDDEN);
+    }
   }
 
 }

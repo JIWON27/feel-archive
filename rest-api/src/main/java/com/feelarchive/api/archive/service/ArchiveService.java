@@ -1,11 +1,21 @@
 package com.feelarchive.api.archive.service;
 
 import com.feelarchive.api.archive.controller.request.ArchiveRequest;
+import com.feelarchive.api.archive.controller.request.ArchiveSearchCondition;
+import com.feelarchive.api.archive.controller.request.ArchiveStatusUpdateRequest;
+import com.feelarchive.api.archive.controller.response.ArchiveDetailResponse;
+import com.feelarchive.api.archive.controller.response.ArchiveImageResponse;
+import com.feelarchive.api.archive.controller.response.ArchiveSummaryResponse;
 import com.feelarchive.api.archive.domain.Archive;
+import com.feelarchive.api.archive.repository.ArchiveQueryRepository;
 import com.feelarchive.api.archive.repository.ArchiveRepository;
+import com.feelarchive.api.common.response.PagingResponse;
 import com.feelarchive.api.user.domain.User;
 import com.feelarchive.api.user.service.UserReader;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class ArchiveService {
 
   private final ArchiveRepository archiveRepository;
+  private final ArchiveQueryRepository archiveQueryRepository;
+  private final ArchiveImageService archiveImageService;
   private final ArchiveMapper archiveMapper;
+  private final ArchiveReader archiveReader;
   private final UserReader userReader;
 
   @Transactional
@@ -25,4 +38,37 @@ public class ArchiveService {
     return saved.getId();
   }
 
+  @Transactional(readOnly = true)
+  public PagingResponse<ArchiveSummaryResponse> getMyArchives(Long userId, ArchiveSearchCondition condition, Pageable pageable) {
+    condition.setUserId(userId);
+    Page<Archive> pages = archiveQueryRepository.search(condition, pageable);
+    Page<ArchiveSummaryResponse> summaryResponses = pages.map(archiveMapper::toSummary);
+    return PagingResponse.of(summaryResponses);
+  }
+
+  @Transactional(readOnly = true)
+  public PagingResponse<ArchiveSummaryResponse> getPublicArchives(ArchiveSearchCondition condition, Pageable pageable) {
+    condition.setUserId(null);
+    Page<Archive> pages = archiveQueryRepository.search(condition, pageable);
+    Page<ArchiveSummaryResponse> summaryResponses = pages.map(archiveMapper::toSummary);
+    return PagingResponse.of(summaryResponses);
+  }
+
+  @Transactional(readOnly = true)
+  public ArchiveDetailResponse getArchiveDetail(Long archiveId, Long userId) {
+    Archive archive = archiveReader.getById(archiveId);
+    archive.validateReadAuth(userId);
+
+    List<ArchiveImageResponse> images = archiveImageService.getImages(archive);
+    boolean isOwner = archive.getUser().getId().equals(userId);
+    return archiveMapper.toDetail(archive, images, isOwner);
+  }
+
+  @Transactional
+  public void updateStatus(Long archiveId, Long userId, ArchiveStatusUpdateRequest request) {
+    Archive archive = archiveReader.getById(archiveId);
+    archive.validateOwner(userId);
+
+    archive.updateVisibility(request.getVisibility());
+  }
 }
