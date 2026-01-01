@@ -7,10 +7,8 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
-@ToString
 @Getter
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -28,7 +26,7 @@ public class KakaoAddress2CoordResponse {
     Integer pageableCount;
     Boolean isEnd;
   }
-  @ToString
+
   @Getter
   @NoArgsConstructor
   @FieldDefaults(level = AccessLevel.PRIVATE)
