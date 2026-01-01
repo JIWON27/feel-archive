@@ -1,9 +1,10 @@
 package com.feelarchive.geo.kakao;
 
+import static com.feelarchive.geo.exception.LocationExceptionCode.NOT_FOUND_LOCATION;
+
 import com.feelarchive.geo.Location;
 import com.feelarchive.geo.LocationResolver;
-import com.feelarchive.geo.exception.GeoExceptionCode;
-import com.feelarchive.geo.exception.GeoProviderException;
+import com.feelarchive.geo.exception.LocationException;
 import com.feelarchive.geo.kakao.request.KakaoAddressQuery;
 import com.feelarchive.geo.kakao.request.KakaoCoordQuery;
 import com.feelarchive.geo.kakao.response.KakaoAddress2CoordResponse;
@@ -30,7 +31,7 @@ public class KakaoLocationResolver implements LocationResolver {
     KakaoCoord2AddressResponse response = api.getCoordToAddress(query);
 
     if (response.getDocuments() == null || response.getDocuments().isEmpty()) {
-      throw new GeoProviderException(GeoExceptionCode.NOT_FOUND_LOCATION);
+      throw new LocationException(NOT_FOUND_LOCATION);
     }
 
     KakaoCoord2AddressResponse.Document document = response.getDocuments().get(0);
@@ -50,7 +51,7 @@ public class KakaoLocationResolver implements LocationResolver {
     KakaoAddress2CoordResponse response = api.getAddressToCoord(query);
 
     if (response.getDocuments() == null || response.getDocuments().isEmpty()) {
-      throw new GeoProviderException(GeoExceptionCode.NOT_FOUND_LOCATION);
+      throw new LocationException(NOT_FOUND_LOCATION);
     }
 
     KakaoAddress2CoordResponse.Document document = response.getDocuments().get(0);
