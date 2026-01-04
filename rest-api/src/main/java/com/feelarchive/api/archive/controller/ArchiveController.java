@@ -8,6 +8,7 @@ import com.feelarchive.api.archive.controller.response.ArchiveImageDownloadRespo
 import com.feelarchive.api.archive.controller.response.ArchiveImageResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveSummaryResponse;
 import com.feelarchive.api.archive.service.ArchiveImageService;
+import com.feelarchive.api.archive.service.ArchiveLikeService;
 import com.feelarchive.api.archive.service.ArchiveService;
 import com.feelarchive.api.common.response.PagingResponse;
 import jakarta.validation.Valid;
@@ -38,6 +39,7 @@ public class ArchiveController {
 
   private final ArchiveService archiveService;
   private final ArchiveImageService archiveImageService;
+  private final ArchiveLikeService archiveLikeService;
 
   @PostMapping
   public ResponseEntity<Void> createArchive(
@@ -121,4 +123,23 @@ public class ArchiveController {
     archiveService.updateStatus(archiveId, userId, request);
     return ResponseEntity.ok().build();
   }
+
+  @PostMapping("/{archiveId}/like")
+  public ResponseEntity<Void> likeArchive(
+      @PathVariable Long archiveId,
+      @AuthenticationPrincipal Long userId
+  ) {
+    archiveLikeService.like(archiveId, userId);
+    return ResponseEntity.ok().build();
+  }
+
+  @DeleteMapping("/{archiveId}/like")
+  public ResponseEntity<Void> unlikeArchive(
+      @PathVariable Long archiveId,
+      @AuthenticationPrincipal Long userId
+  ) {
+    archiveLikeService.unlike(archiveId, userId);
+    return ResponseEntity.ok().build();
+  }
+
 }
