@@ -6,6 +6,7 @@ import static com.feelarchive.api.archive.exception.ArchiveExceptionCode.ARCHIVE
 import com.feelarchive.api.archive.domain.Archive;
 import com.feelarchive.api.archive.domain.ArchiveLike;
 import com.feelarchive.api.archive.repository.ArchiveLikeRepository;
+import com.feelarchive.api.archive.repository.ArchiveRepository;
 import com.feelarchive.api.exception.BusinessException;
 import com.feelarchive.api.user.domain.User;
 import com.feelarchive.api.user.service.UserReader;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 public class ArchiveLikeService {
 
   private final ArchiveLikeRepository archiveLikeRepository;
+  private final ArchiveRepository archiveRepository;
   private final ArchiveReader archiveReader;
   private final UserReader userReader;
 
@@ -34,6 +36,8 @@ public class ArchiveLikeService {
         .archive(archive)
         .user(user)
         .build());
+
+    archiveRepository.increaseLikeCount(archiveId);
   }
 
   @Transactional
@@ -45,6 +49,6 @@ public class ArchiveLikeService {
         .orElseThrow(() -> new BusinessException(ARCHIVE_LIKE_NOT_FOUND));
 
     archiveLikeRepository.delete(archiveLike);
+    archiveRepository.decreaseLikeCount(archiveId);
   }
-
 }
