@@ -9,6 +9,7 @@ import com.feelarchive.api.archive.controller.response.ArchiveImageResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveSummaryResponse;
 import com.feelarchive.api.archive.service.ArchiveImageService;
 import com.feelarchive.api.archive.service.ArchiveLikeService;
+import com.feelarchive.api.archive.service.ArchiveScrapService;
 import com.feelarchive.api.archive.service.ArchiveService;
 import com.feelarchive.api.common.response.PagingResponse;
 import jakarta.validation.Valid;
@@ -40,6 +41,7 @@ public class ArchiveController {
   private final ArchiveService archiveService;
   private final ArchiveImageService archiveImageService;
   private final ArchiveLikeService archiveLikeService;
+  private final ArchiveScrapService archiveScrapService;
 
   @PostMapping
   public ResponseEntity<Void> createArchive(
@@ -142,4 +144,30 @@ public class ArchiveController {
     return ResponseEntity.ok().build();
   }
 
+  @PostMapping("/{archiveId}/scrap")
+  public ResponseEntity<Void> scrapArchive(
+      @PathVariable Long archiveId,
+      @AuthenticationPrincipal Long userId
+  ) {
+    archiveScrapService.scrap(archiveId, userId);
+    return ResponseEntity.ok().build();
+  }
+
+  @DeleteMapping("/{archiveId}/scrap")
+  public ResponseEntity<Void> unScrapArchive(
+      @PathVariable Long archiveId,
+      @AuthenticationPrincipal Long userId
+  ) {
+    archiveScrapService.unScrap(archiveId, userId);
+    return ResponseEntity.ok().build();
+  }
+
+  @GetMapping("/scraps")
+  public ResponseEntity<PagingResponse<ArchiveSummaryResponse>> getScrapArchives(
+      @AuthenticationPrincipal Long userId,
+      Pageable pageable)
+  {
+    PagingResponse<ArchiveSummaryResponse> response = archiveScrapService.getMyScarps(userId, pageable);
+    return ResponseEntity.ok().body(response);
+  }
 }
