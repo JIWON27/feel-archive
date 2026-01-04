@@ -17,6 +17,8 @@ public enum ArchiveExceptionCode implements ExceptionCode {
   ARCHIVE_IMAGE_FORBIDDEN("A007", HttpStatus.FORBIDDEN, "해당 이미지에 대한 접근권한이 없습니다."),
   ARCHIVE_LIKE_NOT_FOUND("A008", HttpStatus.NOT_FOUND, "좋아요 기록이 존재하지 않습니다."),
   ALREADY_LIKED("A009", HttpStatus.CONFLICT, "이미 좋아요를 누른 아카이브입니다."),
+  ARCHIVE_SCRAP_NOT_FOUND("A008", HttpStatus.NOT_FOUND, "스크랩 기록이 존재하지 않습니다."),
+  ALREADY_SCRAPPED("A009", HttpStatus.CONFLICT, "이미 스크랩한 아카이브입니다."),
   ;
 
   final String code;
