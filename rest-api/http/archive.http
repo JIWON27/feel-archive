@@ -78,3 +78,11 @@ Authorization: Bearer {{accessToken}}
 {
   "visibility": "PUBLIC"
 }
+
+### 아카이브 좋아요
+POST http://127.0.0.1:8080/api/v1/archives/1/like
+Authorization: Bearer {{accessToken}}
+
+### 아카이브 좋아요 삭제
+DELETE http://127.0.0.1:8080/api/v1/archives/1/like
+Authorization: Bearer {{accessToken}}

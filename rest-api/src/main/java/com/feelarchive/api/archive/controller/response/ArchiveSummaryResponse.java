@@ -16,6 +16,6 @@ public class ArchiveSummaryResponse {
   String contentPreview;
   String address;
   String createdAt;
+  int likeCount;
   CommonUserResponse writer;
-
 }

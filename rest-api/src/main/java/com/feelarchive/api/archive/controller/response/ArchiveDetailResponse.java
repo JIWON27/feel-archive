@@ -20,7 +20,7 @@ public class ArchiveDetailResponse {
   LocationDetail location;
   String createdAt;
   String updatedAt;
-
+  int likeCount;
   CommonUserResponse writer;
   boolean isOwner;
 

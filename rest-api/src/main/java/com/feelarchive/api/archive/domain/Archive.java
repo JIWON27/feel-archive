@@ -63,6 +63,9 @@ public class Archive {
   @Embedded
   Location location;
 
+  @Column(name = "like_count")
+  int likeCount;
+
   @CreationTimestamp
   @Column(name = "created_at", updatable = false, nullable = false)
   LocalDateTime createdAt;
@@ -108,5 +111,4 @@ public class Archive {
       throw new BusinessException(ARCHIVE_FORBIDDEN);
     }
   }
-
 }
