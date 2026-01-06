@@ -30,3 +30,11 @@ subprojects {
         testAnnotationProcessor 'org.projectlombok:lombok'
     }
 }
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}
