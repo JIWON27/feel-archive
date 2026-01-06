@@ -1,8 +1,9 @@
 package com.feelarchive.geo.exception;
 
+import com.feelarchive.common.excepion.FeelArchiveErrorCode;
 import org.springframework.http.HttpStatus;
 
-public enum LocationExceptionCode implements ExceptionCode{
+public enum LocationExceptionCode implements FeelArchiveErrorCode {
   NOT_FOUND_LOCATION("G001", HttpStatus.BAD_REQUEST, "해당 주소에 대한 위치 정보를 찾을 수 없습니다."),
   ;
 
