@@ -1,12 +1,13 @@
 package com.feelarchive.api.exception;
 
+import com.feelarchive.common.excepion.FeelArchiveErrorCode;
 import lombok.Getter;
 
 @Getter
 public class BusinessException extends RuntimeException {
-  private final ExceptionCode exceptionCode;
+  private final FeelArchiveErrorCode errorCode;
 
-  public BusinessException(ExceptionCode exceptionCode) {
-    this.exceptionCode = exceptionCode;
+  public BusinessException(FeelArchiveErrorCode errorCode) {
+    this.errorCode = errorCode;
   }
 }

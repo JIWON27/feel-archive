@@ -17,23 +17,23 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(BusinessException.class)
   public ResponseEntity<ExceptionResponse> handleBusinessException(BusinessException e) {
     log.warn("[비지니스 예외] status={} code={} custom_msg={} exception_msg={}",
-        e.getExceptionCode().getStatus(),
-        e.getExceptionCode().getCode(),
-        e.getExceptionCode().getMessage(),
+        e.getErrorCode().getStatus(),
+        e.getErrorCode().getCode(),
+        e.getErrorCode().getMessage(),
         e.getMessage());
     ExceptionResponse body = new ExceptionResponse(
-        e.getExceptionCode().getCode(),
-        e.getExceptionCode().getMessage()
+        e.getErrorCode().getCode(),
+        e.getErrorCode().getMessage()
     );
-    return ResponseEntity.status(e.getExceptionCode().getStatus()).body(body);
+    return ResponseEntity.status(e.getErrorCode().getStatus()).body(body);
   }
 
   @ExceptionHandler(FileException.class)
   public ResponseEntity<ExceptionResponse> handleFileException(FileException e) {
     log.warn("[파일 예외] status={} code={} custom_msg={} exception_msg={}",
-        e.getExceptionCode().getStatus(),
-        e.getExceptionCode().getCode(),
-        e.getExceptionCode().getMessage(),
+        e.getErrorCode().getStatus(),
+        e.getErrorCode().getCode(),
+        e.getErrorCode().getMessage(),
         e.getMessage());
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
         .body(new ExceptionResponse("FILE_ERROR", "파일 처리 중 오류가 발생했습니다."));

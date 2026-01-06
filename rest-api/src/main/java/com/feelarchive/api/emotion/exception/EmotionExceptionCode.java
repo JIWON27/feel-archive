@@ -1,12 +1,12 @@
 package com.feelarchive.api.emotion.exception;
 
-import com.feelarchive.api.exception.ExceptionCode;
+import com.feelarchive.common.excepion.FeelArchiveErrorCode;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public enum EmotionExceptionCode implements ExceptionCode {
+public enum EmotionExceptionCode implements FeelArchiveErrorCode {
 
   EMOTION_NOT_FOUND("E001", HttpStatus.NOT_FOUND, "존재하지 않는 감정입니다."),
   EMOTION_REQUIRED("E002", HttpStatus.BAD_REQUEST, "감정 정보는 필수값입니다.")

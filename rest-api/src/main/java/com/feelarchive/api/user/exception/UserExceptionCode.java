@@ -1,12 +1,12 @@
 package com.feelarchive.api.user.exception;
 
-import com.feelarchive.api.exception.ExceptionCode;
+import com.feelarchive.common.excepion.FeelArchiveErrorCode;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public enum UserExceptionCode implements ExceptionCode {
+public enum UserExceptionCode implements FeelArchiveErrorCode {
 
   USER_NOT_FOUND("U001", HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다."),
   DUPLICATE_EMAIL("U002", HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다."),
