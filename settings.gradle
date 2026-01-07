@@ -1,6 +1,6 @@
 rootProject.name = 'feel-archive'
 
 include("external")
-include("rest-api")
+include("api")
 include("batch")
 include("common")
