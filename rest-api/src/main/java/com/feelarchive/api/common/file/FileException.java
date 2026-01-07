@@ -1,14 +1,14 @@
 package com.feelarchive.api.common.file;
 
-import com.feelarchive.api.exception.ExceptionCode;
+import com.feelarchive.common.excepion.FeelArchiveErrorCode;
 import lombok.Getter;
 
 @Getter
 public class FileException extends RuntimeException {
-  private final ExceptionCode exceptionCode;
+  private final FeelArchiveErrorCode errorCode;
 
-  public FileException(ExceptionCode exceptionCode) {
-    this.exceptionCode = exceptionCode;
+  public FileException(FeelArchiveErrorCode errorCode) {
+    this.errorCode = errorCode;
   }
 
 }

@@ -1,12 +1,13 @@
 package com.feelarchive.geo.exception;
 
+import com.feelarchive.common.excepion.FeelArchiveErrorCode;
 import lombok.Getter;
 
 @Getter
 public class LocationException extends RuntimeException {
-  private final ExceptionCode exceptionCode;
+  private final FeelArchiveErrorCode errorCode;
 
-  public LocationException(ExceptionCode exceptionCode) {
-    this.exceptionCode = exceptionCode;
+  public LocationException(FeelArchiveErrorCode errorCode) {
+    this.errorCode = errorCode;
   }
 }

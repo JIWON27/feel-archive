@@ -1,11 +1,11 @@
 package com.feelarchive.api.common.file;
 
-import com.feelarchive.api.exception.ExceptionCode;
+import com.feelarchive.common.excepion.FeelArchiveErrorCode;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public enum FileExceptionCode implements ExceptionCode {
+public enum FileExceptionCode implements FeelArchiveErrorCode {
   INVALID_FILE_URI("F001", HttpStatus.INTERNAL_SERVER_ERROR, "유효하지 않는 URI 입니다."),
   INVALID_DIR_PATH("F002", HttpStatus.INTERNAL_SERVER_ERROR, "허용되지 않는 저장 경로입니다."),
   FILE_NOT_FOUND("F003", HttpStatus.INTERNAL_SERVER_ERROR, "파일을 찾을 수 없습니다."),

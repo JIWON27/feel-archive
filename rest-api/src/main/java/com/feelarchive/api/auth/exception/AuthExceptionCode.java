@@ -1,12 +1,12 @@
 package com.feelarchive.api.auth.exception;
 
-import com.feelarchive.api.exception.ExceptionCode;
+import com.feelarchive.common.excepion.FeelArchiveErrorCode;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public enum AuthExceptionCode implements ExceptionCode {
+public enum AuthExceptionCode implements FeelArchiveErrorCode {
   INVALID_TOKEN("A001", HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
   NOT_FOUND_TOKEN("A002", HttpStatus.UNAUTHORIZED, "존재하지 않는 토큰입니다."),
   EMPTY_TOKEN("A003", HttpStatus.BAD_REQUEST, "토큰이 비어있습니다."),
