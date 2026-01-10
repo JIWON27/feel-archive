@@ -1,5 +1,6 @@
 package com.feelarchive.api.capsule.service;
 
+import static com.feelarchive.domain.capsule.exception.TimeCapsuleExceptionCode.CAPSULE_EDIT_TIME_EXPIRED;
 import static com.feelarchive.domain.capsule.exception.TimeCapsuleExceptionCode.CAPSULE_FORBIDDEN;
 import static com.feelarchive.domain.capsule.exception.TimeCapsuleExceptionCode.CAPSULE_IMAGE_NOT_FOUND;
 import static com.feelarchive.domain.file.exception.FileExceptionCode.FILE_NOT_FOUND;
@@ -10,6 +11,7 @@ import com.feelarchive.api.capsule.controller.response.TimeCapsuleImageResponse;
 import com.feelarchive.api.common.file.FileProperties;
 import com.feelarchive.api.common.file.FileService;
 import com.feelarchive.common.excepion.FeelArchiveException;
+import com.feelarchive.domain.capsule.entity.CapsuleStatus;
 import com.feelarchive.domain.capsule.entity.TimeCapsule;
 import com.feelarchive.domain.capsule.entity.TimeCapsuleImage;
 import com.feelarchive.domain.capsule.repository.TimeCapsuleImageRepository;
@@ -35,7 +37,8 @@ public class TimeCapsuleImageService {
   private final TimeCapsuleImageRepository timeCapsuleImageRepository;
 
   @Transactional
-  public List<TimeCapsuleImageResponse> uploads(Long timeCapsuleId, Long userId, List<MultipartFile> files) {
+  public List<TimeCapsuleImageResponse> uploads(Long timeCapsuleId, Long userId,
+      List<MultipartFile> files) {
     TimeCapsule timeCapsule = capsuleReader.getById(timeCapsuleId);
     checkOwner(timeCapsule, userId);
 
@@ -49,7 +52,9 @@ public class TimeCapsuleImageService {
           .build());
     }
     List<TimeCapsuleImage> timeCapsuleImages = timeCapsuleImageRepository.saveAll(capsules);
-    return timeCapsuleImages.stream().map(TimeCapsuleImage -> TimeCapsuleImageResponse.of(TimeCapsuleImage.getId(), generateDownloadUrl(timeCapsuleId, TimeCapsuleImage))).toList();
+    return timeCapsuleImages.stream().map(
+        TimeCapsuleImage -> TimeCapsuleImageResponse.of(TimeCapsuleImage.getId(),
+            generateDownloadUrl(timeCapsuleId, TimeCapsuleImage))).toList();
   }
 
   @Transactional
@@ -68,10 +73,12 @@ public class TimeCapsuleImageService {
   public TimeCapsuleImageDownloadResponse download(Long timeCapsuleId, Long imageId, Long userId) {
     TimeCapsuleImage image = getTimeCapsuleImage(timeCapsuleId, imageId);
     TimeCapsule timeCapsule = image.getTimeCapsule();
-    FileMeta fileMeta = image.getFileMeta();
-    Path fullPath = fileService.getFullPath(fileMeta.getStorageKey());
 
     checkOwner(timeCapsule, userId);
+    checkTimeCapsuleEditable(timeCapsule);
+
+    FileMeta fileMeta = image.getFileMeta();
+    Path fullPath = fileService.getFullPath(fileMeta.getStorageKey());
 
     try {
       UrlResource resource = new UrlResource(fullPath.toUri());
@@ -90,7 +97,8 @@ public class TimeCapsuleImageService {
 
   @Transactional(readOnly = true)
   public List<TimeCapsuleImageResponse> getImages(TimeCapsule timeCapsule) {
-    List<TimeCapsuleImage> timeCapsuleImages = timeCapsuleImageRepository.findByTimeCapsule(timeCapsule);
+    List<TimeCapsuleImage> timeCapsuleImages = timeCapsuleImageRepository.findByTimeCapsule(
+        timeCapsule);
     return timeCapsuleImages.stream()
         .map(timeCapsuleImage -> TimeCapsuleImageResponse.of(
             timeCapsuleImage.getId(), generateDownloadUrl(timeCapsule.getId(), timeCapsuleImage)))
@@ -103,12 +111,22 @@ public class TimeCapsuleImageService {
   }
 
   private String generateDownloadUrl(Long timeCapsuleId, TimeCapsuleImage timeCapsuleImage) {
-    return fileProperties.getPublicBaseUrl() + timeCapsuleId +"/images/" + timeCapsuleImage.getId();
+    return fileProperties.getPublicBaseUrl() + timeCapsuleId + "/images/"
+        + timeCapsuleImage.getId();
   }
 
   private void checkOwner(TimeCapsule timeCapsule, Long userId) {
     if (!timeCapsule.isOwner(userId)) {
       throw new FeelArchiveException(CAPSULE_FORBIDDEN);
+    }
+  }
+
+  private void checkTimeCapsuleEditable(TimeCapsule capsule) {
+    if (capsule.getCapsuleStatus() == CapsuleStatus.OPENED) {
+      return;
+    }
+    if (!capsule.isEditable()) {
+      throw new FeelArchiveException(CAPSULE_EDIT_TIME_EXPIRED);
     }
   }
 
