@@ -1,7 +1,7 @@
 package com.feelarchive.domain.capsule.entity;
 
-import static com.feelarchive.domain.archive.exception.ArchiveExceptionCode.ARCHIVE_FORBIDDEN;
 import static com.feelarchive.domain.capsule.exception.TimeCapsuleExceptionCode.CANNOT_OPEN_CAPSULE;
+import static com.feelarchive.domain.capsule.exception.TimeCapsuleExceptionCode.CAPSULE_FORBIDDEN;
 import static com.feelarchive.domain.capsule.exception.TimeCapsuleExceptionCode.INVALID_OPEN_TIME;
 
 import com.feelarchive.common.excepion.FeelArchiveException;
@@ -115,7 +115,7 @@ public class TimeCapsule {
 
   public void validateOwner(Long userId) {
     if (!isOwner(userId)) {
-      throw new FeelArchiveException(ARCHIVE_FORBIDDEN);
+      throw new FeelArchiveException(CAPSULE_FORBIDDEN);
     }
   }
 
