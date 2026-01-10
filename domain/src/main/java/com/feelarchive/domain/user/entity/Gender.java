@@ -1,4 +1,4 @@
-package com.feelarchive.domain.user.domain;
+package com.feelarchive.domain.user.entity;
 
 public enum Gender {
   MALE,

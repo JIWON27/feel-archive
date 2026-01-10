@@ -1,12 +1,12 @@
-package com.feelarchive.api.archive.repository;
+package com.feelarchive.domain.archive.repository;
 
-import static com.feelarchive.api.archive.domain.QArchive.archive;
+import static com.feelarchive.domain.archive.entity.QArchive.archive;
 
-import com.feelarchive.api.archive.controller.request.ArchiveSearchCondition;
-import com.feelarchive.api.archive.controller.request.ArchiveSortType;
-import com.feelarchive.api.archive.domain.Archive;
-import com.feelarchive.api.archive.domain.Visibility;
-import com.feelarchive.api.emotion.domain.Emotion;
+import com.feelarchive.domain.archive.ArchiveSearchCondition;
+import com.feelarchive.domain.archive.ArchiveSortType;
+import com.feelarchive.domain.archive.entity.Archive;
+import com.feelarchive.domain.archive.entity.Visibility;
+import com.feelarchive.domain.emotion.entity.Emotion;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;

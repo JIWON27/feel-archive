@@ -1,4 +1,4 @@
-package com.feelarchive.api.archive.controller.request;
+package com.feelarchive.domain.archive;
 
 import lombok.AccessLevel;
 import lombok.Getter;

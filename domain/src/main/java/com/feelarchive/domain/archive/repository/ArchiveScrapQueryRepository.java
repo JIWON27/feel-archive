@@ -1,8 +1,8 @@
-package com.feelarchive.api.archive.repository;
+package com.feelarchive.domain.archive.repository;
 
-import static com.feelarchive.api.archive.domain.QArchiveScrap.archiveScrap;
+import static com.feelarchive.domain.archive.entity.QArchiveScrap.archiveScrap;
 
-import com.feelarchive.api.archive.domain.ArchiveScrap;
+import com.feelarchive.domain.archive.entity.ArchiveScrap;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;

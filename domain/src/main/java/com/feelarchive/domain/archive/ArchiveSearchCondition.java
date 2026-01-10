@@ -1,6 +1,6 @@
-package com.feelarchive.api.archive.controller.request;
+package com.feelarchive.domain.archive;
 
-import com.feelarchive.api.emotion.domain.Emotion;
+import com.feelarchive.domain.emotion.entity.Emotion;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,8 +1,8 @@
-package com.feelarchive.domain.user.repository.jpa;
+package com.feelarchive.domain.user.repository;
 
-import com.feelarchive.domain.user.domain.User;
-import com.feelarchive.domain.user.domain.vo.Email;
-import com.feelarchive.domain.user.domain.vo.Nickname;
+import com.feelarchive.domain.user.entity.User;
+import com.feelarchive.domain.user.entity.vo.Email;
+import com.feelarchive.domain.user.entity.vo.Nickname;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

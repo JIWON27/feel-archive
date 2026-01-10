@@ -1,4 +1,4 @@
-package com.feelarchive.domain.emotion.domain;
+package com.feelarchive.domain.emotion.entity;
 
 import static com.feelarchive.domain.emotion.exception.EmotionExceptionCode.EMOTION_REQUIRED;
 

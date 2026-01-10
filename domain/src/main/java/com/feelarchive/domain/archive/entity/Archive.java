@@ -1,11 +1,11 @@
-package com.feelarchive.domain.archive.domain;
+package com.feelarchive.domain.archive.entity;
 
-import static com.feelarchive.api.archive.exception.ArchiveExceptionCode.ARCHIVE_FORBIDDEN;
+import static com.feelarchive.domain.archive.exception.ArchiveExceptionCode.ARCHIVE_FORBIDDEN;
 
-import com.feelarchive.api.emotion.domain.Emotion;
-import com.feelarchive.api.user.domain.User;
 import com.feelarchive.common.excepion.FeelArchiveException;
-import com.feelarchive.domain.archive.domain.vo.Location;
+import com.feelarchive.domain.archive.entity.vo.Location;
+import com.feelarchive.domain.emotion.entity.Emotion;
+import com.feelarchive.domain.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;

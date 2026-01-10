@@ -1,8 +1,8 @@
-package com.feelarchive.api.archive.repository;
+package com.feelarchive.domain.archive.repository;
 
-import com.feelarchive.api.archive.domain.Archive;
-import com.feelarchive.api.archive.domain.ArchiveScrap;
-import com.feelarchive.api.user.domain.User;
+import com.feelarchive.domain.archive.entity.Archive;
+import com.feelarchive.domain.archive.entity.ArchiveScrap;
+import com.feelarchive.domain.user.entity.User;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

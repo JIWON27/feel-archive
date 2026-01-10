@@ -1,4 +1,4 @@
-package com.feelarchive.api.common.file;
+package com.feelarchive.domain.file.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

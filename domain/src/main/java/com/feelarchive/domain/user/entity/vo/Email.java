@@ -1,4 +1,4 @@
-package com.feelarchive.domain.user.domain.vo;
+package com.feelarchive.domain.user.entity.vo;
 
 import com.feelarchive.common.excepion.FeelArchiveException;
 import com.feelarchive.domain.user.exception.UserExceptionCode;

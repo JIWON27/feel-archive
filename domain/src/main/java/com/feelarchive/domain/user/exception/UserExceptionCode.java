@@ -1,4 +1,4 @@
-package com.feelarchive.api.user.exception;
+package com.feelarchive.domain.user.exception;
 
 import com.feelarchive.common.excepion.FeelArchiveErrorCode;
 import lombok.AccessLevel;

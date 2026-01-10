@@ -3,6 +3,7 @@ package com.feelarchive.api.common.file;
 import static com.feelarchive.api.common.file.FileExceptionCode.DELETE_FAILED;
 import static com.feelarchive.api.common.file.FileExceptionCode.INVALID_DIR_PATH;
 
+import com.feelarchive.common.excepion.FeelArchiveException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -48,7 +49,7 @@ public class LocalFileService implements FileService {
           .build();
     } catch (IOException e) {
       log.error("File upload failed. Dir: {}", dir, e);
-      throw new FileException(FileExceptionCode.UPLOAD_FAILED);
+      throw new FeelArchiveException(FileExceptionCode.UPLOAD_FAILED);
     }
   }
 
@@ -71,7 +72,7 @@ public class LocalFileService implements FileService {
       }
     } catch (IOException e) {
       log.error("File delete failed. Path: {}", fullPath, e);
-      throw new FileException(DELETE_FAILED);
+      throw new FeelArchiveException(DELETE_FAILED);
     }
   }
 
@@ -86,7 +87,7 @@ public class LocalFileService implements FileService {
     Path baseDir = Path.of(fileProperties.getBaseDir());
     Path fullPath = baseDir.resolve(storageKey).normalize();
     if (!fullPath.startsWith(baseDir)) {
-      throw new FileException(FileExceptionCode.INVALID_DIR_PATH);
+      throw new FeelArchiveException(FileExceptionCode.INVALID_DIR_PATH);
     }
     return fullPath;
   }
@@ -97,7 +98,7 @@ public class LocalFileService implements FileService {
     }
 
     if (dir.contains("..")) {
-      throw new FileException(INVALID_DIR_PATH);
+      throw new FeelArchiveException(INVALID_DIR_PATH);
     }
 
     return dir + "/" + UUID.randomUUID() + extension;
@@ -109,7 +110,7 @@ public class LocalFileService implements FileService {
 
   private void validateFile(MultipartFile file) {
     if (file == null || file.isEmpty()) {
-      throw new FileException(FileExceptionCode.EMPTY_FILE);
+      throw new FeelArchiveException(FileExceptionCode.EMPTY_FILE);
     }
   }
 }

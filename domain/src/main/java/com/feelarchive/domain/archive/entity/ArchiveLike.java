@@ -1,6 +1,6 @@
-package com.feelarchive.domain.archive.domain;
+package com.feelarchive.domain.archive.entity;
 
-import com.feelarchive.api.user.domain.User;
+import com.feelarchive.domain.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

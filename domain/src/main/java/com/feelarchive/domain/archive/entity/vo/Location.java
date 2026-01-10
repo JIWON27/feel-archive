@@ -1,8 +1,8 @@
-package com.feelarchive.domain.archive.domain.vo;
+package com.feelarchive.domain.archive.entity.vo;
 
-import static com.feelarchive.api.archive.exception.ArchiveExceptionCode.LATITUDE_OUT_OF_RANGE;
-import static com.feelarchive.api.archive.exception.ArchiveExceptionCode.LOCATION_COORDINATES_REQUIRED;
-import static com.feelarchive.api.archive.exception.ArchiveExceptionCode.LONGITUDE_OUT_OF_RANGE;
+import static com.feelarchive.domain.archive.exception.ArchiveExceptionCode.LATITUDE_OUT_OF_RANGE;
+import static com.feelarchive.domain.archive.exception.ArchiveExceptionCode.LOCATION_COORDINATES_REQUIRED;
+import static com.feelarchive.domain.archive.exception.ArchiveExceptionCode.LONGITUDE_OUT_OF_RANGE;
 
 import com.feelarchive.common.excepion.FeelArchiveException;
 import jakarta.persistence.Column;

@@ -1,4 +1,4 @@
-package com.feelarchive.domain.user.domain.vo;
+package com.feelarchive.domain.user.entity.vo;
 
 import static com.feelarchive.domain.user.exception.UserExceptionCode.INVALID_PHONE_FORMAT;
 import static com.feelarchive.domain.user.exception.UserExceptionCode.PHONE_REQUIRED;

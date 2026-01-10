@@ -1,11 +1,11 @@
-package com.feelarchive.domain.user.domain;
+package com.feelarchive.domain.user.entity;
 
 import com.feelarchive.common.excepion.FeelArchiveException;
-import com.feelarchive.domain.user.domain.vo.BirthDate;
-import com.feelarchive.domain.user.domain.vo.Email;
-import com.feelarchive.domain.user.domain.vo.Nickname;
-import com.feelarchive.domain.user.domain.vo.Password;
-import com.feelarchive.domain.user.domain.vo.Phone;
+import com.feelarchive.domain.user.entity.vo.BirthDate;
+import com.feelarchive.domain.user.entity.vo.Email;
+import com.feelarchive.domain.user.entity.vo.Nickname;
+import com.feelarchive.domain.user.entity.vo.Password;
+import com.feelarchive.domain.user.entity.vo.Phone;
 import com.feelarchive.domain.user.exception.UserExceptionCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
