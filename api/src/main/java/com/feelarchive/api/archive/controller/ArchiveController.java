@@ -1,7 +1,6 @@
 package com.feelarchive.api.archive.controller;
 
 import com.feelarchive.api.archive.controller.request.ArchiveRequest;
-import com.feelarchive.api.archive.controller.request.ArchiveSearchCondition;
 import com.feelarchive.api.archive.controller.request.ArchiveStatusUpdateRequest;
 import com.feelarchive.api.archive.controller.response.ArchiveDetailResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveImageDownloadResponse;
@@ -12,6 +11,7 @@ import com.feelarchive.api.archive.service.ArchiveLikeService;
 import com.feelarchive.api.archive.service.ArchiveScrapService;
 import com.feelarchive.api.archive.service.ArchiveService;
 import com.feelarchive.api.common.response.PagingResponse;
+import com.feelarchive.domain.archive.ArchiveSearchCondition;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;

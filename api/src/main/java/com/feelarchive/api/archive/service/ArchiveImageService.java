@@ -1,21 +1,21 @@
 package com.feelarchive.api.archive.service;
 
-import static com.feelarchive.api.archive.exception.ArchiveExceptionCode.ARCHIVE_FORBIDDEN;
-import static com.feelarchive.api.archive.exception.ArchiveExceptionCode.ARCHIVE_IMAGE_NOT_FOUND;
-import static com.feelarchive.api.common.file.FileExceptionCode.FILE_NOT_FOUND;
-import static com.feelarchive.api.common.file.FileExceptionCode.FILE_NOT_READABLE;
+
+import static com.feelarchive.domain.archive.exception.ArchiveExceptionCode.ARCHIVE_FORBIDDEN;
+import static com.feelarchive.domain.archive.exception.ArchiveExceptionCode.ARCHIVE_IMAGE_NOT_FOUND;
+import static com.feelarchive.domain.file.exception.FileExceptionCode.FILE_NOT_FOUND;
+import static com.feelarchive.domain.file.exception.FileExceptionCode.FILE_NOT_READABLE;
 
 import com.feelarchive.api.archive.controller.response.ArchiveImageDownloadResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveImageResponse;
-import com.feelarchive.api.archive.domain.Archive;
-import com.feelarchive.api.archive.domain.ArchiveImage;
-import com.feelarchive.api.archive.repository.ArchiveImageRepository;
-import com.feelarchive.api.common.file.FileException;
-import com.feelarchive.api.common.file.FileExceptionCode;
-import com.feelarchive.api.common.file.FileMeta;
 import com.feelarchive.api.common.file.FileProperties;
 import com.feelarchive.api.common.file.FileService;
 import com.feelarchive.common.excepion.FeelArchiveException;
+import com.feelarchive.domain.archive.entity.Archive;
+import com.feelarchive.domain.archive.entity.ArchiveImage;
+import com.feelarchive.domain.archive.repository.ArchiveImageRepository;
+import com.feelarchive.domain.file.entity.FileMeta;
+import com.feelarchive.domain.file.exception.FileExceptionCode;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -78,15 +78,15 @@ public class ArchiveImageService {
     try {
       UrlResource resource = new UrlResource(fullPath.toUri());
       if (!resource.exists()) {
-        throw new FileException(FILE_NOT_FOUND);
+        throw new FeelArchiveException(FILE_NOT_FOUND);
       }
       if (!resource.isReadable()) {
-        throw new FileException(FILE_NOT_READABLE);
+        throw new FeelArchiveException(FILE_NOT_READABLE);
       }
 
       return ArchiveImageDownloadResponse.of(fileMeta, resource);
     } catch (MalformedURLException e) {
-      throw new FileException(FileExceptionCode.INVALID_FILE_URI);
+      throw new FeelArchiveException(FileExceptionCode.INVALID_FILE_URI);
     }
   }
 
@@ -100,7 +100,7 @@ public class ArchiveImageService {
 
   private ArchiveImage getArchiveImage(Long archiveId, Long imageId) {
     return archiveImageRepository.findByIdAndArchive_Id(imageId, archiveId)
-        .orElseThrow(() -> new FeelArchiveException(ARCHIVE_IMAGE_NOT_FOUND));
+        .orElseThrow(() -> new com.feelarchive.common.excepion.FeelArchiveException(ARCHIVE_IMAGE_NOT_FOUND));
   }
 
   private String generateDownloadUrl(Long archiveId, ArchiveImage archiveImage) {
@@ -109,7 +109,7 @@ public class ArchiveImageService {
 
   private void checkOwner(Archive archive, Long userId) {
     if (!archive.isOwner(userId)) {
-      throw new FeelArchiveException(ARCHIVE_FORBIDDEN);
+      throw new com.feelarchive.common.excepion.FeelArchiveException(ARCHIVE_FORBIDDEN);
     }
   }
 

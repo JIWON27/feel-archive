@@ -2,17 +2,17 @@ package com.feelarchive.api.auth.service;
 
 import static com.feelarchive.api.auth.exception.AuthExceptionCode.NOT_FOUND_TOKEN;
 import static com.feelarchive.api.auth.exception.AuthExceptionCode.REISSUE_FAIL;
-import static com.feelarchive.api.user.exception.UserExceptionCode.LOGIN_FAIL;
+import static com.feelarchive.domain.user.exception.UserExceptionCode.LOGIN_FAIL;
 
 import com.feelarchive.api.auth.controller.request.LoginRequest;
 import com.feelarchive.api.auth.controller.response.LoginResponse;
 import com.feelarchive.api.auth.domain.RefreshToken;
 import com.feelarchive.api.auth.jwt.JwtProvider;
 import com.feelarchive.api.auth.repository.redis.RefreshTokenRedisRepository;
-import com.feelarchive.api.user.domain.User;
-import com.feelarchive.api.user.domain.vo.Email;
 import com.feelarchive.api.user.service.UserReader;
 import com.feelarchive.common.excepion.FeelArchiveException;
+import com.feelarchive.domain.user.entity.User;
+import com.feelarchive.domain.user.entity.vo.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

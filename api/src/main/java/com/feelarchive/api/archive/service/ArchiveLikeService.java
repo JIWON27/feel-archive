@@ -1,15 +1,15 @@
 package com.feelarchive.api.archive.service;
 
-import static com.feelarchive.api.archive.exception.ArchiveExceptionCode.ALREADY_LIKED;
-import static com.feelarchive.api.archive.exception.ArchiveExceptionCode.ARCHIVE_LIKE_NOT_FOUND;
+import static com.feelarchive.domain.archive.exception.ArchiveExceptionCode.ALREADY_LIKED;
+import static com.feelarchive.domain.archive.exception.ArchiveExceptionCode.ARCHIVE_LIKE_NOT_FOUND;
 
-import com.feelarchive.api.archive.domain.Archive;
-import com.feelarchive.api.archive.domain.ArchiveLike;
-import com.feelarchive.api.archive.repository.ArchiveLikeRepository;
-import com.feelarchive.api.archive.repository.ArchiveRepository;
-import com.feelarchive.api.user.domain.User;
 import com.feelarchive.api.user.service.UserReader;
 import com.feelarchive.common.excepion.FeelArchiveException;
+import com.feelarchive.domain.archive.entity.Archive;
+import com.feelarchive.domain.archive.entity.ArchiveLike;
+import com.feelarchive.domain.archive.repository.ArchiveLikeRepository;
+import com.feelarchive.domain.archive.repository.ArchiveRepository;
+import com.feelarchive.domain.user.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

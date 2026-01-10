@@ -1,7 +1,5 @@
 package com.feelarchive.api.exception;
 
-import com.feelarchive.api.common.file.FileException;
-import com.feelarchive.common.excepion.FeelArchiveException;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +13,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-  @ExceptionHandler(FeelArchiveException.class)
-  public ResponseEntity<ExceptionResponse> handleBusinessException(FeelArchiveException e) {
+  @ExceptionHandler(com.feelarchive.common.excepion.FeelArchiveException.class)
+  public ResponseEntity<ExceptionResponse> handleBusinessException(
+      com.feelarchive.common.excepion.FeelArchiveException e) {
     log.warn("[비지니스 예외] status={} code={} custom_msg={} exception_msg={}",
         e.getErrorCode().getStatus(),
         e.getErrorCode().getCode(),
@@ -27,17 +26,6 @@ public class GlobalExceptionHandler {
         e.getErrorCode().getMessage()
     );
     return ResponseEntity.status(e.getErrorCode().getStatus()).body(body);
-  }
-
-  @ExceptionHandler(FileException.class)
-  public ResponseEntity<ExceptionResponse> handleFileException(FileException e) {
-    log.warn("[파일 예외] status={} code={} custom_msg={} exception_msg={}",
-        e.getErrorCode().getStatus(),
-        e.getErrorCode().getCode(),
-        e.getErrorCode().getMessage(),
-        e.getMessage());
-    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .body(new ExceptionResponse("FILE_ERROR", "파일 처리 중 오류가 발생했습니다."));
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)

@@ -1,10 +1,11 @@
 package com.feelarchive.api.archive.service;
 
-import static com.feelarchive.api.archive.exception.ArchiveExceptionCode.ARCHIVE_NOT_FOUND;
 
-import com.feelarchive.api.archive.domain.Archive;
-import com.feelarchive.api.archive.repository.ArchiveRepository;
+import static com.feelarchive.domain.archive.exception.ArchiveExceptionCode.ARCHIVE_NOT_FOUND;
+
 import com.feelarchive.common.excepion.FeelArchiveException;
+import com.feelarchive.domain.archive.entity.Archive;
+import com.feelarchive.domain.archive.repository.ArchiveRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

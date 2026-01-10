@@ -1,8 +1,8 @@
 package com.feelarchive.api.config.auth;
 
 import com.feelarchive.api.auth.jwt.JwtProvider;
-import com.feelarchive.api.user.domain.User;
 import com.feelarchive.api.user.service.UserReader;
+import com.feelarchive.domain.user.entity.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

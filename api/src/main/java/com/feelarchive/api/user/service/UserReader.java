@@ -1,11 +1,12 @@
 package com.feelarchive.api.user.service;
 
-import static com.feelarchive.api.user.exception.UserExceptionCode.USER_NOT_FOUND;
 
-import com.feelarchive.api.user.domain.User;
-import com.feelarchive.api.user.domain.vo.Email;
-import com.feelarchive.api.user.repository.jpa.UserRepository;
+import static com.feelarchive.domain.user.exception.UserExceptionCode.USER_NOT_FOUND;
+
 import com.feelarchive.common.excepion.FeelArchiveException;
+import com.feelarchive.domain.user.entity.User;
+import com.feelarchive.domain.user.entity.vo.Email;
+import com.feelarchive.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
