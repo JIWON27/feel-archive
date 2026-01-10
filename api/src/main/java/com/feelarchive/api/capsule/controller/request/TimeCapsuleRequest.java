@@ -1,5 +1,6 @@
 package com.feelarchive.api.capsule.controller.request;
 
+import com.feelarchive.api.archive.controller.request.LocationRequest;
 import com.feelarchive.domain.emotion.entity.Emotion;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,6 +12,7 @@ public record TimeCapsuleRequest(
     @NotBlank(message = "내용을 작성해주세요.")
     String content,
     @NotNull(message = "오픈 시간을 입력해주세요.")
-    LocalDateTime openAt
+    LocalDateTime openAt,
+    LocationRequest location
 ) {
 }
