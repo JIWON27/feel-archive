@@ -1,6 +1,5 @@
 package com.feelarchive.api.archive.controller.request;
 
-import com.feelarchive.api.archive.domain.Visibility;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,5 +9,5 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ArchiveStatusUpdateRequest {
-  Visibility visibility;
+  com.feelarchive.domain.archive.entity.Visibility visibility;
 }

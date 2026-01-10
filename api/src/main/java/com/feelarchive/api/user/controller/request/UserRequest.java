@@ -1,6 +1,6 @@
 package com.feelarchive.api.user.controller.request;
 
-import com.feelarchive.api.user.domain.Gender;
+import com.feelarchive.domain.user.entity.Gender;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

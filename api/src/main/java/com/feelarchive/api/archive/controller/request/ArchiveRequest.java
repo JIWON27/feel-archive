@@ -1,7 +1,7 @@
 package com.feelarchive.api.archive.controller.request;
 
-import com.feelarchive.api.archive.domain.Visibility;
-import com.feelarchive.api.emotion.domain.Emotion;
+import com.feelarchive.domain.archive.entity.Visibility;
+import com.feelarchive.domain.emotion.entity.Emotion;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;

@@ -1,5 +1,6 @@
 package com.feelarchive.api.common.file;
 
+import com.feelarchive.domain.file.entity.FileMeta;
 import java.nio.file.Path;
 import java.util.List;
 import org.springframework.web.multipart.MultipartFile;

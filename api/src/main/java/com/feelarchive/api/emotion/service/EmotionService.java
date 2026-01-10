@@ -1,7 +1,7 @@
 package com.feelarchive.api.emotion.service;
 
 import com.feelarchive.api.emotion.controller.response.EmotionResponse;
-import com.feelarchive.api.emotion.domain.Emotion;
+import com.feelarchive.domain.emotion.entity.Emotion;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.stereotype.Service;

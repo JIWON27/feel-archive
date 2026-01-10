@@ -2,10 +2,10 @@ package com.feelarchive.api.user.service;
 
 import com.feelarchive.api.user.controller.request.UserRequest;
 import com.feelarchive.api.user.controller.response.UserResponse;
-import com.feelarchive.api.user.domain.User;
-import com.feelarchive.api.user.domain.vo.Email;
-import com.feelarchive.api.user.domain.vo.Nickname;
-import com.feelarchive.api.user.domain.vo.Phone;
+import com.feelarchive.domain.user.entity.User;
+import com.feelarchive.domain.user.entity.vo.Email;
+import com.feelarchive.domain.user.entity.vo.Nickname;
+import com.feelarchive.domain.user.entity.vo.Phone;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

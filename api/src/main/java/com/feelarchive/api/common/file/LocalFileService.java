@@ -1,9 +1,12 @@
 package com.feelarchive.api.common.file;
 
-import static com.feelarchive.api.common.file.FileExceptionCode.DELETE_FAILED;
-import static com.feelarchive.api.common.file.FileExceptionCode.INVALID_DIR_PATH;
+
+import static com.feelarchive.domain.file.exception.FileExceptionCode.DELETE_FAILED;
+import static com.feelarchive.domain.file.exception.FileExceptionCode.INVALID_DIR_PATH;
 
 import com.feelarchive.common.excepion.FeelArchiveException;
+import com.feelarchive.domain.file.entity.FileMeta;
+import com.feelarchive.domain.file.exception.FileExceptionCode;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -87,7 +90,7 @@ public class LocalFileService implements FileService {
     Path baseDir = Path.of(fileProperties.getBaseDir());
     Path fullPath = baseDir.resolve(storageKey).normalize();
     if (!fullPath.startsWith(baseDir)) {
-      throw new FeelArchiveException(FileExceptionCode.INVALID_DIR_PATH);
+      throw new FeelArchiveException(INVALID_DIR_PATH);
     }
     return fullPath;
   }

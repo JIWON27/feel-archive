@@ -1,17 +1,17 @@
 package com.feelarchive.api.archive.service;
 
 import com.feelarchive.api.archive.controller.request.ArchiveRequest;
-import com.feelarchive.api.archive.controller.request.ArchiveSearchCondition;
 import com.feelarchive.api.archive.controller.request.ArchiveStatusUpdateRequest;
 import com.feelarchive.api.archive.controller.response.ArchiveDetailResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveImageResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveSummaryResponse;
-import com.feelarchive.api.archive.domain.Archive;
-import com.feelarchive.api.archive.repository.ArchiveQueryRepository;
-import com.feelarchive.api.archive.repository.ArchiveRepository;
 import com.feelarchive.api.common.response.PagingResponse;
-import com.feelarchive.api.user.domain.User;
 import com.feelarchive.api.user.service.UserReader;
+import com.feelarchive.domain.archive.ArchiveSearchCondition;
+import com.feelarchive.domain.archive.entity.Archive;
+import com.feelarchive.domain.archive.repository.ArchiveQueryRepository;
+import com.feelarchive.domain.archive.repository.ArchiveRepository;
+import com.feelarchive.domain.user.entity.User;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

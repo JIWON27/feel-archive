@@ -1,15 +1,16 @@
 package com.feelarchive.api.user.service;
 
-import static com.feelarchive.api.user.exception.UserExceptionCode.DUPLICATE_EMAIL;
-import static com.feelarchive.api.user.exception.UserExceptionCode.DUPLICATE_NICKNAME;
+
+import static com.feelarchive.domain.user.exception.UserExceptionCode.DUPLICATE_EMAIL;
+import static com.feelarchive.domain.user.exception.UserExceptionCode.DUPLICATE_NICKNAME;
 
 import com.feelarchive.api.user.controller.request.UserRequest;
 import com.feelarchive.api.user.controller.response.UserResponse;
-import com.feelarchive.api.user.domain.User;
-import com.feelarchive.api.user.domain.vo.Email;
-import com.feelarchive.api.user.domain.vo.Nickname;
-import com.feelarchive.api.user.repository.jpa.UserRepository;
 import com.feelarchive.common.excepion.FeelArchiveException;
+import com.feelarchive.domain.user.entity.User;
+import com.feelarchive.domain.user.entity.vo.Email;
+import com.feelarchive.domain.user.entity.vo.Nickname;
+import com.feelarchive.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

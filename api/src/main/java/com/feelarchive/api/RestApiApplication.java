@@ -6,8 +6,10 @@ import com.feelarchive.api.config.auth.TokenProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
+@ComponentScan(basePackages = "com.feelarchive")
 @EnableConfigurationProperties({TokenProperties.class, CookieProperties.class, FileProperties.class})
 public class RestApiApplication {
   public static void main(String[] args) {

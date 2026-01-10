@@ -1,17 +1,18 @@
 package com.feelarchive.api.archive.service;
 
-import static com.feelarchive.api.archive.exception.ArchiveExceptionCode.ALREADY_SCRAPPED;
-import static com.feelarchive.api.archive.exception.ArchiveExceptionCode.ARCHIVE_SCRAP_NOT_FOUND;
+
+import static com.feelarchive.domain.archive.exception.ArchiveExceptionCode.ALREADY_SCRAPPED;
+import static com.feelarchive.domain.archive.exception.ArchiveExceptionCode.ARCHIVE_SCRAP_NOT_FOUND;
 
 import com.feelarchive.api.archive.controller.response.ArchiveSummaryResponse;
-import com.feelarchive.api.archive.domain.Archive;
-import com.feelarchive.api.archive.domain.ArchiveScrap;
-import com.feelarchive.api.archive.repository.ArchiveScrapQueryRepository;
-import com.feelarchive.api.archive.repository.ArchiveScrapRepository;
 import com.feelarchive.api.common.response.PagingResponse;
-import com.feelarchive.api.user.domain.User;
 import com.feelarchive.api.user.service.UserReader;
 import com.feelarchive.common.excepion.FeelArchiveException;
+import com.feelarchive.domain.archive.entity.Archive;
+import com.feelarchive.domain.archive.entity.ArchiveScrap;
+import com.feelarchive.domain.archive.repository.ArchiveScrapQueryRepository;
+import com.feelarchive.domain.archive.repository.ArchiveScrapRepository;
+import com.feelarchive.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

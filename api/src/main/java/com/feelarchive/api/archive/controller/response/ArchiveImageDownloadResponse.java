@@ -1,6 +1,6 @@
 package com.feelarchive.api.archive.controller.response;
 
-import com.feelarchive.api.common.file.FileMeta;
+import com.feelarchive.domain.file.entity.FileMeta;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

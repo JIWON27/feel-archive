@@ -4,8 +4,8 @@ import static com.feelarchive.api.auth.exception.AuthExceptionCode.EMPTY_TOKEN;
 import static com.feelarchive.api.auth.exception.AuthExceptionCode.INVALID_TOKEN;
 
 import com.feelarchive.api.config.auth.TokenProperties;
-import com.feelarchive.api.user.domain.User;
 import com.feelarchive.common.excepion.FeelArchiveException;
+import com.feelarchive.domain.user.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.JwtException;
