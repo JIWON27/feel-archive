@@ -1,5 +1,6 @@
 package com.feelarchive.api.capsule.service;
 
+import static com.feelarchive.domain.capsule.exception.TimeCapsuleExceptionCode.CAPSULE_EDIT_TIME_EXPIRED;
 import static com.feelarchive.domain.capsule.exception.TimeCapsuleExceptionCode.CAPSULE_NOT_FOUND;
 
 import com.feelarchive.api.capsule.controller.request.TimeCapsuleRequest;
@@ -11,7 +12,6 @@ import com.feelarchive.api.user.service.UserReader;
 import com.feelarchive.common.excepion.FeelArchiveException;
 import com.feelarchive.domain.capsule.entity.CapsuleStatus;
 import com.feelarchive.domain.capsule.entity.TimeCapsule;
-import com.feelarchive.domain.capsule.exception.TimeCapsuleExceptionCode;
 import com.feelarchive.domain.capsule.repository.TimeCapsuleQueryRepository;
 import com.feelarchive.domain.capsule.repository.TimeCapsuleRepository;
 import com.feelarchive.domain.user.entity.User;
@@ -59,10 +59,13 @@ public class TimeCapsuleService {
 
   @Transactional
   public void updateTimeCapsule(Long userId, Long timeCapsuleId, TimeCapsuleRequest request) {
-    // TODO 타임캡슐 검증 로직은?
     TimeCapsule timeCapsule = getById(timeCapsuleId);
 
     timeCapsule.validateOwner(userId);
+    if (!timeCapsule.isEditable()) {
+      throw new FeelArchiveException(CAPSULE_EDIT_TIME_EXPIRED);
+    }
+
     timeCapsule.update(request.emotion(), request.content(), request.openAt());
   }
 
@@ -76,7 +79,7 @@ public class TimeCapsuleService {
 
   private TimeCapsule getById(Long archiveId) {
     return timeCapsuleRepository.findById(archiveId)
-        .orElseThrow(() -> new FeelArchiveException(TimeCapsuleExceptionCode.CAPSULE_NOT_FOUND));
+        .orElseThrow(() -> new FeelArchiveException(CAPSULE_NOT_FOUND));
   }
 
 

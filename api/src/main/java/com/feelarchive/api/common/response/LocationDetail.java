@@ -1,7 +1,9 @@
 package com.feelarchive.api.common.response;
 
+import java.math.BigDecimal;
+
 public record LocationDetail(
     String address,
-    Double latitude,
-    Double longitude
+    BigDecimal latitude,
+    BigDecimal longitude
 ) {}
