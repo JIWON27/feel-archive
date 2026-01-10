@@ -24,6 +24,8 @@ public enum TimeCapsuleExceptionCode implements FeelArchiveErrorCode {
 
   CAPSULE_IMAGE_NOT_FOUND("T013", HttpStatus.NOT_FOUND, "존재하지 않는 이미지입니다."),
   CAPSULE_IMAGE_FORBIDDEN("T014", HttpStatus.FORBIDDEN, "해당 이미지에 대한 접근권한이 없습니다."),
+
+  CAPSULE_EDIT_TIME_EXPIRED("T015", HttpStatus.FORBIDDEN, "수정 가능 시간(30분)이 지났습니다. 이제 캡슐은 봉인되었습니다."),
   ;
 
   final String code;
