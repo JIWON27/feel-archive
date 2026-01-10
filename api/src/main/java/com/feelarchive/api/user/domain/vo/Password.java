@@ -1,7 +1,7 @@
 package com.feelarchive.api.user.domain.vo;
 
-import com.feelarchive.api.exception.BusinessException;
 import com.feelarchive.api.user.exception.UserExceptionCode;
+import com.feelarchive.common.excepion.FeelArchiveException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -26,10 +26,10 @@ public class Password {
 
   private void validatePassword(String password) {
     if (password == null || password.isBlank()) {
-      throw new BusinessException(UserExceptionCode.PASSWORD_REQUIRED);
+      throw new FeelArchiveException(UserExceptionCode.PASSWORD_REQUIRED);
     }
     if (password.length() > 255) {
-      throw new BusinessException(UserExceptionCode.PASSWORD_TOO_LONG);
+      throw new FeelArchiveException(UserExceptionCode.PASSWORD_TOO_LONG);
     }
   }
 }

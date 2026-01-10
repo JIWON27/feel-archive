@@ -1,7 +1,7 @@
 package com.feelarchive.api.user.domain.vo;
 
-import com.feelarchive.api.exception.BusinessException;
 import com.feelarchive.api.user.exception.UserExceptionCode;
+import com.feelarchive.common.excepion.FeelArchiveException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.time.LocalDate;
@@ -27,10 +27,10 @@ public class BirthDate {
 
   private void validateBirthDate(LocalDate birthDate) {
     if (birthDate == null) {
-      throw new BusinessException(UserExceptionCode.BIRTHDATE_REQUIRED);
+      throw new FeelArchiveException(UserExceptionCode.BIRTHDATE_REQUIRED);
     }
     if (birthDate.isAfter(LocalDate.now())) {
-      throw new BusinessException(UserExceptionCode.BIRTHDATE_IN_FUTURE);
+      throw new FeelArchiveException(UserExceptionCode.BIRTHDATE_IN_FUTURE);
     }
   }
 }

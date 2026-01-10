@@ -4,8 +4,8 @@ import static com.feelarchive.api.auth.exception.AuthExceptionCode.EMPTY_TOKEN;
 import static com.feelarchive.api.auth.exception.AuthExceptionCode.INVALID_TOKEN;
 
 import com.feelarchive.api.config.auth.TokenProperties;
-import com.feelarchive.api.exception.BusinessException;
 import com.feelarchive.api.user.domain.User;
+import com.feelarchive.common.excepion.FeelArchiveException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.JwtException;
@@ -69,9 +69,9 @@ public class JwtProvider {
           .getPayload();
       return claims.get("id", Long.class);
     }catch (JwtException e) {
-      throw new BusinessException(INVALID_TOKEN);
+      throw new FeelArchiveException(INVALID_TOKEN);
     }catch (IllegalArgumentException e) {
-      throw new BusinessException(EMPTY_TOKEN);
+      throw new FeelArchiveException(EMPTY_TOKEN);
     }
   }
 }

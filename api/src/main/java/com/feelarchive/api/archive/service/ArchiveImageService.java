@@ -15,7 +15,7 @@ import com.feelarchive.api.common.file.FileExceptionCode;
 import com.feelarchive.api.common.file.FileMeta;
 import com.feelarchive.api.common.file.FileProperties;
 import com.feelarchive.api.common.file.FileService;
-import com.feelarchive.api.exception.BusinessException;
+import com.feelarchive.common.excepion.FeelArchiveException;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -100,7 +100,7 @@ public class ArchiveImageService {
 
   private ArchiveImage getArchiveImage(Long archiveId, Long imageId) {
     return archiveImageRepository.findByIdAndArchive_Id(imageId, archiveId)
-        .orElseThrow(() -> new BusinessException(ARCHIVE_IMAGE_NOT_FOUND));
+        .orElseThrow(() -> new FeelArchiveException(ARCHIVE_IMAGE_NOT_FOUND));
   }
 
   private String generateDownloadUrl(Long archiveId, ArchiveImage archiveImage) {
@@ -109,7 +109,7 @@ public class ArchiveImageService {
 
   private void checkOwner(Archive archive, Long userId) {
     if (!archive.isOwner(userId)) {
-      throw new BusinessException(ARCHIVE_FORBIDDEN);
+      throw new FeelArchiveException(ARCHIVE_FORBIDDEN);
     }
   }
 

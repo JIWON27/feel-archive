@@ -4,8 +4,8 @@ import static com.feelarchive.api.archive.exception.ArchiveExceptionCode.ARCHIVE
 
 import com.feelarchive.api.archive.domain.vo.Location;
 import com.feelarchive.api.emotion.domain.Emotion;
-import com.feelarchive.api.exception.BusinessException;
 import com.feelarchive.api.user.domain.User;
+import com.feelarchive.common.excepion.FeelArchiveException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -102,13 +102,13 @@ public class Archive {
     boolean isOwner = this.getUser().getId().equals(userId);
 
     if (!isOwner && !this.isPublic()) {
-      throw new BusinessException(ARCHIVE_FORBIDDEN);
+      throw new FeelArchiveException(ARCHIVE_FORBIDDEN);
     }
   }
 
   public void validateOwner(Long userId) {
     if (!this.getUser().getId().equals(userId)) {
-      throw new BusinessException(ARCHIVE_FORBIDDEN);
+      throw new FeelArchiveException(ARCHIVE_FORBIDDEN);
     }
   }
 }

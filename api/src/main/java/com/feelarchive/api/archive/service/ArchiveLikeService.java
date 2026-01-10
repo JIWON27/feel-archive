@@ -7,9 +7,9 @@ import com.feelarchive.api.archive.domain.Archive;
 import com.feelarchive.api.archive.domain.ArchiveLike;
 import com.feelarchive.api.archive.repository.ArchiveLikeRepository;
 import com.feelarchive.api.archive.repository.ArchiveRepository;
-import com.feelarchive.api.exception.BusinessException;
 import com.feelarchive.api.user.domain.User;
 import com.feelarchive.api.user.service.UserReader;
+import com.feelarchive.common.excepion.FeelArchiveException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class ArchiveLikeService {
     User user = userReader.getById(userId);
 
     if (archiveLikeRepository.existsByUserAndArchive(user, archive)) {
-      throw new BusinessException(ALREADY_LIKED);
+      throw new FeelArchiveException(ALREADY_LIKED);
     }
 
     archiveLikeRepository.save(ArchiveLike.builder()
@@ -46,7 +46,7 @@ public class ArchiveLikeService {
     User user = userReader.getById(userId);
 
     ArchiveLike archiveLike = archiveLikeRepository.findByUserAndArchive(user, archive)
-        .orElseThrow(() -> new BusinessException(ARCHIVE_LIKE_NOT_FOUND));
+        .orElseThrow(() -> new FeelArchiveException(ARCHIVE_LIKE_NOT_FOUND));
 
     archiveLikeRepository.delete(archiveLike);
     archiveRepository.decreaseLikeCount(archiveId);

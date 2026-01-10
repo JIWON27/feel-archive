@@ -9,9 +9,9 @@ import com.feelarchive.api.archive.domain.ArchiveScrap;
 import com.feelarchive.api.archive.repository.ArchiveScrapQueryRepository;
 import com.feelarchive.api.archive.repository.ArchiveScrapRepository;
 import com.feelarchive.api.common.response.PagingResponse;
-import com.feelarchive.api.exception.BusinessException;
 import com.feelarchive.api.user.domain.User;
 import com.feelarchive.api.user.service.UserReader;
+import com.feelarchive.common.excepion.FeelArchiveException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +34,7 @@ public class ArchiveScrapService {
     User user = userReader.getById(userId);
 
     if (archiveScrapRepository.existsByUserAndArchive(user, archive)) {
-      throw new BusinessException(ALREADY_SCRAPPED);
+      throw new FeelArchiveException(ALREADY_SCRAPPED);
     }
 
     archiveScrapRepository.save(ArchiveScrap.builder()
@@ -49,7 +49,7 @@ public class ArchiveScrapService {
     User user = userReader.getById(userId);
 
     ArchiveScrap archiveScrap = archiveScrapRepository.findByUserAndArchive(user, archive)
-        .orElseThrow(() -> new BusinessException(ARCHIVE_SCRAP_NOT_FOUND));
+        .orElseThrow(() -> new FeelArchiveException(ARCHIVE_SCRAP_NOT_FOUND));
 
     archiveScrapRepository.delete(archiveScrap);
   }

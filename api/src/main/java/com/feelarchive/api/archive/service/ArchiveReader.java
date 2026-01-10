@@ -4,7 +4,7 @@ import static com.feelarchive.api.archive.exception.ArchiveExceptionCode.ARCHIVE
 
 import com.feelarchive.api.archive.domain.Archive;
 import com.feelarchive.api.archive.repository.ArchiveRepository;
-import com.feelarchive.api.exception.BusinessException;
+import com.feelarchive.common.excepion.FeelArchiveException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +16,7 @@ public class ArchiveReader {
 
   public Archive getById(Long archiveId) {
     return archiveRepository.findById(archiveId)
-        .orElseThrow(() -> new BusinessException(ARCHIVE_NOT_FOUND));
+        .orElseThrow(() -> new FeelArchiveException(ARCHIVE_NOT_FOUND));
   }
 
 }

@@ -1,12 +1,12 @@
 package com.feelarchive.api.user.domain;
 
-import com.feelarchive.api.exception.BusinessException;
 import com.feelarchive.api.user.domain.vo.BirthDate;
 import com.feelarchive.api.user.domain.vo.Email;
 import com.feelarchive.api.user.domain.vo.Nickname;
 import com.feelarchive.api.user.domain.vo.Password;
 import com.feelarchive.api.user.domain.vo.Phone;
 import com.feelarchive.api.user.exception.UserExceptionCode;
+import com.feelarchive.common.excepion.FeelArchiveException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -97,13 +97,13 @@ public class User {
 
   private void validateName(String name) {
     if (name == null || name.isBlank()) {
-      throw new BusinessException(UserExceptionCode.NAME_REQUIRED);
+      throw new FeelArchiveException(UserExceptionCode.NAME_REQUIRED);
     }
   }
 
   private void validateGender(Gender gender) {
     if (gender == null) {
-      throw new BusinessException(UserExceptionCode.GENDER_REQUIRED);
+      throw new FeelArchiveException(UserExceptionCode.GENDER_REQUIRED);
     }
   }
 

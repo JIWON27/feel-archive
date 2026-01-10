@@ -1,7 +1,7 @@
 package com.feelarchive.api.user.domain.vo;
 
-import com.feelarchive.api.exception.BusinessException;
 import com.feelarchive.api.user.exception.UserExceptionCode;
+import com.feelarchive.common.excepion.FeelArchiveException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -26,7 +26,7 @@ public class Email {
 
   private void validateEmail(String email) {
     if (email == null || email.isBlank()) {
-      throw new BusinessException(UserExceptionCode.EMAIL_REQUIRED);
+      throw new FeelArchiveException(UserExceptionCode.EMAIL_REQUIRED);
     }
     // TODO 이메일 형식 검증
   }

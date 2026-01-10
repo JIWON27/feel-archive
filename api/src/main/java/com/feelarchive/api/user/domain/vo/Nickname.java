@@ -1,7 +1,7 @@
 package com.feelarchive.api.user.domain.vo;
 
-import com.feelarchive.api.exception.BusinessException;
 import com.feelarchive.api.user.exception.UserExceptionCode;
+import com.feelarchive.common.excepion.FeelArchiveException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -26,10 +26,10 @@ public class Nickname {
 
   private void validateNickname(String nickname) {
     if (nickname == null || nickname.isBlank()) {
-      throw new BusinessException(UserExceptionCode.NICKNAME_REQUIRED);
+      throw new FeelArchiveException(UserExceptionCode.NICKNAME_REQUIRED);
     }
     if (nickname.length() < 2 || nickname.length() > 10) {
-      throw new BusinessException(UserExceptionCode.NICKNAME_LENGTH_INVALID);
+      throw new FeelArchiveException(UserExceptionCode.NICKNAME_LENGTH_INVALID);
     }
     // TODO 닉네임 추가 정책
   }

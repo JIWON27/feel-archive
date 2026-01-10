@@ -2,7 +2,7 @@ package com.feelarchive.api.emotion.domain;
 
 import static com.feelarchive.api.emotion.exception.EmotionExceptionCode.EMOTION_REQUIRED;
 
-import com.feelarchive.api.exception.BusinessException;
+import com.feelarchive.common.excepion.FeelArchiveException;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -31,7 +31,7 @@ public enum Emotion {
 
   public static Emotion fromLabel(String label) {
     if (Objects.isNull(label) || label.isEmpty()) {
-      throw new BusinessException(EMOTION_REQUIRED);
+      throw new FeelArchiveException(EMOTION_REQUIRED);
     }
     return Emotion.valueOf(label.toUpperCase());
   }

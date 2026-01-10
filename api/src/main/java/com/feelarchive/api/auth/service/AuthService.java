@@ -9,10 +9,10 @@ import com.feelarchive.api.auth.controller.response.LoginResponse;
 import com.feelarchive.api.auth.domain.RefreshToken;
 import com.feelarchive.api.auth.jwt.JwtProvider;
 import com.feelarchive.api.auth.repository.redis.RefreshTokenRedisRepository;
-import com.feelarchive.api.exception.BusinessException;
 import com.feelarchive.api.user.domain.User;
 import com.feelarchive.api.user.domain.vo.Email;
 import com.feelarchive.api.user.service.UserReader;
+import com.feelarchive.common.excepion.FeelArchiveException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,7 +32,7 @@ public class AuthService {
     User user = userReader.getByEmail(new Email(request.getEmail()));
 
     if (!passwordEncoder.matches(request.getPassword(), user.getPassword().getPassword())) {
-      throw new BusinessException(LOGIN_FAIL);
+      throw new FeelArchiveException(LOGIN_FAIL);
     }
 
     String accessToken = jwtProvider.createAccessToken(user);
@@ -53,10 +53,10 @@ public class AuthService {
     Long userId = jwtProvider.validateAndGetUserId(refreshToken);
 
     RefreshToken savedRefreshToken = refreshTokenRepository.findById(refreshToken)
-        .orElseThrow(() -> new BusinessException(NOT_FOUND_TOKEN));
+        .orElseThrow(() -> new FeelArchiveException(NOT_FOUND_TOKEN));
 
     if (!userId.equals(savedRefreshToken.getUserId())) {
-      throw new BusinessException(REISSUE_FAIL);
+      throw new FeelArchiveException(REISSUE_FAIL);
     }
 
     User user = userReader.getById(userId);

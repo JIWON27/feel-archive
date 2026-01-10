@@ -1,6 +1,7 @@
 package com.feelarchive.api.exception;
 
 import com.feelarchive.api.common.file.FileException;
+import com.feelarchive.common.excepion.FeelArchiveException;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -14,8 +15,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-  @ExceptionHandler(BusinessException.class)
-  public ResponseEntity<ExceptionResponse> handleBusinessException(BusinessException e) {
+  @ExceptionHandler(FeelArchiveException.class)
+  public ResponseEntity<ExceptionResponse> handleBusinessException(FeelArchiveException e) {
     log.warn("[비지니스 예외] status={} code={} custom_msg={} exception_msg={}",
         e.getErrorCode().getStatus(),
         e.getErrorCode().getCode(),

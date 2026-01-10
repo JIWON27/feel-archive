@@ -4,7 +4,7 @@ import static com.feelarchive.api.archive.exception.ArchiveExceptionCode.LATITUD
 import static com.feelarchive.api.archive.exception.ArchiveExceptionCode.LOCATION_COORDINATES_REQUIRED;
 import static com.feelarchive.api.archive.exception.ArchiveExceptionCode.LONGITUDE_OUT_OF_RANGE;
 
-import com.feelarchive.api.exception.BusinessException;
+import com.feelarchive.common.excepion.FeelArchiveException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.math.BigDecimal;
@@ -47,15 +47,15 @@ public class Location {
     if (lat == null && lon == null) return;
 
     if (lat == null || lon == null) {
-      throw new BusinessException(LOCATION_COORDINATES_REQUIRED);
+      throw new FeelArchiveException(LOCATION_COORDINATES_REQUIRED);
     }
 
     if (lat.compareTo(MIN_LAT) < 0 || lat.compareTo(MAX_LAT) > 0) {
-      throw new BusinessException(LATITUDE_OUT_OF_RANGE);
+      throw new FeelArchiveException(LATITUDE_OUT_OF_RANGE);
     }
 
     if (lon.compareTo(MIN_LON) < 0 || lon.compareTo(MAX_LON) > 0) {
-      throw new BusinessException(LONGITUDE_OUT_OF_RANGE);
+      throw new FeelArchiveException(LONGITUDE_OUT_OF_RANGE);
     }
   }
 }

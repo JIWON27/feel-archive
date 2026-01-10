@@ -3,7 +3,7 @@ package com.feelarchive.api.user.domain.vo;
 import static com.feelarchive.api.user.exception.UserExceptionCode.INVALID_PHONE_FORMAT;
 import static com.feelarchive.api.user.exception.UserExceptionCode.PHONE_REQUIRED;
 
-import com.feelarchive.api.exception.BusinessException;
+import com.feelarchive.common.excepion.FeelArchiveException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -36,15 +36,15 @@ public class Phone {
 
   private void validatePhone(String phone) {
     if (phone == null || phone.isBlank()) {
-      throw new BusinessException(PHONE_REQUIRED);
+      throw new FeelArchiveException(PHONE_REQUIRED);
     }
 
     if (phone.length() != 11) {
-      throw new BusinessException(INVALID_PHONE_FORMAT);
+      throw new FeelArchiveException(INVALID_PHONE_FORMAT);
     }
 
     if (!(phone.startsWith("010"))) {
-      throw new BusinessException(INVALID_PHONE_FORMAT);
+      throw new FeelArchiveException(INVALID_PHONE_FORMAT);
     }
   }
 }
