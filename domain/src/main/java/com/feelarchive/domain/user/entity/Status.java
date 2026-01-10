@@ -1,4 +1,4 @@
-package com.feelarchive.api.user.domain;
+package com.feelarchive.domain.user.domain;
 
 public enum Status {
   ACTIVE,

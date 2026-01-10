@@ -1,6 +1,6 @@
-package com.feelarchive.api.emotion.domain;
+package com.feelarchive.domain.emotion.domain;
 
-import static com.feelarchive.api.emotion.exception.EmotionExceptionCode.EMOTION_REQUIRED;
+import static com.feelarchive.domain.emotion.exception.EmotionExceptionCode.EMOTION_REQUIRED;
 
 import com.feelarchive.common.excepion.FeelArchiveException;
 import java.util.Objects;

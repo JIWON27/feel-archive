@@ -1,4 +1,4 @@
-package com.feelarchive.api.archive.domain;
+package com.feelarchive.domain.archive.domain;
 
 import com.feelarchive.api.user.domain.User;
 import jakarta.persistence.Column;
@@ -24,10 +24,10 @@ import org.hibernate.annotations.DynamicUpdate;
 @Getter
 @DynamicInsert
 @DynamicUpdate
-@Table(name = "archive_scrap")
+@Table(name = "archive_like")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ArchiveScrap {
+public class ArchiveLike {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,7 +46,7 @@ public class ArchiveScrap {
   LocalDateTime createdAt;
 
   @Builder
-  public ArchiveScrap(Archive archive, User user) {
+  public ArchiveLike(Archive archive, User user) {
     this.archive = archive;
     this.user = user;
   }

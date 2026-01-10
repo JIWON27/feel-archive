@@ -1,4 +1,4 @@
-package com.feelarchive.api.archive.domain;
+package com.feelarchive.domain.archive.domain;
 
 public enum Visibility {
   PUBLIC,

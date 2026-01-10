@@ -1,7 +1,7 @@
-package com.feelarchive.api.user.domain.vo;
+package com.feelarchive.domain.user.domain.vo;
 
-import static com.feelarchive.api.user.exception.UserExceptionCode.INVALID_PHONE_FORMAT;
-import static com.feelarchive.api.user.exception.UserExceptionCode.PHONE_REQUIRED;
+import static com.feelarchive.domain.user.exception.UserExceptionCode.INVALID_PHONE_FORMAT;
+import static com.feelarchive.domain.user.exception.UserExceptionCode.PHONE_REQUIRED;
 
 import com.feelarchive.common.excepion.FeelArchiveException;
 import jakarta.persistence.Column;

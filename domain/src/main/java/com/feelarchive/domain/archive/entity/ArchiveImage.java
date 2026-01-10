@@ -1,7 +1,8 @@
-package com.feelarchive.api.archive.domain;
+package com.feelarchive.domain.archive.domain;
 
-import com.feelarchive.api.user.domain.User;
+import com.feelarchive.api.common.file.FileMeta;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -19,15 +20,19 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
 @DynamicInsert
 @DynamicUpdate
-@Table(name = "archive_like")
+@Table(name = "archive_image")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ArchiveLike {
+@SQLRestriction("deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE archive_image SET deleted_at = NOW() WHERE id = ?")
+public class ArchiveImage {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,17 +42,19 @@ public class ArchiveLike {
   @JoinColumn(name = "archive_id", nullable = false)
   Archive archive;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false)
-  User user;
+  @Embedded
+  FileMeta fileMeta;
 
   @CreationTimestamp
   @Column(name = "created_at", updatable = false, nullable = false)
   LocalDateTime createdAt;
 
+  @Column(name = "deleted_at")
+  LocalDateTime deletedAt;
+
   @Builder
-  public ArchiveLike(Archive archive, User user) {
+  public ArchiveImage(Archive archive, FileMeta fileMeta) {
     this.archive = archive;
-    this.user = user;
+    this.fileMeta = fileMeta;
   }
 }

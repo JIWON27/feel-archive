@@ -1,4 +1,4 @@
-package com.feelarchive.api.archive.domain.vo;
+package com.feelarchive.domain.archive.domain.vo;
 
 import static com.feelarchive.api.archive.exception.ArchiveExceptionCode.LATITUDE_OUT_OF_RANGE;
 import static com.feelarchive.api.archive.exception.ArchiveExceptionCode.LOCATION_COORDINATES_REQUIRED;
