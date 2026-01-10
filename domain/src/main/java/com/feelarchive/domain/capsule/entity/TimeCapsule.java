@@ -109,6 +109,13 @@ public class TimeCapsule {
     }
   }
 
+  public boolean isEditable() {
+    if (this.capsuleStatus == CapsuleStatus.OPENED) {
+      return false;
+    }
+    return LocalDateTime.now().isBefore(this.getCreatedAt().plusMinutes(30));
+  }
+
   public boolean isOwner(Long userId) {
     return this.user.getId().equals(userId);
   }
