@@ -1,7 +1,7 @@
 {
   "project": "feel-archive",
   "version": "1.0",
-  "lastUpdated": "2026-01-19",
+  "lastUpdated": "2026-01-20",
   "tasks": [
     {
       "id": 1,
@@ -71,9 +71,10 @@
         "React Query 설치 및 Provider 설정",
         "npm run dev 성공 확인"
       ],
-      "passes": false,
-      "commit": null,
-      "blockers": []
+      "passes": true,
+      "commit": "apps/frontend 프로젝트 세팅 완료 - Next.js 14, TypeScript, Tailwind CSS, React Query, Kakao Maps SDK",
+      "blockers": [],
+      "completedAt": "2026-01-20"
     },
     {
       "id": 6,
@@ -85,9 +86,10 @@
         "테스트 페이지에서 지도 렌더링 확인",
         "마커 표시 테스트"
       ],
-      "passes": false,
-      "commit": null,
-      "blockers": ["Kakao Developers 계정 및 앱 등록 필요"]
+      "passes": true,
+      "commit": "Kakao Maps SDK 설정 완료 - layout.tsx에 Script 추가, 환경변수 설정",
+      "blockers": ["Kakao Developers 계정 및 앱 등록 필요 (사용자가 직접 발급 필요)"],
+      "completedAt": "2026-01-20"
     },
     {
       "id": 7,
