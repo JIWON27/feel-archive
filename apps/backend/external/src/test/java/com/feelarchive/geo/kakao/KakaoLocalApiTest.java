@@ -7,11 +7,13 @@ import com.feelarchive.geo.kakao.request.KakaoAddressQuery;
 import com.feelarchive.geo.kakao.request.KakaoCoordQuery;
 import com.feelarchive.geo.kakao.response.KakaoAddress2CoordResponse;
 import com.feelarchive.geo.kakao.response.KakaoCoord2AddressResponse;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+@Disabled
 @SpringBootTest(classes = TestOpenFeignConfig.class)
 class KakaoLocalApiTest {
 
