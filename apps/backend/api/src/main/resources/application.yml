@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: rest-api
+  profiles:
+    active: local
+

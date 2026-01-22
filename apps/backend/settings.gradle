@@ -1,4 +1,4 @@
-rootProject.name = 'feel-archive'
+rootProject.name = 'backend'
 
 include("external")
 include("api")
