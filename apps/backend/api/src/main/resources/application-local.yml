@@ -41,3 +41,5 @@ app:
   file:
     base-dir: "upload"
     public-base-url: "http://localhost:8080/api/v1/archives/"
+  time-capsule:
+    batch-size: ${BATCH_SIZE}
