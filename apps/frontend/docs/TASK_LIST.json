@@ -1,7 +1,7 @@
 {
   "project": "feel-archive",
   "version": "1.0",
-  "lastUpdated": "2026-01-26",
+  "lastUpdated": "2026-01-27",
   "tasks": [
     {
       "id": 5,
@@ -116,30 +116,36 @@
       "category": "feature",
       "description": "프론트엔드 Kakao Maps 통합 구현",
       "steps": [
-        "KakaoMap 공통 컴포넌트 생성",
-        "마커 렌더링 로직 구현",
-        "마커 클릭 시 InfoWindow 표시",
-        "지도 이동/줌 시 바운드 변경 감지",
-        "바운드 변경 시 API 호출 (debounce 적용)"
+        "components/map/KakaoMap.tsx 생성",
+        "마커 렌더링 로직 구현 (CustomOverlay)",
+        "마커 클릭 시 아카이브 미리보기 표시",
+        "감정별 마커 색상 및 이모지 매핑",
+        "선택된 마커 강조 (scale 1.2)",
+        "무한 로딩 버그 수정 (스크립트 중복 로드 방지)",
+        "마커 클릭 이벤트 버그 수정 (DOM 요소로 직접 생성)"
       ],
-      "passes": false,
-      "commit": null,
-      "blockers": []
+      "passes": true,
+      "commit": "feat: WhatsApp 스타일 메인 페이지 및 Kakao 지도 통합",
+      "blockers": [],
+      "completedAt": "2026-01-27"
     },
     {
       "id": 27,
       "category": "feature",
-      "description": "프론트엔드 지도 뷰 페이지 구현",
+      "description": "프론트엔드 지도 뷰 페이지 구현 (메인 홈)",
       "steps": [
-        "app/(main)/explore/page.tsx 생성",
-        "전체 화면 Kakao Maps 렌더링",
-        "마커 로딩 및 표시",
-        "마커 클릭 시 미리보기 카드 표시",
-        "감정별 마커 색상 구분"
+        "app/(main)/page.tsx를 WhatsApp 스타일 2단 레이아웃으로 변경",
+        "왼쪽: 아카이브 리스트 (400-450px, 무한 스크롤)",
+        "오른쪽: Kakao Maps (나머지 공간)",
+        "현재 위치 GPS 자동 감지",
+        "마커 클릭 시 하단 미리보기 카드",
+        "리스트-지도 양방향 동기화"
       ],
-      "passes": false,
-      "commit": null,
-      "blockers": []
+      "passes": true,
+      "commit": "feat: WhatsApp 스타일 메인 페이지 및 Kakao 지도 통합",
+      "blockers": [],
+      "completedAt": "2026-01-27",
+      "notes": "홈페이지를 지도 뷰로 통합 구현 (별도 explore 페이지 없음)"
     },
     {
       "id": 28,
@@ -339,6 +345,61 @@
       "passes": false,
       "commit": null,
       "blockers": []
+    },
+    {
+      "id": 53,
+      "category": "docs",
+      "description": "프론트엔드 URL 라우팅 문서 작성",
+      "steps": [
+        "docs/ROUTES.md 생성",
+        "모든 페이지 URL 및 설명 정리",
+        "인증/메인 라우트 그룹 설명",
+        "동적 라우팅 파라미터 정의",
+        "리다이렉트 규칙 문서화",
+        "네비게이션 구조 다이어그램"
+      ],
+      "passes": true,
+      "commit": "feat: WhatsApp 스타일 메인 페이지 및 Kakao 지도 통합",
+      "blockers": [],
+      "completedAt": "2026-01-27"
+    },
+    {
+      "id": 54,
+      "category": "feature",
+      "description": "홈페이지 WhatsApp 스타일 레이아웃 구현",
+      "steps": [
+        "components/archive/ArchiveListItem.tsx 생성 (리스트용 간단 카드)",
+        "app/(main)/page.tsx 2단 레이아웃으로 변경",
+        "왼쪽 사이드바: 검색, 리스트, 현재 위치 표시",
+        "오른쪽 지도: KakaoMap 통합",
+        "리스트-지도 양방향 동기화",
+        "선택된 아카이브 하단 미리보기",
+        "더블클릭으로 상세 페이지 이동"
+      ],
+      "passes": true,
+      "commit": "feat: WhatsApp 스타일 메인 페이지 및 Kakao 지도 통합",
+      "blockers": [],
+      "completedAt": "2026-01-27"
+    },
+    {
+      "id": 55,
+      "category": "refactor",
+      "description": "감정 선택을 복수에서 단일 선택으로 변경",
+      "steps": [
+        "SPEC.md 문서 수정 (복수 선택 → 단일 선택)",
+        "types/archive.ts 타입 정의 변경 (emotions[] → emotion)",
+        "lib/validations/archive.ts Zod 스키마 수정",
+        "ArchiveForm 컴포넌트: 멀티 선택 → 단일 선택 UI",
+        "ArchiveCard, ArchiveListItem: 복수 감정 표시 로직 제거",
+        "KakaoMap: emotions[0] → emotion 수정",
+        "상세/수정 페이지: 감정 표시 로직 수정",
+        "BACKEND_API_CHANGES_REQUIRED.md 업데이트"
+      ],
+      "passes": true,
+      "commit": "refactor: 감정 선택을 복수에서 단일 선택으로 변경",
+      "blockers": [],
+      "completedAt": "2026-01-27",
+      "notes": "사용자 피드백 반영 - 단일 감정 선택이 더 직관적"
     }
   ]
 }
