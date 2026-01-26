@@ -1,0 +1,332 @@
+{
+  "project": "feel-archive",
+  "version": "1.0",
+  "lastUpdated": "2026-01-26",
+  "tasks": [
+    {
+      "id": 5,
+      "category": "setup",
+      "description": "Next.js 14 프로젝트 초기화",
+      "steps": [
+        "create-next-app으로 프로젝트 생성 (App Router, TypeScript)",
+        "Tailwind CSS 설정",
+        "React Query 설치 및 Provider 설정",
+        "npm run dev 성공 확인"
+      ],
+      "passes": true,
+      "commit": "apps/frontend 프로젝트 세팅 완료 - Next.js 14, TypeScript, Tailwind CSS, React Query, Kakao Maps SDK",
+      "blockers": [],
+      "completedAt": "2026-01-20"
+    },
+    {
+      "id": 6,
+      "category": "setup",
+      "description": "Kakao Maps SDK 설정",
+      "steps": [
+        "Kakao Developers에서 JavaScript 키 발급",
+        "Next.js에 Script 컴포넌트로 SDK 로드",
+        "테스트 페이지에서 지도 렌더링 확인",
+        "마커 표시 테스트"
+      ],
+      "passes": true,
+      "commit": "Kakao Maps SDK 설정 완료 - layout.tsx에 Script 추가, 환경변수 설정",
+      "blockers": ["Kakao Developers 계정 및 앱 등록 필요 (사용자가 직접 발급 필요)"],
+      "completedAt": "2026-01-20"
+    },
+    {
+      "id": 14,
+      "category": "feature",
+      "description": "프론트엔드 로그인 페이지 구현",
+      "steps": [
+        "app/(auth)/login/page.tsx 생성",
+        "로그인 폼 컴포넌트 구현 (이메일, 비밀번호)",
+        "폼 유효성 검사 (react-hook-form 또는 기본)",
+        "API 호출 및 토큰 저장 (localStorage 또는 cookie)",
+        "로그인 성공 시 홈으로 리다이렉트"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": []
+    },
+    {
+      "id": 15,
+      "category": "feature",
+      "description": "프론트엔드 회원가입 페이지 구현",
+      "steps": [
+        "app/(auth)/signup/page.tsx 생성",
+        "회원가입 폼 컴포넌트 구현 (이메일, 비밀번호, 닉네임)",
+        "폼 유효성 검사",
+        "API 호출 및 성공 시 로그인 페이지로 이동"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": []
+    },
+    {
+      "id": 16,
+      "category": "feature",
+      "description": "프론트엔드 인증 상태 관리 구현",
+      "steps": [
+        "AuthContext 또는 Zustand store 생성",
+        "토큰 저장/조회/삭제 유틸 함수",
+        "새로고침 시 인증 상태 복원",
+        "axios interceptor로 Authorization 헤더 자동 추가"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": []
+    },
+    {
+      "id": 17,
+      "category": "feature",
+      "description": "프론트엔드 Protected Route 구현",
+      "steps": [
+        "ProtectedRoute 컴포넌트 생성",
+        "인증되지 않은 사용자 로그인 페이지로 리다이렉트",
+        "인증이 필요한 페이지에 적용",
+        "로딩 상태 처리"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": []
+    },
+    {
+      "id": 25,
+      "category": "feature",
+      "description": "프론트엔드 아카이브 작성 폼 구현",
+      "steps": [
+        "app/(main)/archive/new/page.tsx 생성",
+        "위치 선택 컴포넌트 (현재 위치 GPS / 지도에서 선택)",
+        "감정 태그 복수 선택 UI",
+        "텍스트 입력 (2000자 이상)",
+        "공개/비공개 토글",
+        "API 호출 및 저장"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": []
+    },
+    {
+      "id": 26,
+      "category": "feature",
+      "description": "프론트엔드 Kakao Maps 통합 구현",
+      "steps": [
+        "KakaoMap 공통 컴포넌트 생성",
+        "마커 렌더링 로직 구현",
+        "마커 클릭 시 InfoWindow 표시",
+        "지도 이동/줌 시 바운드 변경 감지",
+        "바운드 변경 시 API 호출 (debounce 적용)"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": []
+    },
+    {
+      "id": 27,
+      "category": "feature",
+      "description": "프론트엔드 지도 뷰 페이지 구현",
+      "steps": [
+        "app/(main)/explore/page.tsx 생성",
+        "전체 화면 Kakao Maps 렌더링",
+        "마커 로딩 및 표시",
+        "마커 클릭 시 미리보기 카드 표시",
+        "감정별 마커 색상 구분"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": []
+    },
+    {
+      "id": 28,
+      "category": "feature",
+      "description": "프론트엔드 피드 뷰 페이지 구현",
+      "steps": [
+        "피드 뷰 컴포넌트 구현",
+        "아카이브 카드 컴포넌트 생성",
+        "무한 스크롤 구현 (react-query useInfiniteQuery)",
+        "필터 UI (감정, 정렬 옵션)",
+        "지도 뷰 ↔ 피드 뷰 전환 버튼"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": []
+    },
+    {
+      "id": 29,
+      "category": "feature",
+      "description": "프론트엔드 아카이브 상세 페이지 구현",
+      "steps": [
+        "app/(main)/archive/[id]/page.tsx 생성",
+        "아카이브 상세 정보 표시 (내용, 위치, 감정, 작성일)",
+        "지도에 위치 마커 표시",
+        "수정/삭제 버튼 (본인 글만)",
+        "좋아요/스크랩 버튼"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": []
+    },
+    {
+      "id": 37,
+      "category": "feature",
+      "description": "프론트엔드 좋아요/스크랩 버튼 구현",
+      "steps": [
+        "LikeButton 컴포넌트 생성",
+        "ScrapButton 컴포넌트 생성",
+        "낙관적 UI 업데이트 (클릭 즉시 반영)",
+        "API 실패 시 롤백",
+        "아카이브 카드/상세 페이지에 적용"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": []
+    },
+    {
+      "id": 38,
+      "category": "feature",
+      "description": "프론트엔드 내 스크랩 목록 페이지 구현",
+      "steps": [
+        "app/(main)/my/scraps/page.tsx 생성",
+        "스크랩한 아카이브 목록 표시",
+        "무한 스크롤 또는 페이지네이션",
+        "스크랩 해제 기능"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": []
+    },
+    {
+      "id": 39,
+      "category": "feature",
+      "description": "프론트엔드 타임캡슐 작성 폼 구현",
+      "steps": [
+        "app/(main)/timecapsule/new/page.tsx 생성",
+        "공개 예정 일시 선택 (DateTimePicker)",
+        "위치 선택 컴포넌트",
+        "감정 태그 선택",
+        "텍스트 입력",
+        "API 호출 및 저장"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": []
+    },
+    {
+      "id": 40,
+      "category": "feature",
+      "description": "프론트엔드 내 타임캡슐 목록 페이지 구현",
+      "steps": [
+        "app/(main)/my/timecapsules/page.tsx 생성",
+        "잠금/열림 상태에 따른 UI 구분",
+        "잠금 상태: 카운트다운 표시",
+        "열림 상태: 상세 보기 가능"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": []
+    },
+    {
+      "id": 41,
+      "category": "feature",
+      "description": "프론트엔드 타임캡슐 상세 페이지 구현",
+      "steps": [
+        "app/(main)/timecapsule/[id]/page.tsx 생성",
+        "잠금 상태: 블러 처리 또는 봉인 UI",
+        "열림 상태: 전체 내용 표시",
+        "수정 버튼 (30분 내 + 미잠금 상태만)"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": []
+    },
+    {
+      "id": 42,
+      "category": "feature",
+      "description": "프론트엔드 알림 표시 구현",
+      "steps": [
+        "헤더에 알림 아이콘 + 배지 추가",
+        "알림 드롭다운 또는 페이지 구현",
+        "읽지 않은 알림 개수 표시",
+        "알림 클릭 시 해당 타임캡슐로 이동"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": []
+    },
+    {
+      "id": 45,
+      "category": "feature",
+      "description": "프론트엔드 리포트 페이지 구현",
+      "steps": [
+        "app/(main)/my/report/page.tsx 생성",
+        "월 선택 UI",
+        "감정 분포 바 차트 또는 파이 차트 (Chart.js 또는 Recharts)",
+        "일별 감정 흐름 라인 차트",
+        "기록 빈도 통계 표시"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": []
+    },
+    {
+      "id": 47,
+      "category": "feature",
+      "description": "프론트엔드 로딩/에러/빈 상태 처리",
+      "steps": [
+        "Skeleton UI 컴포넌트 생성",
+        "ErrorBoundary 컴포넌트 생성",
+        "Toast 알림 시스템 구현",
+        "EmptyState 컴포넌트 생성",
+        "모든 페이지에 상태별 UI 적용"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": []
+    },
+    {
+      "id": 48,
+      "category": "feature",
+      "description": "프론트엔드 모바일 반응형 구현",
+      "steps": [
+        "Tailwind 반응형 클래스 적용",
+        "모바일 네비게이션 메뉴",
+        "터치 인터랙션 최적화",
+        "지도 뷰 모바일 UX 개선",
+        "모바일 기기에서 테스트"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": []
+    },
+    {
+      "id": 49,
+      "category": "setup",
+      "description": "GitHub Actions CI 파이프라인 구축",
+      "steps": [
+        ".github/workflows/backend.yml 생성",
+        "PR 생성 시 테스트 자동 실행",
+        "테스트 실패 시 PR 머지 차단",
+        ".github/workflows/frontend.yml 생성",
+        "프론트엔드 빌드 및 린트 검사"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": []
+    },
+    {
+      "id": 52,
+      "category": "setup",
+      "description": "프론트엔드 Vercel 배포",
+      "steps": [
+        "Vercel 계정 연결 및 프로젝트 생성",
+        "환경변수 설정 (API URL 등)",
+        "main 브랜치 push 시 자동 배포",
+        "커스텀 도메인 연결 (선택)",
+        "배포 확인"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": []
+    }
+  ]
+}

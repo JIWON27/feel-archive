@@ -67,4 +67,5 @@ npm run build
 ## 관련 문서
 
 - [SPEC.md](../../docs/SPEC.md) - 서비스 기획 스펙
-- [IMPLEMENTATION_PLAN.md](../../docs/IMPLEMENTATION_PLAN.md) - 구현 계획
+- [IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md) - 구현 계획
+- [TASK_LIST.json] - 작업 목록
