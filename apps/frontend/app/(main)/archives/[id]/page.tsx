@@ -110,14 +110,9 @@ export default function ArchiveDetailPage() {
         <div className="bg-white rounded-lg shadow p-8">
           {/* 감정 태그 */}
           <div className="flex flex-wrap gap-2 mb-6">
-            {archive.emotions.map((emotion) => (
-              <span
-                key={emotion}
-                className="px-4 py-2 bg-primary/10 text-primary text-sm font-medium rounded-full"
-              >
-                {EmotionLabels[emotion]}
-              </span>
-            ))}
+            <span className="px-4 py-2 bg-primary/10 text-primary text-sm font-medium rounded-full">
+              {EmotionLabels[archive.emotion]}
+            </span>
           </div>
 
           {/* 내용 */}

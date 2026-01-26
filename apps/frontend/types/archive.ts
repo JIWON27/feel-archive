@@ -37,9 +37,9 @@ export interface Location {
   locationLabel?: string; // 주소 또는 장소명
 }
 
-// 아카이브 작성 요청 (SPEC.md 기준: 감정 복수 선택, 위치 필수)
+// 아카이브 작성 요청 (SPEC.md 기준: 감정 단일 선택, 위치 필수)
 export interface ArchiveCreateRequest {
-  emotions: EmotionType[]; // 복수 선택
+  emotion: EmotionType; // 단일 선택
   content: string; // 2000자 이상 허용
   visibility: Visibility;
   location: Location; // 필수
@@ -47,7 +47,7 @@ export interface ArchiveCreateRequest {
 
 // 아카이브 수정 요청
 export interface ArchiveUpdateRequest {
-  emotions: EmotionType[];
+  emotion: EmotionType;
   content: string;
   visibility: Visibility;
   location: Location;
@@ -67,7 +67,7 @@ export interface ArchiveUser {
 // 아카이브 요약 (목록용)
 export interface ArchiveSummary {
   archiveId: number;
-  emotions: EmotionType[]; // SPEC 기준 복수
+  emotion: EmotionType; // 단일 선택
   contentPreview: string;
   address?: string;
   createdAt: string;
@@ -80,7 +80,7 @@ export interface ArchiveSummary {
 // 아카이브 상세
 export interface ArchiveDetail {
   archiveId: number;
-  emotions: EmotionType[]; // SPEC 기준 복수
+  emotion: EmotionType; // 단일 선택
   content: string;
   images: ArchiveImage[];
   visibility: Visibility;

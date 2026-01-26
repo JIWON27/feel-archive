@@ -31,46 +31,33 @@ export const ArchiveForm: React.FC<ArchiveFormProps> = ({
   } = useForm<ArchiveFormData>({
     resolver: zodResolver(archiveSchema),
     defaultValues: defaultValues || {
-      emotions: [],
+      emotion: undefined,
       content: '',
       visibility: Visibility.PUBLIC,
       location: undefined,
     },
   });
 
-  const selectedEmotions = watch('emotions') || [];
+  const selectedEmotion = watch('emotion');
   const visibility = watch('visibility');
-
-  // 감정 선택/해제 토글
-  const toggleEmotion = (emotion: EmotionType) => {
-    const current = selectedEmotions;
-    if (current.includes(emotion)) {
-      setValue(
-        'emotions',
-        current.filter((e) => e !== emotion)
-      );
-    } else {
-      setValue('emotions', [...current, emotion]);
-    }
-  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {/* 감정 태그 선택 (복수) */}
+      {/* 감정 태그 선택 (단일) */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          감정 태그 선택 (복수 선택 가능)
+          감정 태그 선택 (단일 선택)
         </label>
         <div className="flex flex-wrap gap-2">
           {Object.entries(EmotionLabels).map(([key, label]) => {
             const emotion = key as EmotionType;
-            const isSelected = selectedEmotions.includes(emotion);
+            const isSelected = selectedEmotion === emotion;
 
             return (
               <button
                 key={emotion}
                 type="button"
-                onClick={() => toggleEmotion(emotion)}
+                onClick={() => setValue('emotion', emotion)}
                 className={`
                   px-4 py-2 rounded-full text-sm font-medium transition-colors
                   ${
@@ -85,8 +72,8 @@ export const ArchiveForm: React.FC<ArchiveFormProps> = ({
             );
           })}
         </div>
-        {errors.emotions && (
-          <p className="mt-1 text-sm text-red-500">{errors.emotions.message}</p>
+        {errors.emotion && (
+          <p className="mt-1 text-sm text-red-500">{errors.emotion.message}</p>
         )}
       </div>
 

@@ -3,10 +3,8 @@ import { EmotionType, Visibility } from '@/types/archive';
 
 // 아카이브 작성/수정 스키마 (SPEC.md 기준)
 export const archiveSchema = z.object({
-  // 감정 태그: 복수 선택, 1개 이상 필수
-  emotions: z
-    .array(z.nativeEnum(EmotionType))
-    .min(1, '감정을 최소 1개 이상 선택해주세요'),
+  // 감정 태그: 단일 선택 필수
+  emotion: z.nativeEnum(EmotionType),
 
   // 텍스트: 2000자 이상 허용
   content: z

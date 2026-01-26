@@ -55,7 +55,7 @@ export default function EditArchivePage() {
   }
 
   const defaultValues: Partial<ArchiveFormData> = {
-    emotions: archive.emotions,
+    emotion: archive.emotion,
     content: archive.content,
     visibility: archive.visibility,
     location: archive.location

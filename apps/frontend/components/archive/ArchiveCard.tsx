@@ -34,14 +34,9 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ archive }) => {
       <div className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-6 cursor-pointer">
         {/* 감정 태그 */}
         <div className="flex flex-wrap gap-2 mb-3">
-          {archive.emotions.map((emotion) => (
-            <span
-              key={emotion}
-              className="px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full"
-            >
-              {EmotionLabels[emotion]}
-            </span>
-          ))}
+          <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
+            {EmotionLabels[archive.emotion]}
+          </span>
         </div>
 
         {/* 내용 미리보기 */}
