@@ -1,9 +1,9 @@
-package com.feelarchive.api.capsule.service;
+package com.feelarchive.api.timeCapsule.service;
 
-import com.feelarchive.api.capsule.controller.request.TimeCapsuleRequest;
-import com.feelarchive.api.capsule.controller.response.TimeCapsuleDetailResponse;
-import com.feelarchive.api.capsule.controller.response.TimeCapsuleImageResponse;
-import com.feelarchive.api.capsule.controller.response.TimeCapsuleSummaryResponse;
+import com.feelarchive.api.timeCapsule.controller.request.TimeCapsuleRequest;
+import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleDetailResponse;
+import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleImageResponse;
+import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleSummaryResponse;
 import com.feelarchive.api.common.response.LocationDetail;
 import com.feelarchive.domain.archive.entity.vo.Location;
 import com.feelarchive.domain.capsule.entity.CapsuleStatus;

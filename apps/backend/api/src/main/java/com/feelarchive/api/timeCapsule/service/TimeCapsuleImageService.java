@@ -1,4 +1,4 @@
-package com.feelarchive.api.capsule.service;
+package com.feelarchive.api.timeCapsule.service;
 
 import static com.feelarchive.domain.capsule.exception.TimeCapsuleExceptionCode.CAPSULE_EDIT_TIME_EXPIRED;
 import static com.feelarchive.domain.capsule.exception.TimeCapsuleExceptionCode.CAPSULE_FORBIDDEN;
@@ -6,8 +6,8 @@ import static com.feelarchive.domain.capsule.exception.TimeCapsuleExceptionCode.
 import static com.feelarchive.domain.file.exception.FileExceptionCode.FILE_NOT_FOUND;
 import static com.feelarchive.domain.file.exception.FileExceptionCode.FILE_NOT_READABLE;
 
-import com.feelarchive.api.capsule.controller.response.TimeCapsuleImageDownloadResponse;
-import com.feelarchive.api.capsule.controller.response.TimeCapsuleImageResponse;
+import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleImageDownloadResponse;
+import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleImageResponse;
 import com.feelarchive.api.common.file.FileProperties;
 import com.feelarchive.api.common.file.FileService;
 import com.feelarchive.common.excepion.FeelArchiveException;

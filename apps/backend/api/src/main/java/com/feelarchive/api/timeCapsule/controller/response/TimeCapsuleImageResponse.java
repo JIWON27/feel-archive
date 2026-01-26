@@ -1,4 +1,4 @@
-package com.feelarchive.api.capsule.controller.response;
+package com.feelarchive.api.timeCapsule.controller.response;
 
 public record TimeCapsuleImageResponse(
   Long id,

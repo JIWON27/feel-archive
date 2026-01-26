@@ -140,4 +140,8 @@ public class TimeCapsule {
   public void markNotificationSent() {
     this.isNotificationSent = true;
   }
+
+  public void updateStatus(CapsuleStatus status) {
+    this.capsuleStatus = status;
+  }
 }
