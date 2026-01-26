@@ -1,4 +1,4 @@
-package com.feelarchive.api.capsule.controller.response;
+package com.feelarchive.api.timeCapsule.controller.response;
 
 import com.feelarchive.domain.capsule.entity.CapsuleStatus;
 import com.feelarchive.domain.emotion.entity.Emotion;

@@ -1,6 +1,6 @@
-package com.feelarchive.api.capsule.handler;
+package com.feelarchive.api.timeCapsule.handler;
 
-import com.feelarchive.api.capsule.event.TimeCapsuleOpenedEvent;
+import com.feelarchive.api.timeCapsule.event.TimeCapsuleOpenedEvent;
 import com.feelarchive.api.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

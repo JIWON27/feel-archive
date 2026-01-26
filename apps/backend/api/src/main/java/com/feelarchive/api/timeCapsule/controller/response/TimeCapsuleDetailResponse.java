@@ -1,4 +1,4 @@
-package com.feelarchive.api.capsule.controller.response;
+package com.feelarchive.api.timeCapsule.controller.response;
 
 import com.feelarchive.api.common.response.LocationDetail;
 import com.feelarchive.domain.capsule.entity.CapsuleStatus;

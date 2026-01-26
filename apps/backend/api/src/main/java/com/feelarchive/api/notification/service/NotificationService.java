@@ -1,6 +1,6 @@
 package com.feelarchive.api.notification.service;
 
-import com.feelarchive.api.capsule.event.TimeCapsuleOpenedEvent;
+import com.feelarchive.api.timeCapsule.event.TimeCapsuleOpenedEvent;
 import com.feelarchive.api.user.service.UserReader;
 import com.feelarchive.domain.notification.entity.Notification;
 import com.feelarchive.domain.notification.entity.NotificationType;

@@ -1,4 +1,4 @@
-package com.feelarchive.api.capsule.service;
+package com.feelarchive.api.timeCapsule.service;
 
 
 import com.feelarchive.common.excepion.FeelArchiveException;

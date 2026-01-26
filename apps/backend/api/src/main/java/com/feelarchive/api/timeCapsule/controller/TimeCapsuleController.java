@@ -1,12 +1,12 @@
-package com.feelarchive.api.capsule.controller;
+package com.feelarchive.api.timeCapsule.controller;
 
-import com.feelarchive.api.capsule.controller.request.TimeCapsuleRequest;
-import com.feelarchive.api.capsule.controller.response.TimeCapsuleDetailResponse;
-import com.feelarchive.api.capsule.controller.response.TimeCapsuleImageDownloadResponse;
-import com.feelarchive.api.capsule.controller.response.TimeCapsuleImageResponse;
-import com.feelarchive.api.capsule.controller.response.TimeCapsuleSummaryResponse;
-import com.feelarchive.api.capsule.service.TimeCapsuleImageService;
-import com.feelarchive.api.capsule.service.TimeCapsuleService;
+import com.feelarchive.api.timeCapsule.controller.request.TimeCapsuleRequest;
+import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleDetailResponse;
+import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleImageDownloadResponse;
+import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleImageResponse;
+import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleSummaryResponse;
+import com.feelarchive.api.timeCapsule.service.TimeCapsuleImageService;
+import com.feelarchive.api.timeCapsule.service.TimeCapsuleService;
 import com.feelarchive.api.common.response.PagingResponse;
 import com.feelarchive.domain.capsule.entity.CapsuleStatus;
 import jakarta.validation.Valid;

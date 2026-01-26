@@ -1,13 +1,13 @@
-package com.feelarchive.api.capsule.service;
+package com.feelarchive.api.timeCapsule.service;
 
 import static com.feelarchive.domain.capsule.exception.TimeCapsuleExceptionCode.CAPSULE_EDIT_TIME_EXPIRED;
 import static com.feelarchive.domain.capsule.exception.TimeCapsuleExceptionCode.CAPSULE_NOT_FOUND;
 
-import com.feelarchive.api.capsule.controller.request.TimeCapsuleRequest;
-import com.feelarchive.api.capsule.controller.response.TimeCapsuleDetailResponse;
-import com.feelarchive.api.capsule.controller.response.TimeCapsuleImageResponse;
-import com.feelarchive.api.capsule.controller.response.TimeCapsuleSummaryResponse;
-import com.feelarchive.api.capsule.event.TimeCapsuleOpenedEvent;
+import com.feelarchive.api.timeCapsule.controller.request.TimeCapsuleRequest;
+import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleDetailResponse;
+import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleImageResponse;
+import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleSummaryResponse;
+import com.feelarchive.api.timeCapsule.event.TimeCapsuleOpenedEvent;
 import com.feelarchive.api.common.response.PagingResponse;
 import com.feelarchive.api.user.service.UserReader;
 import com.feelarchive.common.excepion.FeelArchiveException;
@@ -16,7 +16,6 @@ import com.feelarchive.domain.capsule.entity.TimeCapsule;
 import com.feelarchive.domain.capsule.repository.TimeCapsuleQueryRepository;
 import com.feelarchive.domain.capsule.repository.TimeCapsuleRepository;
 import com.feelarchive.domain.user.entity.User;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

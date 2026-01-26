@@ -1,4 +1,4 @@
-package com.feelarchive.api.capsule.controller.response;
+package com.feelarchive.api.timeCapsule.controller.response;
 
 import com.feelarchive.domain.file.entity.FileMeta;
 import org.springframework.core.io.Resource;

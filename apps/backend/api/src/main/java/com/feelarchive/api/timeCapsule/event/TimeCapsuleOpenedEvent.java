@@ -1,4 +1,4 @@
-package com.feelarchive.api.capsule.event;
+package com.feelarchive.api.timeCapsule.event;
 
 import java.time.LocalDateTime;
 

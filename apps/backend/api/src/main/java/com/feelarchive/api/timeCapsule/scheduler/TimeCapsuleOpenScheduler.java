@@ -1,8 +1,7 @@
-package com.feelarchive.api.capsule.scheduler;
+package com.feelarchive.api.timeCapsule.scheduler;
 
-import com.feelarchive.api.capsule.service.TimeCapsuleService;
+import com.feelarchive.api.timeCapsule.service.TimeCapsuleService;
 import com.feelarchive.common.excepion.FeelArchiveException;
-import com.feelarchive.domain.capsule.entity.CapsuleStatus;
 import com.feelarchive.domain.capsule.entity.TimeCapsule;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
