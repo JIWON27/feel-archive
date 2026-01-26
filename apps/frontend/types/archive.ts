@@ -1,0 +1,121 @@
+// 아카이브 관련 타입 정의 (SPEC.md 기준)
+
+// 감정 타입 (백엔드 Emotion enum과 동일)
+export enum EmotionType {
+  HAPPY = 'HAPPY',       // 행복한
+  SAD = 'SAD',           // 슬픈
+  ANXIOUS = 'ANXIOUS',   // 불안한
+  ANGRY = 'ANGRY',       // 화난
+  CALM = 'CALM',         // 차분한
+  EXCITED = 'EXCITED',   // 신난
+  LONELY = 'LONELY',     // 외로운
+  GRATEFUL = 'GRATEFUL', // 감사한
+}
+
+// 감정 타입 한글 라벨 매핑
+export const EmotionLabels: Record<EmotionType, string> = {
+  [EmotionType.HAPPY]: '행복한',
+  [EmotionType.SAD]: '슬픈',
+  [EmotionType.ANXIOUS]: '불안한',
+  [EmotionType.ANGRY]: '화난',
+  [EmotionType.CALM]: '차분한',
+  [EmotionType.EXCITED]: '신난',
+  [EmotionType.LONELY]: '외로운',
+  [EmotionType.GRATEFUL]: '감사한',
+};
+
+// 공개 설정
+export enum Visibility {
+  PUBLIC = 'PUBLIC',
+  PRIVATE = 'PRIVATE',
+}
+
+// 위치 정보
+export interface Location {
+  latitude: number;
+  longitude: number;
+  locationLabel?: string; // 주소 또는 장소명
+}
+
+// 아카이브 작성 요청 (SPEC.md 기준: 감정 복수 선택, 위치 필수)
+export interface ArchiveCreateRequest {
+  emotions: EmotionType[]; // 복수 선택
+  content: string; // 2000자 이상 허용
+  visibility: Visibility;
+  location: Location; // 필수
+}
+
+// 아카이브 수정 요청
+export interface ArchiveUpdateRequest {
+  emotions: EmotionType[];
+  content: string;
+  visibility: Visibility;
+  location: Location;
+}
+
+// 아카이브 상태 변경 요청 (현재 백엔드 지원)
+export interface ArchiveStatusUpdateRequest {
+  visibility: Visibility;
+}
+
+// 사용자 정보
+export interface ArchiveUser {
+  userId: number;
+  nickname: string;
+}
+
+// 아카이브 요약 (목록용)
+export interface ArchiveSummary {
+  archiveId: number;
+  emotions: EmotionType[]; // SPEC 기준 복수
+  contentPreview: string;
+  address?: string;
+  createdAt: string;
+  likeCount: number;
+  isLiked?: boolean; // 현재 사용자가 좋아요 했는지
+  isScraped?: boolean; // 현재 사용자가 스크랩 했는지
+  writer: ArchiveUser;
+}
+
+// 아카이브 상세
+export interface ArchiveDetail {
+  archiveId: number;
+  emotions: EmotionType[]; // SPEC 기준 복수
+  content: string;
+  images: ArchiveImage[];
+  visibility: Visibility;
+  location?: {
+    address?: string;
+    latitude: number;
+    longitude: number;
+  };
+  createdAt: string;
+  updatedAt: string;
+  likeCount: number;
+  isLiked?: boolean;
+  isScraped?: boolean;
+  writer: ArchiveUser;
+  isOwner: boolean; // 본인 글 여부
+}
+
+// 이미지 정보
+export interface ArchiveImage {
+  id: number;
+  url: string;
+}
+
+// 페이징 응답
+export interface PagingResponse<T> {
+  content: T[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  last: boolean;
+}
+
+// 아카이브 검색 조건
+export interface ArchiveSearchCondition {
+  emotion?: EmotionType;
+  sort?: 'latest' | 'oldest' | 'popular'; // 최신순/오래된순/인기순
+}
