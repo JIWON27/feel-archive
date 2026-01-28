@@ -37,13 +37,16 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
   useEffect(() => {
     if (!mapRef.current || map) return;
 
-    const script = document.createElement('script');
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_APP_KEY}&autoload=false&libraries=services`;
-    script.async = true;
+    const initMap = () => {
+      if (!window.kakao || !window.kakao.maps) {
+        console.error('Kakao Maps SDK가 로드되지 않았습니다');
+        return;
+      }
 
-    script.onload = () => {
       window.kakao.maps.load(() => {
         const container = mapRef.current;
+        if (!container) return;
+
         const options = {
           center: new window.kakao.maps.LatLng(
             value?.latitude || 37.5665,
@@ -80,13 +83,20 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
       });
     };
 
-    document.head.appendChild(script);
+    // 이미 스크립트가 로드되어 있는지 확인
+    if (window.kakao && window.kakao.maps) {
+      initMap();
+    } else {
+      // 스크립트 로드 대기
+      const checkKakao = setInterval(() => {
+        if (window.kakao && window.kakao.maps) {
+          clearInterval(checkKakao);
+          initMap();
+        }
+      }, 100);
 
-    return () => {
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
-      }
-    };
+      return () => clearInterval(checkKakao);
+    }
   }, []);
 
   // 위치 선택 처리

@@ -122,7 +122,10 @@ export const ArchiveForm: React.FC<ArchiveFormProps> = ({
           <LocationPicker
             value={field.value}
             onChange={field.onChange}
-            error={errors.location?.message}
+            error={
+              errors.location?.message ||
+              (errors.location ? '위치를 선택해주세요' : undefined)
+            }
           />
         )}
       />
