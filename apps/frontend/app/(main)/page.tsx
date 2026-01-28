@@ -15,6 +15,10 @@ export default function Home() {
     lat: number;
     lng: number;
   } | null>(null);
+  const [targetCenter, setTargetCenter] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
   const [selectedArchive, setSelectedArchive] = useState<ArchiveSummary | null>(
     null
   );
@@ -47,6 +51,14 @@ export default function Home() {
 
   const handleArchiveClick = (archive: ArchiveSummary) => {
     setSelectedArchive(archive);
+
+    // GIS 정보가 있으면 지도를 해당 위치로 이동
+    if (archive.latitude && archive.longitude) {
+      setTargetCenter({
+        lat: archive.latitude,
+        lng: archive.longitude,
+      });
+    }
   };
 
   const handleArchiveDetail = (archive: ArchiveSummary) => {
@@ -187,13 +199,14 @@ export default function Home() {
             <KakaoMap
               archives={allArchives}
               center={currentLocation}
+              targetCenter={targetCenter}
               onArchiveClick={handleMapArchiveClick}
               selectedArchiveId={selectedArchive?.archiveId}
             />
 
             {/* 선택된 아카이브 미리보기 */}
             {selectedArchive && (
-              <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 w-[90%] max-w-md bg-white rounded-lg shadow-xl p-4 z-10">
+              <div className="absolute top-6 left-1/2 transform -translate-x-1/2 w-[90%] max-w-md bg-white rounded-lg shadow-xl p-4 z-10">
                 <div className="flex items-start gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2">

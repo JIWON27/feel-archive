@@ -12,6 +12,7 @@ declare global {
 interface KakaoMapProps {
   archives: ArchiveSummary[];
   center?: { lat: number; lng: number };
+  targetCenter?: { lat: number; lng: number } | null; // 특정 아카이브로 이동
   onArchiveClick?: (archive: ArchiveSummary) => void;
   selectedArchiveId?: number;
 }
@@ -19,6 +20,7 @@ interface KakaoMapProps {
 export const KakaoMap: React.FC<KakaoMapProps> = ({
   archives,
   center,
+  targetCenter,
   onArchiveClick,
   selectedArchiveId,
 }) => {
@@ -117,12 +119,15 @@ export const KakaoMap: React.FC<KakaoMapProps> = ({
     document.head.appendChild(script);
   }, []);
 
-  // 중심 위치 변경
+  // 중심 위치 변경 (targetCenter가 있으면 우선)
   useEffect(() => {
-    if (!map || !center) return;
-    const position = new window.kakao.maps.LatLng(center.lat, center.lng);
-    map.setCenter(position);
-  }, [map, center]);
+    if (!map) return;
+    const centerToUse = targetCenter || center;
+    if (!centerToUse) return;
+
+    const position = new window.kakao.maps.LatLng(centerToUse.lat, centerToUse.lng);
+    map.panTo(position); // setCenter 대신 panTo로 부드럽게 이동
+  }, [map, center, targetCenter]);
 
   // 마커 업데이트
   useEffect(() => {
@@ -135,13 +140,12 @@ export const KakaoMap: React.FC<KakaoMapProps> = ({
 
     // 새 마커 생성
     const newMarkers = archives
-      .filter((archive) => archive.address) // 위치 정보가 있는 것만
+      .filter((archive) => archive.latitude && archive.longitude) // GIS 정보가 있는 것만
       .map((archive) => {
-        // 임시로 랜덤 위치 생성 (실제로는 archive.location 사용)
-        const lat = 37.5665 + (Math.random() - 0.5) * 0.1;
-        const lng = 126.978 + (Math.random() - 0.5) * 0.1;
-
-        const position = new window.kakao.maps.LatLng(lat, lng);
+        const position = new window.kakao.maps.LatLng(
+          archive.latitude!,
+          archive.longitude!
+        );
 
         // 감정에 따른 마커 색상
         const emotionColor = getEmotionColor(archive.emotion);

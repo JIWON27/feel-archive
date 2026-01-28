@@ -70,6 +70,8 @@ export interface ArchiveSummary {
   emotion: EmotionType; // 단일 선택
   contentPreview: string;
   address?: string;
+  latitude?: number; // GIS 위치 정보
+  longitude?: number; // GIS 위치 정보
   createdAt: string;
   likeCount: number;
   isLiked?: boolean; // 현재 사용자가 좋아요 했는지
