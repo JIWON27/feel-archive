@@ -14,9 +14,29 @@ export const archiveService = {
   // 아카이브 생성
   async create(data: ArchiveCreateRequest): Promise<number> {
     const response = await apiClient.post('/api/v1/archives', data);
+
+    // 디버깅: 모든 헤더 출력
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[Archive Create] Response headers:', response.headers);
+      console.log('[Archive Create] Location header:', response.headers.location);
+      console.log('[Archive Create] Location header (lowercase):', response.headers['location']);
+    }
+
     // Location 헤더에서 생성된 ID 추출
-    const location = response.headers.location;
-    const id = location ? parseInt(location.split('/').pop() || '0') : 0;
+    // 소문자로 시도 (Axios는 헤더를 소문자로 변환할 수 있음)
+    const location = response.headers.location || response.headers['location'];
+
+    if (!location) {
+      console.error('[Archive Create] Location 헤더가 없습니다. 백엔드 CORS 설정을 확인하세요.');
+      // 백업: response body에 ID가 있는지 확인 (백엔드가 추후 수정할 경우 대비)
+      if (response.data && typeof response.data === 'object' && 'id' in response.data) {
+        return response.data.id as number;
+      }
+      return 0;
+    }
+
+    const id = parseInt(location.split('/').pop() || '0');
+    console.log('[Archive Create] Extracted ID:', id);
     return id;
   },
 
