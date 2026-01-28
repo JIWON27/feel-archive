@@ -1,7 +1,7 @@
 {
   "project": "feel-archive",
   "version": "1.0",
-  "lastUpdated": "2026-01-28",
+  "lastUpdated": "2026-01-28T15:30:00",
   "tasks": [
     {
       "id": 5,
@@ -420,6 +420,25 @@
       "blockers": [],
       "completedAt": "2026-01-28",
       "notes": "백엔드 이미지 API 이미 구현되어 있음. 파일당 5MB, 전체 20MB, 최대 5개 제한"
+    },
+    {
+      "id": 57,
+      "category": "feature",
+      "description": "지도 인터랙션 개선 - 아카이브 클릭 시 지도 이동 및 미리보기 위치 변경",
+      "steps": [
+        "ArchiveSummary 타입에 latitude/longitude 필드 추가",
+        "KakaoMap 컴포넌트에 targetCenter prop 추가",
+        "지도 마커를 실제 아카이브 좌표로 표시 (랜덤 위치 제거)",
+        "리스트에서 아카이브 클릭 시 지도가 해당 위치로 이동 (panTo)",
+        "미리보기 카드 위치를 지도 하단에서 상단으로 변경",
+        "GIS 데이터가 있는 아카이브만 마커 표시",
+        "SPEC.md 업데이트 (홈페이지 레이아웃 및 지도 마커 시스템 상세 설명)"
+      ],
+      "passes": true,
+      "commit": "feat: 아카이브 클릭 시 지도 이동 및 미리보기 카드 위치 변경",
+      "blockers": [],
+      "completedAt": "2026-01-28",
+      "notes": "리스트-지도 양방향 동기화 강화, 사용자 경험 개선"
     }
   ]
 }
