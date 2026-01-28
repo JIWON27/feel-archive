@@ -102,6 +102,37 @@ public ResponseEntity<Void> deleteArchive(
 
 ---
 
+## 🟢 이미지 API 구현 완료
+
+백엔드에서 이미지 관련 API가 이미 구현되어 있습니다:
+
+**이미지 업로드:**
+```java
+POST /api/v1/archives/{id}/images
+Content-Type: multipart/form-data
+RequestPart: images (List<MultipartFile>)
+Response: List<ArchiveImageResponse>
+```
+
+**이미지 삭제:**
+```java
+DELETE /api/v1/archives/{archiveId}/images/{imageId}
+Response: 204 No Content
+```
+
+**이미지 다운로드:**
+```java
+GET /api/v1/archives/{archiveId}/images/{imageId}
+Response: Resource (이미지 파일)
+```
+
+**프론트엔드 구현 방식:**
+- 아카이브 작성 시: 아카이브 생성 후 자동으로 이미지 업로드
+- 아카이브 수정 시: 기존 이미지 전체 삭제 후 새 이미지 업로드 (전체 교체)
+- 제한사항: 최대 5개, 파일당 5MB, 전체 20MB
+
+---
+
 ## 🟢 Response DTO 변경 사항
 
 ### ArchiveSummaryResponse
@@ -193,11 +224,13 @@ public record ArchiveDetailResponse(
 질문이나 논의가 필요한 사항이 있으면 프론트엔드 팀에 연락주세요.
 
 **프론트엔드 구현 완료 범위:**
-- ✅ 아카이브 작성 (감정 단일 선택, 위치 필수)
+- ✅ 아카이브 작성 (감정 단일 선택, 위치 필수, 이미지 최대 5개)
 - ✅ 아카이브 목록 조회 (무한 스크롤, 필터링, 정렬)
 - ✅ 아카이브 상세 조회
-- ✅ 아카이브 수정
+- ✅ 아카이브 수정 (이미지 전체 교체 방식)
 - ✅ 아카이브 삭제
+- ✅ 이미지 업로드 (최대 5개, 파일당 5MB, 전체 20MB)
+- ✅ 이미지 삭제
 - ✅ 좋아요/스크랩 기능
 - ✅ 내 아카이브 목록
 - ✅ 스크랩 목록

@@ -7,10 +7,11 @@ import { archiveSchema, ArchiveFormData } from '@/lib/validations/archive';
 import { EmotionType, EmotionLabels, Visibility } from '@/types/archive';
 import { Button } from '@/components/ui/Button';
 import { LocationPicker } from './LocationPicker';
+import { ImageUploader } from './ImageUploader';
 
 interface ArchiveFormProps {
   defaultValues?: Partial<ArchiveFormData>;
-  onSubmit: (data: ArchiveFormData) => void;
+  onSubmit: (data: ArchiveFormData, images: File[]) => void;
   isLoading?: boolean;
   submitLabel?: string;
 }
@@ -21,6 +22,8 @@ export const ArchiveForm: React.FC<ArchiveFormProps> = ({
   isLoading = false,
   submitLabel = '작성하기',
 }) => {
+  const [images, setImages] = useState<File[]>([]);
+
   const {
     register,
     control,
@@ -41,8 +44,12 @@ export const ArchiveForm: React.FC<ArchiveFormProps> = ({
   const selectedEmotion = watch('emotion');
   const visibility = watch('visibility');
 
+  const handleFormSubmit = (data: ArchiveFormData) => {
+    onSubmit(data, images);
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
       {/* 감정 태그 선택 (단일) */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -97,6 +104,15 @@ export const ArchiveForm: React.FC<ArchiveFormProps> = ({
           <p className="mt-1 text-sm text-red-500">{errors.content.message}</p>
         )}
       </div>
+
+      {/* 이미지 업로드 */}
+      <ImageUploader
+        images={images}
+        onChange={setImages}
+        maxImages={5}
+        maxSizePerFile={5}
+        maxTotalSize={20}
+      />
 
       {/* 위치 선택 */}
       <Controller

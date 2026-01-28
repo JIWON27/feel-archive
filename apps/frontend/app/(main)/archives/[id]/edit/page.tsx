@@ -15,8 +15,12 @@ export default function EditArchivePage() {
   const { data: archive, isLoading, error } = useArchiveDetail(id);
   const updateArchive = useUpdateArchive(id);
 
-  const handleSubmit = (data: ArchiveFormData) => {
-    updateArchive.mutate(data);
+  const handleSubmit = (data: ArchiveFormData, images: File[]) => {
+    updateArchive.mutate({
+      data,
+      images,
+      existingImages: archive?.images || [],
+    });
   };
 
   if (isLoading) {

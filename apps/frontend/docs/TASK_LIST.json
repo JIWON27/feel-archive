@@ -1,7 +1,7 @@
 {
   "project": "feel-archive",
   "version": "1.0",
-  "lastUpdated": "2026-01-27",
+  "lastUpdated": "2026-01-28",
   "tasks": [
     {
       "id": 5,
@@ -101,15 +101,16 @@
       "steps": [
         "app/(main)/archives/new/page.tsx 생성",
         "위치 선택 컴포넌트 (현재 위치 GPS / 지도에서 선택) - LocationPicker",
-        "감정 태그 복수 선택 UI (SPEC 기준 복수 선택)",
+        "감정 태그 단일 선택 UI",
         "텍스트 입력 (최대 5000자)",
+        "이미지 업로드 (최대 5개, 인스타그램 스타일 그리드)",
         "공개/비공개 토글",
-        "API 호출 및 저장"
+        "API 호출 및 저장 (아카이브 생성 후 이미지 자동 업로드)"
       ],
       "passes": true,
-      "commit": "feat: 아카이브 CRUD 구현 - 작성/수정/삭제/목록/상세, 감정 복수 선택, 위치 필수, 좋아요/스크랩",
-      "blockers": ["백엔드 API 수정 필요: emotion 복수 선택, PATCH /archives/{id}, DELETE /archives/{id}"],
-      "completedAt": "2026-01-26"
+      "commit": "feat: 아카이브 CRUD 및 이미지 업로드 구현",
+      "blockers": ["백엔드 API 수정 필요: PATCH /archives/{id}, DELETE /archives/{id}"],
+      "completedAt": "2026-01-28"
     },
     {
       "id": 26,
@@ -400,6 +401,25 @@
       "blockers": [],
       "completedAt": "2026-01-27",
       "notes": "사용자 피드백 반영 - 단일 감정 선택이 더 직관적"
+    },
+    {
+      "id": 56,
+      "category": "feature",
+      "description": "아카이브 이미지 업로드 기능 구현",
+      "steps": [
+        "ImageUploader 컴포넌트 생성 (인스타그램 스타일 그리드)",
+        "이미지 유효성 검사 (최대 5개, 파일당 5MB, 전체 20MB)",
+        "이미지 미리보기 및 삭제 기능",
+        "ArchiveForm에 이미지 업로더 통합",
+        "아카이브 생성 시 이미지 자동 업로드 (동시 플로우)",
+        "아카이브 수정 시 이미지 전체 교체 (기존 삭제 후 재업로드)",
+        "SPEC.md 업데이트 (이미지 제한사항 명시)"
+      ],
+      "passes": true,
+      "commit": "미커밋 (작업 완료)",
+      "blockers": [],
+      "completedAt": "2026-01-28",
+      "notes": "백엔드 이미지 API 이미 구현되어 있음. 파일당 5MB, 전체 20MB, 최대 5개 제한"
     }
   ]
 }

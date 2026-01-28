@@ -7,8 +7,8 @@ import { ArchiveFormData } from '@/lib/validations/archive';
 export default function NewArchivePage() {
   const createArchive = useCreateArchive();
 
-  const handleSubmit = (data: ArchiveFormData) => {
-    createArchive.mutate(data);
+  const handleSubmit = (data: ArchiveFormData, images: File[]) => {
+    createArchive.mutate({ data, images });
   };
 
   return (

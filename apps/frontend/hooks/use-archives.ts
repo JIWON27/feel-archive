@@ -83,13 +83,29 @@ export const useArchiveDetail = (id: number) => {
   });
 };
 
-// 아카이브 생성
+// 아카이브 생성 (이미지 포함)
 export const useCreateArchive = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: ArchiveCreateRequest) => archiveService.create(data),
+    mutationFn: async ({ data, images }: { data: ArchiveCreateRequest; images: File[] }) => {
+      // 1. 아카이브 생성
+      const archiveId = await archiveService.create(data);
+
+      // 2. 이미지가 있으면 업로드
+      if (images.length > 0) {
+        try {
+          await archiveService.uploadImages(archiveId, images);
+        } catch (error) {
+          // 이미지 업로드 실패해도 아카이브는 생성됨
+          console.error('이미지 업로드 실패:', error);
+          toast.error('이미지 업로드에 실패했지만 아카이브는 생성되었습니다');
+        }
+      }
+
+      return archiveId;
+    },
     onSuccess: (archiveId) => {
       queryClient.invalidateQueries({ queryKey: archiveKeys.lists() });
       queryClient.invalidateQueries({ queryKey: archiveKeys.myLists() });
@@ -104,14 +120,36 @@ export const useCreateArchive = () => {
   });
 };
 
-// 아카이브 수정
+// 아카이브 수정 (이미지 전체 교체)
 export const useUpdateArchive = (id: number) => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: ArchiveUpdateRequest) =>
-      archiveService.update(id, data),
+    mutationFn: async ({
+      data,
+      images,
+      existingImages
+    }: {
+      data: ArchiveUpdateRequest;
+      images: File[];
+      existingImages: Array<{ id: number }>
+    }) => {
+      // 1. 아카이브 수정
+      await archiveService.update(id, data);
+
+      // 2. 기존 이미지 전체 삭제
+      if (existingImages.length > 0) {
+        await Promise.all(
+          existingImages.map(img => archiveService.deleteImage(id, img.id))
+        );
+      }
+
+      // 3. 새 이미지 업로드
+      if (images.length > 0) {
+        await archiveService.uploadImages(id, images);
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: archiveKeys.detail(id) });
       queryClient.invalidateQueries({ queryKey: archiveKeys.lists() });
