@@ -31,9 +31,18 @@ export const useAuthStore = create<AuthState>((set) => ({
     const accessToken = tokenUtils.getAccessToken();
     const userId = tokenUtils.getUserId();
 
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[Auth] Initializing auth state:', {
+        hasToken: !!accessToken,
+        userId,
+      });
+    }
+
     if (accessToken && userId) {
       set({ isAuthenticated: true, userId });
     } else {
+      // 토큰이나 userId 중 하나라도 없으면 전체 삭제
+      tokenUtils.clearAll();
       set({ isAuthenticated: false, userId: null });
     }
   },

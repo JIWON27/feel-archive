@@ -61,9 +61,14 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest);
       } catch (refreshError) {
         // 토큰 갱신 실패 시 로그아웃 처리
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('[API] Token refresh failed, clearing auth state');
+        }
+
         tokenUtils.clearAll();
 
         // 로그인 페이지로 리다이렉트 (클라이언트 사이드)
+        // Note: Zustand store는 protected route hook에서 동기화됨
         if (typeof window !== 'undefined') {
           window.location.href = '/login';
         }
