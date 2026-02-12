@@ -30,6 +30,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.locationtech.jts.geom.Point;
 
 @Entity
 @Getter
@@ -62,6 +63,9 @@ public class Archive {
 
   @Embedded
   Location location;
+
+  @Column(name = "location")
+  Point point;
 
   @Column(name = "like_count")
   int likeCount;
