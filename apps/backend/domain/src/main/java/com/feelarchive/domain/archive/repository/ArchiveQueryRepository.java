@@ -7,14 +7,19 @@ import com.feelarchive.domain.archive.ArchiveSortType;
 import com.feelarchive.domain.archive.entity.Archive;
 import com.feelarchive.domain.archive.entity.Visibility;
 import com.feelarchive.domain.emotion.entity.Emotion;
+import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import org.geolatte.geom.Circle.Arc;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -42,6 +47,27 @@ public class ArchiveQueryRepository {
         .where(containsKeyword(condition.getKeyword()), emotionEq(condition.getEmotion()), filterUserOrVisibility(condition));
 
     return PageableExecutionUtils.getPage(archives, pageable, countQuery::fetchOne);
+  }
+
+  public List<Archive>  findNearbyArchives(
+      BigDecimal userLongitude,
+      BigDecimal userLatitude,
+      double radius)
+  {
+    String userPoint = String.format("POINT(%f %f)", userLatitude, userLongitude);
+    NumberExpression<Double> distance = Expressions.numberTemplate(
+        Double.class,
+        "ST_Distance_Sphere({0}, ST_GeomFromText({1}, 4326))",
+        archive.point,
+        userPoint
+    );
+
+    return jpaQueryFactory
+        .selectFrom(archive)
+        .where(distance.loe(radius))
+        .limit(10)
+        .orderBy(distance.asc())
+        .fetch();
   }
 
   private BooleanExpression containsKeyword(String keyword) {
