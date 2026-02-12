@@ -29,6 +29,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -177,9 +178,7 @@ public class ArchiveController {
   }
 
   @GetMapping("/nearby")
-  public ResponseEntity<List<ArchiveMarkerResponse>> getNearByArchives(
-      @RequestBody NearbyArchiveRequest request)
-  {
+  public ResponseEntity<List<ArchiveMarkerResponse>> getNearByArchives(@ModelAttribute NearbyArchiveRequest request) {
     List<ArchiveMarkerResponse> response = archiveService.getNearByArchives(request);
     return ResponseEntity.ok().body(response);
   }
