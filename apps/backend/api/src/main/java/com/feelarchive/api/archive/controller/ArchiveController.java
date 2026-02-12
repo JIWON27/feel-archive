@@ -2,9 +2,11 @@ package com.feelarchive.api.archive.controller;
 
 import com.feelarchive.api.archive.controller.request.ArchiveRequest;
 import com.feelarchive.api.archive.controller.request.ArchiveStatusUpdateRequest;
+import com.feelarchive.api.archive.controller.request.NearbyArchiveRequest;
 import com.feelarchive.api.archive.controller.response.ArchiveDetailResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveImageDownloadResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveImageResponse;
+import com.feelarchive.api.archive.controller.response.ArchiveMarkerResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveSummaryResponse;
 import com.feelarchive.api.archive.service.ArchiveImageService;
 import com.feelarchive.api.archive.service.ArchiveLikeService;
@@ -13,11 +15,14 @@ import com.feelarchive.api.archive.service.ArchiveService;
 import com.feelarchive.api.common.response.PagingResponse;
 import com.feelarchive.domain.archive.ArchiveSearchCondition;
 import jakarta.validation.Valid;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -168,6 +173,14 @@ public class ArchiveController {
       Pageable pageable)
   {
     PagingResponse<ArchiveSummaryResponse> response = archiveScrapService.getMyScarps(userId, pageable);
+    return ResponseEntity.ok().body(response);
+  }
+
+  @GetMapping("/nearby")
+  public ResponseEntity<List<ArchiveMarkerResponse>> getNearByArchives(
+      @RequestBody NearbyArchiveRequest request)
+  {
+    List<ArchiveMarkerResponse> response = archiveService.getNearByArchives(request);
     return ResponseEntity.ok().body(response);
   }
 }
