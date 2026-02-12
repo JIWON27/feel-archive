@@ -19,6 +19,7 @@ public enum Emotion {
   EXCITED("신난", 6),
   LONELY("외로운", 7),
   GRATEFUL("감사한", 8),
+  TIRED("지친", 9),
   ;
 
   final String label;

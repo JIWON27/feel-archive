@@ -2,8 +2,10 @@ package com.feelarchive.api.archive.service;
 
 import com.feelarchive.api.archive.controller.request.ArchiveRequest;
 import com.feelarchive.api.archive.controller.request.ArchiveStatusUpdateRequest;
+import com.feelarchive.api.archive.controller.request.NearbyArchiveRequest;
 import com.feelarchive.api.archive.controller.response.ArchiveDetailResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveImageResponse;
+import com.feelarchive.api.archive.controller.response.ArchiveMarkerResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveSummaryResponse;
 import com.feelarchive.api.common.response.PagingResponse;
 import com.feelarchive.api.user.service.UserReader;
@@ -12,6 +14,7 @@ import com.feelarchive.domain.archive.entity.Archive;
 import com.feelarchive.domain.archive.repository.ArchiveQueryRepository;
 import com.feelarchive.domain.archive.repository.ArchiveRepository;
 import com.feelarchive.domain.user.entity.User;
+import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -70,5 +73,16 @@ public class ArchiveService {
     archive.validateOwner(userId);
 
     archive.updateVisibility(request.getVisibility());
+  }
+
+  @Transactional
+  public List<ArchiveMarkerResponse> getNearByArchives(NearbyArchiveRequest request) {
+    BigDecimal userLongitude = request.longitude();
+    BigDecimal userLatitude = request.latitude();
+    double radius = request.radius();
+    List<Archive> archives = archiveQueryRepository.findNearbyArchives(userLongitude, userLatitude, radius);
+    return archives.stream()
+        .map(archiveMapper::toArchiveMarkerResponse)
+        .toList();
   }
 }
