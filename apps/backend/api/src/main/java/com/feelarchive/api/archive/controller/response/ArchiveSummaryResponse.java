@@ -1,5 +1,6 @@
 package com.feelarchive.api.archive.controller.response;
 
+import java.math.BigDecimal;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,6 +15,8 @@ public class ArchiveSummaryResponse {
   Long archiveId;
   String emotion;
   String contentPreview;
+  BigDecimal latitude;
+  BigDecimal longitude;
   String address;
   String createdAt;
   int likeCount;

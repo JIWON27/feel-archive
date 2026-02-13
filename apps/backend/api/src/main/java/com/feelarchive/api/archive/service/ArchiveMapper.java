@@ -3,7 +3,6 @@ package com.feelarchive.api.archive.service;
 import com.feelarchive.api.archive.controller.request.ArchiveRequest;
 import com.feelarchive.api.archive.controller.response.ArchiveDetailResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveImageResponse;
-import com.feelarchive.api.archive.controller.response.ArchiveMarkerResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveSummaryResponse;
 import com.feelarchive.api.archive.controller.response.CommonUserResponse;
 import com.feelarchive.domain.archive.entity.Archive;
@@ -23,6 +22,8 @@ public interface ArchiveMapper {
   @Mapping(target = "writer", source = "user")
   @Mapping(target = "contentPreview", source = "content", qualifiedByName = "summaryContent")
   @Mapping(target = "createdAt", source = "createdAt", dateFormat = "yyyy.MM.dd")
+  @Mapping(target = "latitude", source = "archive.location.latitude")
+  @Mapping(target = "longitude", source = "archive.location.longitude")
   @Mapping(target = "address", source = "archive.location.locationLabel")
   ArchiveSummaryResponse toSummary(Archive archive);
 
@@ -38,11 +39,6 @@ public interface ArchiveMapper {
 
   @Mapping(target = "address", source = "locationLabel")
   ArchiveDetailResponse.LocationDetail toLocationDetail(Location location);
-
-  @Mapping(target = "archiveId", source = "id")
-  @Mapping(target = "latitude", source = "archive.location.latitude")
-  @Mapping(target = "longitude", source = "archive.location.longitude")
-  ArchiveMarkerResponse toArchiveMarkerResponse(Archive archive);
 
   @Named("summaryContent")
   default String summaryContent(String content) {

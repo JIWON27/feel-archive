@@ -5,7 +5,6 @@ import com.feelarchive.api.archive.controller.request.ArchiveStatusUpdateRequest
 import com.feelarchive.api.archive.controller.request.NearbyArchiveRequest;
 import com.feelarchive.api.archive.controller.response.ArchiveDetailResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveImageResponse;
-import com.feelarchive.api.archive.controller.response.ArchiveMarkerResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveSummaryResponse;
 import com.feelarchive.api.common.response.PagingResponse;
 import com.feelarchive.api.user.service.UserReader;
@@ -76,13 +75,13 @@ public class ArchiveService {
   }
 
   @Transactional
-  public List<ArchiveMarkerResponse> getNearByArchives(NearbyArchiveRequest request) {
+  public List<ArchiveSummaryResponse> getNearByArchives(NearbyArchiveRequest request) {
     BigDecimal userLongitude = request.longitude();
     BigDecimal userLatitude = request.latitude();
     double radius = request.radius();
     List<Archive> archives = archiveQueryRepository.findNearbyArchives(userLongitude, userLatitude, radius);
     return archives.stream()
-        .map(archiveMapper::toArchiveMarkerResponse)
+        .map(archiveMapper::toSummary)
         .toList();
   }
 }
