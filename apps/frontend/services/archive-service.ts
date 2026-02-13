@@ -8,6 +8,7 @@ import {
   PagingResponse,
   ArchiveSearchCondition,
   ArchiveImage,
+  NearbyArchiveRequest,
 } from '@/types/archive';
 
 export const archiveService = {
@@ -147,5 +148,24 @@ export const archiveService = {
   // 이미지 삭제
   async deleteImage(archiveId: number, imageId: number): Promise<void> {
     await apiClient.delete(`/api/v1/archives/${archiveId}/images/${imageId}`);
+  },
+
+  // 주변 아카이브 조회 (위치 기반)
+  // 백엔드가 @ModelAttribute를 사용하므로 query parameter 방식으로 전송
+  // 백엔드 수정: ArchiveSummaryResponse 반환 (지도 + 목록 표시용)
+  async getNearbyArchives(
+    request: NearbyArchiveRequest
+  ): Promise<ArchiveSummary[]> {
+    const { data } = await apiClient.get<ArchiveSummary[]>(
+      '/api/v1/archives/nearby',
+      {
+        params: {
+          latitude: request.latitude,
+          longitude: request.longitude,
+          radius: request.radius,
+        },
+      }
+    );
+    return data;
   },
 };

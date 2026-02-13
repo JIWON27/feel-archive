@@ -102,6 +102,43 @@ public ResponseEntity<Void> deleteArchive(
 
 ---
 
+## 🟢 주변 아카이브 조회 API 구현 완료
+
+**API 명세:**
+```
+GET /api/v1/archives/nearby
+Query Parameters:
+  - latitude: BigDecimal (필수) - 위도
+  - longitude: BigDecimal (필수) - 경도
+  - radius: double (선택, 기본값: 50.0) - 반경(미터)
+Response: List<ArchiveSummaryResponse>
+```
+
+**백엔드 구현 변경 사항:**
+- **2026-02-12**: `@RequestBody` → `@ModelAttribute` (Query Parameter 방식)
+- **2026-02-13**: `ArchiveMarkerResponse` → `ArchiveSummaryResponse` (전체 정보 포함)
+
+**프론트엔드 구현:**
+```typescript
+// query parameter로 전송
+const { data } = await apiClient.get<ArchiveSummary[]>('/api/v1/archives/nearby', {
+  params: {
+    latitude: request.latitude,
+    longitude: request.longitude,
+    radius: request.radius,
+  },
+});
+```
+
+**메인 페이지 동작:**
+- GPS로 현재 위치 획득 (또는 기본 위치: 용산 ITX역)
+- 반경 50km 내 아카이브 조회
+- **주변 아카이브 우선 표시** (내용, 날짜, 작성자 포함)
+- 지도에 마커로 표시
+- 결과 없으면 전체 목록으로 폴백
+
+---
+
 ## 🟢 이미지 API 구현 완료
 
 백엔드에서 이미지 관련 API가 이미 구현되어 있습니다:

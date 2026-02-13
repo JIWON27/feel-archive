@@ -3,11 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useArchiveList } from '@/hooks/use-archives';
+import { useArchiveList, useNearbyArchives } from '@/hooks/use-archives';
 import { ArchiveListItem } from '@/components/archive/ArchiveListItem';
 import { KakaoMap } from '@/components/map/KakaoMap';
 import { Button } from '@/components/ui/Button';
-import { ArchiveSummary, EmotionLabels } from '@/types/archive';
+import { ArchiveSummary, EmotionLabels, NearbyArchiveRequest } from '@/types/archive';
 
 export default function Home() {
   const router = useRouter();
@@ -22,31 +22,75 @@ export default function Home() {
   const [selectedArchive, setSelectedArchive] = useState<ArchiveSummary | null>(
     null
   );
+  const [nearbyRequest, setNearbyRequest] = useState<NearbyArchiveRequest | null>(
+    null
+  );
 
-  // 아카이브 목록 조회
-  const { data, isLoading, error } = useArchiveList();
-  const allArchives = data?.pages.flatMap((page) => page.content) || [];
+  // 주변 아카이브 조회 (위치 기반) - 우선 표시
+  const {
+    data: nearbyArchives,
+    isLoading: isLoadingNearby,
+    error: nearbyError,
+  } = useNearbyArchives(nearbyRequest);
 
-  // 현재 위치 가져오기
+  // 전체 아카이브 목록 조회 (폴백용)
+  const { data, isLoading: isLoadingAll, error: allError } = useArchiveList();
+
+  // 주변 아카이브를 우선 표시, 없으면 전체 목록 사용
+  const allArchives = nearbyArchives && nearbyArchives.length > 0
+    ? nearbyArchives
+    : data?.pages.flatMap((page) => page.content) || [];
+
+  const isLoading = isLoadingNearby || isLoadingAll;
+  const error = nearbyError || allError;
+
+  // 현재 위치 가져오기 및 주변 아카이브 조회 요청 설정
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setCurrentLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
-        },
-        (error) => {
-          console.error('위치 가져오기 실패:', error);
-          // 기본 위치 (서울)
-          setCurrentLocation({ lat: 37.5665, lng: 126.978 });
-        }
-      );
-    } else {
-      // 기본 위치 (서울)
-      setCurrentLocation({ lat: 37.5665, lng: 126.978 });
+    // 기본 위치 설정 함수 (서울 용산 ITX역)
+    const setDefaultLocation = () => {
+      const defaultLocation = { lat: 37.5292, lng: 126.9642 };
+      setCurrentLocation(defaultLocation);
+      setNearbyRequest({
+        latitude: 37.5292,
+        longitude: 126.9642,
+        radius: 50.0,
+      });
+    };
+
+    if (!navigator.geolocation) {
+      setDefaultLocation();
+      return;
     }
+
+    // 위치 가져오기 시도
+    const timeoutId = setTimeout(() => {
+      setDefaultLocation();
+    }, 5000); // 5초 후 강제 폴백
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        clearTimeout(timeoutId);
+        const location = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
+        setCurrentLocation(location);
+        setNearbyRequest({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          radius: 50.0,
+        });
+      },
+      (error) => {
+        clearTimeout(timeoutId);
+        setDefaultLocation();
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 10000,
+        maximumAge: 60000, // 1분 내 캐시 허용
+      }
+    );
   }, []);
 
   const handleArchiveClick = (archive: ArchiveSummary) => {
@@ -202,6 +246,7 @@ export default function Home() {
               targetCenter={targetCenter}
               onArchiveClick={handleMapArchiveClick}
               selectedArchiveId={selectedArchive?.archiveId}
+              userLocation={currentLocation}
             />
 
             {/* 선택된 아카이브 미리보기 */}

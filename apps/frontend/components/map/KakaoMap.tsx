@@ -15,6 +15,7 @@ interface KakaoMapProps {
   targetCenter?: { lat: number; lng: number } | null; // 특정 아카이브로 이동
   onArchiveClick?: (archive: ArchiveSummary) => void;
   selectedArchiveId?: number;
+  userLocation?: { lat: number; lng: number } | null; // 현재 위치
 }
 
 export const KakaoMap: React.FC<KakaoMapProps> = ({
@@ -23,10 +24,12 @@ export const KakaoMap: React.FC<KakaoMapProps> = ({
   targetCenter,
   onArchiveClick,
   selectedArchiveId,
+  userLocation,
 }) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<any>(null);
   const [markers, setMarkers] = useState<any[]>([]);
+  const [userMarker, setUserMarker] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [scriptError, setScriptError] = useState<string | null>(null);
 
@@ -42,8 +45,8 @@ export const KakaoMap: React.FC<KakaoMapProps> = ({
 
         const options = {
           center: new window.kakao.maps.LatLng(
-            center?.lat || 37.5665,
-            center?.lng || 126.978
+            center?.lat || 37.5292,
+            center?.lng || 126.9642
           ),
           level: 5,
         };
@@ -68,8 +71,8 @@ export const KakaoMap: React.FC<KakaoMapProps> = ({
 
             const options = {
               center: new window.kakao.maps.LatLng(
-                center?.lat || 37.5665,
-                center?.lng || 126.978
+                center?.lat || 37.5292,
+                center?.lng || 126.9642
               ),
               level: 5,
             };
@@ -83,8 +86,16 @@ export const KakaoMap: React.FC<KakaoMapProps> = ({
       return;
     }
 
+    const apiKey = process.env.NEXT_PUBLIC_KAKAO_APP_KEY;
+
+    if (!apiKey) {
+      setScriptError('Kakao Maps API 키가 없습니다. .env.local 파일을 확인하세요.');
+      setIsLoading(false);
+      return;
+    }
+
     const script = document.createElement('script');
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_APP_KEY}&autoload=false`;
+    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&autoload=false`;
     script.async = true;
 
     script.onload = () => {
@@ -95,8 +106,8 @@ export const KakaoMap: React.FC<KakaoMapProps> = ({
 
           const options = {
             center: new window.kakao.maps.LatLng(
-              center?.lat || 37.5665,
-              center?.lng || 126.978
+              center?.lat || 37.5292,
+              center?.lng || 126.9642
             ),
             level: 5,
           };
@@ -112,7 +123,7 @@ export const KakaoMap: React.FC<KakaoMapProps> = ({
     };
 
     script.onerror = () => {
-      setScriptError('Kakao Maps 스크립트 로드 실패');
+      setScriptError('Kakao Maps 스크립트 로드 실패. 네트워크 연결을 확인하세요.');
       setIsLoading(false);
     };
 
@@ -129,7 +140,81 @@ export const KakaoMap: React.FC<KakaoMapProps> = ({
     map.panTo(position); // setCenter 대신 panTo로 부드럽게 이동
   }, [map, center, targetCenter]);
 
-  // 마커 업데이트
+  // 현재 위치 마커 업데이트
+  useEffect(() => {
+    if (!map || !userLocation) return;
+
+    // 기존 사용자 마커 제거
+    if (userMarker) {
+      userMarker.overlay.setMap(null);
+    }
+
+    const position = new window.kakao.maps.LatLng(
+      userLocation.lat,
+      userLocation.lng
+    );
+
+    // 현재 위치 마커 DOM 생성
+    const userMarkerDiv = document.createElement('div');
+    userMarkerDiv.style.cssText = `
+      position: relative;
+      width: 20px;
+      height: 20px;
+    `;
+
+    // 외곽 반투명 원 (정확도 표시)
+    const outerCircle = document.createElement('div');
+    outerCircle.style.cssText = `
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: rgba(66, 133, 244, 0.2);
+      border: 2px solid rgba(66, 133, 244, 0.5);
+    `;
+
+    // 중앙 파란색 점
+    const innerCircle = document.createElement('div');
+    innerCircle.style.cssText = `
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background-color: #4285F4;
+      border: 3px solid white;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      z-index: 1;
+    `;
+
+    userMarkerDiv.appendChild(outerCircle);
+    userMarkerDiv.appendChild(innerCircle);
+
+    const customOverlay = new window.kakao.maps.CustomOverlay({
+      position,
+      content: userMarkerDiv,
+      yAnchor: 0.5,
+      zIndex: 100, // 다른 마커보다 위에 표시
+    });
+
+    customOverlay.setMap(map);
+
+    setUserMarker({
+      overlay: customOverlay,
+      element: userMarkerDiv,
+    });
+
+    return () => {
+      customOverlay.setMap(null);
+    };
+  }, [map, userLocation]);
+
+  // 아카이브 마커 업데이트
   useEffect(() => {
     if (!map || !archives) return;
 

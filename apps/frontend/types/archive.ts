@@ -121,3 +121,18 @@ export interface ArchiveSearchCondition {
   emotion?: EmotionType;
   sort?: 'latest' | 'oldest' | 'popular'; // 최신순/오래된순/인기순
 }
+
+// 주변 아카이브 조회 요청
+export interface NearbyArchiveRequest {
+  latitude: number;
+  longitude: number;
+  radius: number; // 기본값 50.0 (백엔드에서 처리)
+}
+
+// 아카이브 마커 정보 (지도용)
+export interface ArchiveMarker {
+  archiveId: number;
+  latitude: number;
+  longitude: number;
+  emotion: EmotionType;
+}

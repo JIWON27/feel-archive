@@ -1,7 +1,7 @@
 {
   "project": "feel-archive",
-  "version": "1.0",
-  "lastUpdated": "2026-01-28T15:30:00",
+  "version": "1.1",
+  "lastUpdated": "2026-02-13T15:00:00",
   "tasks": [
     {
       "id": 5,
@@ -439,6 +439,91 @@
       "blockers": [],
       "completedAt": "2026-01-28",
       "notes": "리스트-지도 양방향 동기화 강화, 사용자 경험 개선"
+    },
+    {
+      "id": 58,
+      "category": "feature",
+      "description": "현재 위치 기반 주변 아카이브 자동 조회 기능 구현",
+      "steps": [
+        "types/archive.ts에 NearbyArchiveRequest와 ArchiveMarker 타입 추가",
+        "archive-service.ts에 getNearbyArchives API 함수 추가 (GET /api/v1/archives/nearby)",
+        "use-archives.ts에 useNearbyArchives 훅 추가",
+        "메인 페이지에서 현재 위치 가져온 후 자동으로 주변 아카이브 조회 (반경 50km)",
+        "주변 아카이브가 없으면 전체 목록으로 폴백",
+        "TASK_LIST.json 업데이트"
+      ],
+      "passes": true,
+      "commit": "feat: 현재 위치 기반 주변 아카이브 자동 조회 기능 구현",
+      "blockers": [],
+      "completedAt": "2026-02-12",
+      "notes": "백엔드 GET /api/v1/archives/nearby API 활용. SPEC.md에 이미 정의된 기능 (현재 위치 GPS 자동 감지)."
+    },
+    {
+      "id": 59,
+      "category": "fix",
+      "description": "주변 아카이브 API 수정 - RequestBody → Query Parameter 방식",
+      "steps": [
+        "백엔드: @RequestBody → @ModelAttribute로 변경 (HTTP 표준 준수)",
+        "프론트엔드: axios.request() → axios.get() with params로 변경",
+        "archive.http 파일 업데이트 (query parameter 방식)",
+        "BACKEND_API_CHANGES_REQUIRED.md 업데이트"
+      ],
+      "passes": true,
+      "commit": "fix: 주변 아카이브 API를 query parameter 방식으로 수정",
+      "blockers": [],
+      "completedAt": "2026-02-13",
+      "notes": "GET 메서드에 @RequestBody 사용은 HTTP 표준 위반. @ModelAttribute로 수정하여 표준 준수."
+    },
+    {
+      "id": 60,
+      "category": "fix",
+      "description": "주변 아카이브 API 응답 타입 변경 - 목록 표시용 전체 정보 포함",
+      "steps": [
+        "백엔드: ArchiveMarkerResponse → ArchiveSummaryResponse로 변경",
+        "프론트엔드: 반환 타입 ArchiveMarker[] → ArchiveSummary[]로 변경",
+        "메인 페이지: 주변 아카이브를 ArchiveSummary로 직접 사용 (변환 로직 제거)",
+        "주변 아카이브 우선 표시 로직 구현 (없으면 전체 목록 폴백)",
+        "BACKEND_API_CHANGES_REQUIRED.md 업데이트"
+      ],
+      "passes": true,
+      "commit": "fix: 주변 아카이브 API가 전체 정보를 포함하도록 수정",
+      "blockers": [],
+      "completedAt": "2026-02-13",
+      "notes": "기존: 마커용 최소 정보만 반환 (id, lat, lng, emotion) → 변경: 목록 표시용 전체 정보 포함 (content, date, writer 등)"
+    },
+    {
+      "id": 61,
+      "category": "feature",
+      "description": "현재 위치 마커 지도에 표시",
+      "steps": [
+        "KakaoMap 컴포넌트에 userLocation prop 추가",
+        "현재 위치 전용 마커 생성 (Google Maps 스타일 파란색 원)",
+        "외곽 반투명 원 + 중앙 파란색 점 디자인",
+        "zIndex 100으로 다른 마커보다 위에 표시",
+        "메인 페이지에서 currentLocation을 userLocation prop으로 전달"
+      ],
+      "passes": true,
+      "commit": "feat: 현재 위치를 지도에 파란색 마커로 표시",
+      "blockers": [],
+      "completedAt": "2026-02-13",
+      "notes": "사용자가 지도에서 자신의 위치를 쉽게 파악할 수 있도록 개선"
+    },
+    {
+      "id": 62,
+      "category": "fix",
+      "description": "위치 권한 처리 개선 및 기본 위치 변경",
+      "steps": [
+        "위치 권한 거부 시 5초 타임아웃 후 자동 폴백",
+        "기본 위치를 서울 시청 → 용산 ITX역으로 변경",
+        "Geolocation API 옵션 개선 (timeout, maximumAge)",
+        "디버깅 로그 추가 후 정리",
+        "KakaoMap 컴포넌트 모든 기본 좌표를 용산 ITX역으로 변경"
+      ],
+      "passes": true,
+      "commit": "fix: 위치 권한 처리 개선 및 기본 위치를 용산 ITX역으로 변경",
+      "blockers": [],
+      "completedAt": "2026-02-13",
+      "notes": "Kakao Maps API 401 에러 해결 (localhost vs 127.0.0.1 플랫폼 설정)"
     }
   ]
 }

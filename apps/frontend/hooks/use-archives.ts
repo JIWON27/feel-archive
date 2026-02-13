@@ -11,6 +11,7 @@ import {
   ArchiveCreateRequest,
   ArchiveUpdateRequest,
   ArchiveSearchCondition,
+  NearbyArchiveRequest,
 } from '@/types/archive';
 import { AxiosError } from 'axios';
 
@@ -24,6 +25,8 @@ export const archiveKeys = {
   scrapLists: () => [...archiveKeys.all, 'scraps'] as const,
   details: () => [...archiveKeys.all, 'detail'] as const,
   detail: (id: number) => [...archiveKeys.details(), id] as const,
+  nearby: (lat?: number, lng?: number, radius?: number) =>
+    [...archiveKeys.all, 'nearby', { lat, lng, radius }] as const,
 };
 
 // 아카이브 목록 조회 (무한 스크롤)
@@ -269,5 +272,27 @@ export const useDeleteImage = (archiveId: number) => {
         error.response?.data?.message || '이미지 삭제에 실패했습니다';
       toast.error(message);
     },
+  });
+};
+
+// 주변 아카이브 조회 (위치 기반)
+export const useNearbyArchives = (
+  request: NearbyArchiveRequest | null,
+  enabled: boolean = true
+) => {
+  return useQuery({
+    queryKey: archiveKeys.nearby(
+      request?.latitude,
+      request?.longitude,
+      request?.radius
+    ),
+    queryFn: () => {
+      if (!request) {
+        throw new Error('위치 정보가 필요합니다');
+      }
+      return archiveService.getNearbyArchives(request);
+    },
+    enabled: enabled && !!request,
+    staleTime: 1000 * 60 * 5, // 5분간 캐시 유지
   });
 };
