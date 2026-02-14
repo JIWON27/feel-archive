@@ -1,7 +1,7 @@
 # Feel-Archive 서비스 기획 스펙 문서
 
 > **문서 버전**: 1.0
-> **작성일**: 2026-01-19
+> **작성일**: 2026-02-14
 > **서비스명**: 미확정 (가칭: Feel-Archive)
 
 ---
@@ -93,6 +93,26 @@
   - 지도 마커 클릭 → 리스트에서 해당 아카이브로 스크롤
 - **아카이브 미리보기**: 선택된 아카이브는 지도 상단에 요약 카드 표시
 - **상세 보기**: 아카이브 더블클릭 또는 미리보기 카드의 "자세히 보기" 버튼으로 이동
+
+#### 위치 권한 처리
+- **권한 요청**: 페이지 로드 시 자동으로 Geolocation API 호출
+- **권한 허용 시**:
+  - 현재 GPS 위치로 지도 중심 설정
+  - 반경 50km 내 주변 아카이브 우선 조회
+  - 캐시 허용: 1분 이내 위치 정보 재사용 (maximumAge: 60000ms)
+- **권한 거부 시**:
+  - 5초 타임아웃 후 기본 위치로 자동 폴백
+  - 기본 위치: 용산 ITX역 (위도 37.5292, 경도 126.9642)
+  - 전체 아카이브 목록 표시
+- **현재 위치 표시**:
+  - Google Maps 스타일 파란색 원형 마커
+  - 외곽 반투명 원 (정확도 범위 표시) + 중앙 파란색 점
+  - zIndex 100으로 다른 마커보다 위에 표시
+
+#### 주변 아카이브 우선 표시
+- **조회 방식**: 현재 위치 기반 반경 50km 내 아카이브 자동 조회
+- **폴백 로직**: 주변 아카이브가 없으면 전체 목록으로 자동 전환
+- **API**: `GET /api/v1/archives/nearby?latitude={lat}&longitude={lng}&radius={km}`
 
 #### 지도 마커 시스템
 - **마커 표시**: GIS 정보(latitude, longitude)가 있는 아카이브만 표시
@@ -286,23 +306,34 @@ Member (회원)
 Archive (아카이브 글)
 ├── id (PK)
 ├── memberId (FK)
-├── content (텍스트)
-├── latitude (위도)
-├── longitude (경도)
+├── content (텍스트, 최대 5000자)
+├── emotion (단일 감정 - EmotionType enum)
+├── latitude (위도, BigDecimal)
+├── longitude (경도, BigDecimal)
 ├── locationName (장소명)
-├── locationPrecision (노출 정밀도)
+├── address (주소)
 ├── isPublic (공개 여부)
-├── imageUrl
+├── images (이미지 목록, 최대 5개)
 ├── likeCount
 ├── createdAt
 ├── updatedAt
 ├── deletedAt (soft delete)
 └── point (GEOMETRY - 공간 인덱스용)
 
-ArchiveEmotion (아카이브-감정 매핑)
+ArchiveImage (아카이브 이미지)
 ├── id (PK)
 ├── archiveId (FK)
-└── emotionType (감정 타입)
+├── url (이미지 URL)
+├── originalName (원본 파일명)
+├── contentType (MIME 타입)
+├── sizeBytes (파일 크기, 최대 5MB)
+└── createdAt
+
+이미지 업로드 제한사항:
+- 최대 개수: 5개
+- 파일당 크기: 5MB
+- 전체 크기: 20MB
+- 수정 시: 기존 이미지 전체 삭제 후 재업로드
 
 TimeCapsule (타임캡슐)
 ├── id (PK)
@@ -380,13 +411,16 @@ PATCH  /api/members/me           내 정보 수정
 
 ### 7.3 아카이브
 ```
-POST   /api/archives             글 작성
-GET    /api/archives             글 목록 조회 (필터/정렬)
-GET    /api/archives/{id}        글 상세 조회
-PATCH  /api/archives/{id}        글 수정
-DELETE /api/archives/{id}        글 삭제 (soft delete)
-GET    /api/archives/map         지도용 마커 조회 (GIS)
-GET    /api/archives/nearby      반경 내 글 조회 (GIS)
+POST   /api/v1/archives             글 작성
+GET    /api/v1/archives             글 목록 조회 (필터/정렬)
+GET    /api/v1/archives/{id}        글 상세 조회
+PATCH  /api/v1/archives/{id}        글 수정
+DELETE /api/v1/archives/{id}        글 삭제 (soft delete)
+GET    /api/v1/archives/nearby      반경 내 아카이브 조회 (GIS)
+                                     Query params: latitude, longitude, radius (기본값 50.0km)
+                                     Response: ArchiveSummaryResponse[] (전체 정보 포함)
+POST   /api/v1/archives/{id}/images 이미지 업로드 (최대 5개, 파일당 5MB, 전체 20MB)
+DELETE /api/v1/archives/{archiveId}/images/{imageId}  이미지 삭제
 ```
 
 ### 7.4 좋아요/스크랩
