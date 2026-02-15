@@ -1,7 +1,7 @@
 # Feel-Archive 서비스 기획 스펙 문서
 
 > **문서 버전**: 1.0
-> **작성일**: 2026-02-14
+> **작성일**: 2026-02-15
 > **서비스명**: 미확정 (가칭: Feel-Archive)
 
 ---
@@ -294,40 +294,46 @@
 ### 6.1 핵심 엔티티
 
 ```
-Member (회원)
-├── id (PK)
-├── email
-├── password (암호화)
-├── nickname
-├── profileImageUrl
-├── createdAt
-└── updatedAt
+User (회원)
+├── id (PK, Long, auto-increment)
+├── name (String, NOT NULL)
+├── email (Email @Embedded - value object with validation)
+├── nickname (Nickname @Embedded - value object)
+├── password (Password @Embedded - encrypted value object)
+├── phone (Phone @Embedded - value object with format validation)
+├── gender (Gender enum: MALE/FEMALE, NOT NULL)
+├── birthDate (BirthDate @Embedded - value object)
+├── role (Role enum: USER/ADMIN, default USER)
+├── status (Status enum: ACTIVE/INACTIVE, default ACTIVE)
+├── createdAt (LocalDateTime, auto-generated)
+└── updatedAt (LocalDateTime, auto-updated)
 
 Archive (아카이브 글)
-├── id (PK)
-├── memberId (FK)
-├── content (텍스트, 최대 5000자)
-├── emotion (단일 감정 - EmotionType enum)
-├── latitude (위도, BigDecimal)
-├── longitude (경도, BigDecimal)
-├── locationName (장소명)
-├── address (주소)
-├── isPublic (공개 여부)
-├── images (이미지 목록, 최대 5개)
-├── likeCount
-├── createdAt
-├── updatedAt
-├── deletedAt (soft delete)
-└── point (GEOMETRY - 공간 인덱스용)
+├── id (PK, Long, auto-increment)
+├── user (FK to User, @ManyToOne, NOT NULL)
+├── emotion (Emotion enum, NOT NULL)
+├── content (String, NOT NULL, 최대 5000자)
+├── visibility (Visibility enum: PUBLIC/PRIVATE, NOT NULL)
+├── location (Location @Embedded)
+│   ├── latitude (Double)
+│   ├── longitude (Double)
+│   └── locationName (String)
+├── point (Point - PostGIS geometry type for spatial queries)
+├── likeCount (int, default 0)
+├── createdAt (LocalDateTime, auto-generated)
+├── updatedAt (LocalDateTime, auto-updated)
+└── deletedAt (LocalDateTime, nullable - soft delete)
 
 ArchiveImage (아카이브 이미지)
-├── id (PK)
-├── archiveId (FK)
-├── url (이미지 URL)
-├── originalName (원본 파일명)
-├── contentType (MIME 타입)
-├── sizeBytes (파일 크기, 최대 5MB)
-└── createdAt
+├── id (PK, Long, auto-increment)
+├── archive (FK to Archive, @ManyToOne, NOT NULL)
+├── fileMeta (FileMeta @Embedded - file metadata)
+│   ├── storageKey (String)
+│   ├── originalName (String - 원본 파일명)
+│   ├── contentType (String - MIME 타입)
+│   ├── sizeBytes (Long - 파일 크기, 최대 5MB)
+│   └── extension (String)
+└── createdAt (LocalDateTime, auto-generated)
 
 이미지 업로드 제한사항:
 - 최대 개수: 5개
@@ -335,49 +341,60 @@ ArchiveImage (아카이브 이미지)
 - 전체 크기: 20MB
 - 수정 시: 기존 이미지 전체 삭제 후 재업로드
 
+ArchiveLike (아카이브 좋아요)
+├── id (PK, Long, auto-increment)
+├── archive (FK to Archive, @ManyToOne, NOT NULL)
+├── user (FK to User, @ManyToOne, NOT NULL)
+└── createdAt (LocalDateTime, auto-generated)
+
+ArchiveScrap (아카이브 스크랩)
+├── id (PK, Long, auto-increment)
+├── archive (FK to Archive, @ManyToOne, NOT NULL)
+├── user (FK to User, @ManyToOne, NOT NULL)
+└── createdAt (LocalDateTime, auto-generated)
+
 TimeCapsule (타임캡슐)
-├── id (PK)
-├── memberId (FK)
-├── content
-├── latitude
-├── longitude
-├── locationName
-├── imageUrl
-├── scheduledAt (공개 예정 시간)
-├── isOpened (열람 여부)
-├── isLocked (잠금 여부 - 30분 후 true)
-├── createdAt
-└── updatedAt
+├── id (PK, Long, auto-increment)
+├── user (FK to User, @ManyToOne, NOT NULL)
+├── emotion (Emotion enum, NOT NULL)
+├── content (String, NOT NULL)
+├── location (Location @Embedded)
+│   ├── latitude (Double)
+│   ├── longitude (Double)
+│   └── locationName (String)
+├── capsuleStatus (CapsuleStatus enum: LOCKED/OPENED, NOT NULL, default LOCKED)
+├── isNotificationSent (boolean, NOT NULL, default false)
+├── openAt (LocalDateTime, NOT NULL - unlock time, must be future)
+├── createdAt (LocalDateTime, auto-generated)
+├── updatedAt (LocalDateTime, auto-updated)
+└── deletedAt (LocalDateTime, nullable - soft delete)
 
-TimeCapsuleEmotion (타임캡슐-감정 매핑)
-├── id (PK)
-├── timeCapsuleId (FK)
-└── emotionType
-
-Like (좋아요)
-├── id (PK)
-├── memberId (FK)
-├── archiveId (FK)
-└── createdAt
-
-Scrap (스크랩)
-├── id (PK)
-├── memberId (FK)
-├── archiveId (FK)
-└── createdAt
+TimeCapsuleImage (타임캡슐 이미지)
+├── id (PK, Long, auto-increment)
+├── timeCapsule (FK to TimeCapsule, @ManyToOne, NOT NULL)
+├── fileMeta (FileMeta @Embedded - file metadata)
+│   ├── storageKey (String)
+│   ├── originalName (String - 원본 파일명)
+│   ├── contentType (String - MIME 타입)
+│   ├── sizeBytes (Long - 파일 크기, 최대 5MB)
+│   └── extension (String)
+└── createdAt (LocalDateTime, auto-generated)
 
 Notification (알림)
-├── id (PK)
-├── memberId (FK)
-├── type (알림 타입)
-├── targetId (대상 ID)
-├── isRead
-└── createdAt
+├── id (PK, Long, auto-increment)
+├── user (FK to User, @ManyToOne, NOT NULL)
+├── title (String, NOT NULL)
+├── content (String, NOT NULL)
+├── notificationType (NotificationType enum - 알림 타입)
+├── relatedId (Long - 대상 ID)
+├── isRead (boolean, default false)
+├── createdAt (LocalDateTime, auto-generated)
+└── readAt (LocalDateTime, nullable)
 ```
 
 ### 6.2 감정 타입 (Enum)
 ```java
-public enum EmotionType {
+public enum Emotion {
     HAPPY,      // 행복
     SAD,        // 슬픔
     ANXIOUS,    // 불안함
@@ -392,21 +409,49 @@ public enum EmotionType {
 }
 ```
 
+### 6.3 기타 Enum 타입
+```java
+public enum Visibility {
+    PUBLIC,     // 공개
+    PRIVATE     // 비공개
+}
+
+public enum CapsuleStatus {
+    LOCKED,     // 잠금
+    OPENED      // 열림
+}
+
+public enum Gender {
+    MALE,       // 남성
+    FEMALE      // 여성
+}
+
+public enum Role {
+    USER,       // 일반 사용자
+    ADMIN       // 관리자
+}
+
+public enum Status {
+    ACTIVE,     // 활성
+    INACTIVE    // 비활성
+}
+```
+
 ---
 
-## 7. API 엔드포인트 (초안)
+## 7. API 엔드포인트
 
 ### 7.1 인증
 ```
-POST   /api/auth/signup          회원가입
-POST   /api/auth/login           로그인
-POST   /api/auth/logout          로그아웃
+POST   /api/v1/login             로그인
+DELETE /api/v1/logout            로그아웃
+POST   /api/v1/token/reIssue     토큰 재발급
 ```
 
 ### 7.2 회원
 ```
-GET    /api/members/me           내 정보 조회
-PATCH  /api/members/me           내 정보 수정
+POST   /api/v1/users             회원가입
+GET    /api/v1/users/{id}        회원 정보 조회
 ```
 
 ### 7.3 아카이브
@@ -425,23 +470,23 @@ DELETE /api/v1/archives/{archiveId}/images/{imageId}  이미지 삭제
 
 ### 7.4 좋아요/스크랩
 ```
-POST   /api/archives/{id}/like   좋아요 토글
-POST   /api/archives/{id}/scrap  스크랩 토글
-GET    /api/members/me/scraps    내 스크랩 목록
+POST   /api/v1/archives/{id}/like   좋아요 토글
+POST   /api/v1/archives/{id}/scrap  스크랩 토글
+GET    /api/v1/members/me/scraps    내 스크랩 목록
 ```
 
 ### 7.5 타임캡슐
 ```
-POST   /api/timecapsules         타임캡슐 작성
-GET    /api/timecapsules         내 타임캡슐 목록
-GET    /api/timecapsules/{id}    타임캡슐 상세 조회
-PATCH  /api/timecapsules/{id}    타임캡슐 수정 (30분 내)
+POST   /api/v1/time-capsule          타임캡슐 작성
+GET    /api/v1/time-capsule          내 타임캡슐 목록
+GET    /api/v1/time-capsule/{id}     타임캡슐 상세 조회
+PUT    /api/v1/time-capsule/{id}     타임캡슐 수정 (30분 내)
+POST   /api/v1/time-capsule/{id}/images  이미지 업로드
 ```
 
-### 7.6 리포트
+### 7.6 감정 목록
 ```
-GET    /api/reports/monthly      월간 리포트 조회
-GET    /api/reports/emotions     감정 분포 통계
+GET    /api/v1/emotions              사용 가능한 감정 목록 조회
 ```
 
 ---
