@@ -16,6 +16,7 @@
 - [아카이브 (Archive)](#아카이브-archive)
 - [좋아요/스크랩 (Like/Scrap)](#좋아요스크랩-likescrap)
 - [타임캡슐 (TimeCapsule)](#타임캡슐-timecapsule)
+- [알림 (Notification)](#알림-notification)
 - [리포트 (Report)](#리포트-report)
 - [공통 사항](#공통-사항)
 
@@ -1126,6 +1127,160 @@ Content-Type: application/json
   "status": 400
 }
 ```
+
+---
+
+## 알림 (Notification)
+
+### 1. 알림 목록 조회
+
+사용자의 알림 목록을 조회합니다 (페이지네이션 지원).
+
+**Endpoint**
+```
+GET /api/v1/notifications
+```
+
+**인증 필요**: ✅ Yes (Bearer Token)
+
+**Query Parameters**
+- `page` (int, optional, default: 0): 페이지 번호
+- `size` (int, optional, default: 20): 페이지 크기
+- `sort` (string, optional, default: "createdAt,desc"): 정렬 기준
+- `isRead` (boolean, optional): 읽음/안읽음 필터
+  - `true`: 읽은 알림만
+  - `false`: 읽지 않은 알림만
+  - 생략: 전체 알림
+
+**Request Example**
+```http
+GET /api/v1/notifications?page=0&size=20&isRead=false HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Response (200 OK)**
+```json
+{
+  "content": [
+    {
+      "id": 123,
+      "title": "타임캡슐이 열렸습니다!",
+      "content": "1년 전에 작성한 타임캡슐을 확인해보세요.",
+      "notificationType": "TIME_CAPSULE_OPENED",
+      "relatedId": 789,
+      "isRead": false,
+      "createdAt": "2026-02-15T10:00:00",
+      "readAt": null
+    },
+    {
+      "id": 122,
+      "title": "타임캡슐이 열렸습니다!",
+      "content": "6개월 전에 작성한 타임캡슐을 확인해보세요.",
+      "notificationType": "TIME_CAPSULE_OPENED",
+      "relatedId": 788,
+      "isRead": false,
+      "createdAt": "2026-02-14T15:30:00",
+      "readAt": null
+    }
+  ],
+  "pageable": {
+    "pageNumber": 0,
+    "pageSize": 20,
+    "sort": {
+      "sorted": true,
+      "unsorted": false,
+      "empty": false
+    }
+  },
+  "totalElements": 15,
+  "totalPages": 1,
+  "last": true,
+  "first": true,
+  "size": 20,
+  "number": 0,
+  "numberOfElements": 15,
+  "empty": false
+}
+```
+
+**Status Codes**
+- `200 OK`: 조회 성공
+- `401 Unauthorized`: 인증 토큰 없음 또는 유효하지 않음
+
+**참고사항**
+- 무한 스크롤 페이지네이션에 적합
+- `isRead=false`로 읽지 않은 알림만 조회하여 뱃지 카운트 계산 가능
+- 기본 정렬: 최신순 (createdAt DESC)
+
+---
+
+### 2. 개별 알림 읽음 처리
+
+특정 알림을 읽음 상태로 변경합니다.
+
+**Endpoint**
+```
+PATCH /api/v1/notifications/{id}/read
+```
+
+**인증 필요**: ✅ Yes (Bearer Token)
+
+**Path Parameters**
+- `id` (Long, required): 알림 ID
+
+**Request Example**
+```http
+PATCH /api/v1/notifications/123/read HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Response (200 OK)**
+```http
+200 OK
+```
+
+**Status Codes**
+- `200 OK`: 읽음 처리 성공
+- `401 Unauthorized`: 인증 토큰 없음 또는 유효하지 않음
+- `403 Forbidden`: 본인의 알림이 아님
+- `404 Not Found`: 존재하지 않는 알림 ID
+
+**참고사항**
+- 읽음 처리 시 `isRead`가 `true`로, `readAt`이 현재 시각으로 자동 업데이트됩니다
+- 이미 읽은 알림을 다시 호출해도 성공 (멱등성 보장)
+
+---
+
+### 3. 전체 알림 읽음 처리
+
+모든 읽지 않은 알림을 읽음 상태로 일괄 변경합니다.
+
+**Endpoint**
+```
+PATCH /api/v1/notifications/read-all
+```
+
+**인증 필요**: ✅ Yes (Bearer Token)
+
+**Request Example**
+```http
+PATCH /api/v1/notifications/read-all HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Response (200 OK)**
+```http
+200 OK
+```
+
+**Status Codes**
+- `200 OK`: 전체 읽음 처리 성공
+- `401 Unauthorized`: 인증 토큰 없음 또는 유효하지 않음
+
+**참고사항**
+- 현재 사용자의 읽지 않은 알림(`isRead=false`)만 일괄 업데이트됩니다
+- 업데이트된 알림의 `isRead`는 `true`로, `readAt`은 현재 시각으로 설정됩니다
+- 읽지 않은 알림이 없어도 성공 응답 반환
 
 ---
 
