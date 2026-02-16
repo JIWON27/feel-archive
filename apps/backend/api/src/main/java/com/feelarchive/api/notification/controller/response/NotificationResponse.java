@@ -1,5 +1,6 @@
 package com.feelarchive.api.notification.controller.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.feelarchive.domain.notification.entity.NotificationType;
 import java.time.LocalDateTime;
 
@@ -9,7 +10,8 @@ public record NotificationResponse(
     String content,
     NotificationType notificationType,
     Long relatedId,
-    boolean isRead,
+    @JsonProperty("isRead")
+    boolean read,
     LocalDateTime createdAt,
     LocalDateTime readAt
 ) {}

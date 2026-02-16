@@ -44,7 +44,7 @@ public class NotificationQueryRepository {
     if (Objects.isNull(isRead)) {
       return null;
     }
-    return notification.isRead.eq(isRead);
+    return notification.read.eq(isRead);
   }
 
 }
