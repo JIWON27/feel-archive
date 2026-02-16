@@ -53,7 +53,7 @@ public class Notification {
   Long relatedId;
 
   @Column(name = "is_read", nullable = false)
-  boolean isRead;
+  boolean read;
 
   @CreationTimestamp
   @Column(name = "created_at", updatable = false, nullable = false)
@@ -69,11 +69,11 @@ public class Notification {
     this.content = content;
     this.type = type;
     this.relatedId = relatedId;
-    this.isRead = false;
+    this.read = false;
   }
 
   public void markAsRead() {
-    this.isRead = true;
+    this.read = true;
     this.readAt = LocalDateTime.now();
   }
 
