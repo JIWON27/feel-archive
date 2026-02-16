@@ -39,4 +39,10 @@ public class NotificationController {
     return ResponseEntity.ok().build();
   }
 
+  @PatchMapping("/read-all")
+  public ResponseEntity<Void> readAll(@AuthenticationPrincipal Long userId) {
+    notificationService.readAll(userId);
+    return ResponseEntity.ok().build();
+  }
+
 }

@@ -80,6 +80,11 @@ public class NotificationService{
     notification.markAsRead();
   }
 
+  @Transactional
+  public void readAll(Long userId) {
+    notificationRepository.bulkMarkAsRead(userId, LocalDateTime.now());
+  }
+
   private Notification getById(Long id) {
     return notificationRepository.findById(id).
         orElseThrow(() -> new FeelArchiveException(NotificationExceptionCode.NOTIFICATION_NOT_FOUND));
