@@ -4,8 +4,10 @@ import com.feelarchive.api.common.response.PagingResponse;
 import com.feelarchive.api.notification.controller.response.NotificationResponse;
 import com.feelarchive.api.timeCapsule.event.TimeCapsuleOpenedEvent;
 import com.feelarchive.api.user.service.UserReader;
+import com.feelarchive.common.excepion.FeelArchiveException;
 import com.feelarchive.domain.notification.entity.Notification;
 import com.feelarchive.domain.notification.entity.NotificationType;
+import com.feelarchive.domain.notification.exception.NotificationExceptionCode;
 import com.feelarchive.domain.notification.repository.NotificationQueryRepository;
 import com.feelarchive.domain.notification.repository.NotificationRepository;
 import com.feelarchive.domain.user.entity.User;
@@ -61,5 +63,25 @@ public class NotificationService{
     Page<Notification> notifications = notificationQueryRepository.findNotifications(userId, isRead, pageable);
     Page<NotificationResponse> responses = notifications.map(mapper::toNotification);
     return PagingResponse.of(responses);
+  }
+
+  @Transactional
+  public void read(Long userId, Long id) {
+    Notification notification = getById(id);
+
+    if (!notification.getUser().getId().equals(userId)) {
+      throw new FeelArchiveException(NotificationExceptionCode.NOTIFICATION_FORBIDDEN);
+    }
+
+    if (notification.isRead()) {
+      return;
+    }
+
+    notification.markAsRead();
+  }
+
+  private Notification getById(Long id) {
+    return notificationRepository.findById(id).
+        orElseThrow(() -> new FeelArchiveException(NotificationExceptionCode.NOTIFICATION_NOT_FOUND));
   }
 }

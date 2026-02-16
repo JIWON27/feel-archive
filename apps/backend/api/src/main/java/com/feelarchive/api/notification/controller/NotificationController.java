@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,6 +31,12 @@ public class NotificationController {
   {
     PagingResponse<NotificationResponse> response = notificationService.getNotifications(userId, isRead, pageable);
     return ResponseEntity.ok().body(response);
+  }
+
+  @PatchMapping("/{id}/read")
+  public ResponseEntity<Void> read(@AuthenticationPrincipal Long userId, @PathVariable Long id) {
+    notificationService.read(userId, id);
+    return ResponseEntity.ok().build();
   }
 
 }
