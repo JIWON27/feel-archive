@@ -792,9 +792,9 @@ Content-Disposition: inline; filename="photo1.jpg"
 
 ## 좋아요/스크랩 (Like/Scrap)
 
-### 1. 좋아요 토글
+### 1. 좋아요
 
-아카이브에 좋아요를 추가하거나 제거합니다.
+아카이브에 좋아요를 추가합니다.
 
 **Endpoint**
 ```
@@ -818,19 +818,51 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 **Status Codes**
-- `200 OK`: 좋아요 토글 성공
+- `200 OK`: 좋아요 성공
 - `401 Unauthorized`: 인증 토큰 없음 또는 유효하지 않음
 - `404 Not Found`: 존재하지 않는 아카이브 ID
 
 **참고사항**
-- 토글 방식: 좋아요가 없으면 추가, 있으면 제거
 - 본인이 작성한 아카이브에도 좋아요 가능
+- 이미 좋아요한 아카이브에 재요청 시 무시됨
 
 ---
 
-### 2. 스크랩 토글
+### 2. 좋아요 취소
 
-아카이브를 스크랩하거나 스크랩 해제합니다.
+아카이브의 좋아요를 제거합니다.
+
+**Endpoint**
+```
+DELETE /api/v1/archives/{id}/like
+```
+
+**인증 필요**: ✅ Yes (Bearer Token)
+
+**Path Parameters**
+- `id` (Long, required): 아카이브 ID
+
+**Request Example**
+```http
+DELETE /api/v1/archives/456/like HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Response (200 OK)**
+```http
+200 OK
+```
+
+**Status Codes**
+- `200 OK`: 좋아요 취소 성공
+- `401 Unauthorized`: 인증 토큰 없음 또는 유효하지 않음
+- `404 Not Found`: 존재하지 않는 아카이브 ID
+
+---
+
+### 3. 스크랩
+
+아카이브를 스크랩합니다.
 
 **Endpoint**
 ```
@@ -854,23 +886,55 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 **Status Codes**
-- `200 OK`: 스크랩 토글 성공
+- `200 OK`: 스크랩 성공
 - `401 Unauthorized`: 인증 토큰 없음 또는 유효하지 않음
 - `404 Not Found`: 존재하지 않는 아카이브 ID
 
 **참고사항**
-- 토글 방식: 스크랩이 없으면 추가, 있으면 제거
 - 본인이 작성한 아카이브도 스크랩 가능
+- 이미 스크랩한 아카이브에 재요청 시 무시됨
 
 ---
 
-### 3. 내 스크랩 목록 조회
+### 4. 스크랩 취소
+
+아카이브의 스크랩을 제거합니다.
+
+**Endpoint**
+```
+DELETE /api/v1/archives/{id}/scrap
+```
+
+**인증 필요**: ✅ Yes (Bearer Token)
+
+**Path Parameters**
+- `id` (Long, required): 아카이브 ID
+
+**Request Example**
+```http
+DELETE /api/v1/archives/456/scrap HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR유cCI6IkpXVCJ9...
+```
+
+**Response (200 OK)**
+```http
+200 OK
+```
+
+**Status Codes**
+- `200 OK`: 스크랩 취소 성공
+- `401 Unauthorized`: 인증 토큰 없음 또는 유효하지 않음
+- `404 Not Found`: 존재하지 않는 아카이브 ID
+
+---
+
+### 5. 내 스크랩 목록 조회
 
 본인이 스크랩한 아카이브 목록을 조회합니다.
 
 **Endpoint**
 ```
-GET /api/v1/members/me/scraps
+GET /api/v1/archives/scraps
 ```
 
 **인증 필요**: ✅ Yes (Bearer Token)
@@ -881,7 +945,7 @@ GET /api/v1/members/me/scraps
 
 **Request Example**
 ```http
-GET /api/v1/members/me/scraps?page=0&size=10 HTTP/1.1
+GET /api/v1/archives/scraps?page=0&size=10 HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
@@ -1281,6 +1345,68 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 - 현재 사용자의 읽지 않은 알림(`isRead=false`)만 일괄 업데이트됩니다
 - 업데이트된 알림의 `isRead`는 `true`로, `readAt`은 현재 시각으로 설정됩니다
 - 읽지 않은 알림이 없어도 성공 응답 반환
+
+---
+
+## 이메일 알림 설정 (Email Notification Settings)
+
+### 1. 이메일 알림 수신 설정 변경
+
+사용자의 타임캡슐 이메일 알림 수신 여부를 변경합니다.
+
+**Endpoint**
+```
+PATCH /api/v1/users/me/settings/email-notification
+```
+
+**인증 필요**: ✅ Yes (Bearer Token)
+
+**Request Body**
+```json
+{
+  "enabled": "boolean (required)"
+}
+```
+
+**Validation Rules**
+- `enabled`: boolean 타입, 필수
+  - `true`: 이메일 알림 수신
+  - `false`: 이메일 알림 수신 안함
+
+**Request Example**
+```http
+PATCH /api/v1/users/me/settings/email-notification HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+Content-Type: application/json
+
+{
+  "enabled": false
+}
+```
+
+**Response (200 OK)**
+```http
+200 OK
+```
+
+**Status Codes**
+- `200 OK`: 설정 변경 성공
+- `400 Bad Request`: 유효성 검증 실패 (enabled 필드 누락 또는 타입 오류)
+- `401 Unauthorized`: 인증 토큰 없음 또는 유효하지 않음
+
+**참고사항**
+- 이 설정은 타임캡슐 공개 시 이메일 발송 여부를 제어합니다
+- 인앱(웹) 알림은 이 설정과 무관하게 항상 발송됩니다
+- 기본값은 `true` (이메일 알림 수신)입니다
+- 설정 변경 시 즉시 적용됩니다
+
+**Error Example (400)**
+```json
+{
+  "message": "enabled 필드는 필수입니다.",
+  "status": 400
+}
+```
 
 ---
 
