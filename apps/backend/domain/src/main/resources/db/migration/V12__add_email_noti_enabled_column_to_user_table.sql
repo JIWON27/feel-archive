@@ -1,0 +1,2 @@
+ALTER TABLE users
+ADD COLUMN email_notification_enabled BOOLEAN NOT NULL DEFAULT TRUE;
