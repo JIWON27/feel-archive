@@ -11,10 +11,12 @@ import com.feelarchive.api.timeCapsule.service.TimeCapsuleService;
 import com.feelarchive.domain.capsule.entity.CapsuleStatus;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -114,11 +116,14 @@ public class TimeCapsuleController {
   {
     TimeCapsuleImageDownloadResponse response = timeCapsuleImageService.download(timeCapsuleId, imageId, userId);
 
+    ContentDisposition contentDisposition = ContentDisposition.builder("inline")
+        .filename(response.fileMeta().getOriginalName(), StandardCharsets.UTF_8)
+        .build();
+
     return ResponseEntity.ok()
         .contentType(MediaType.parseMediaType(response.fileMeta().getContentType()))
         .contentLength(response.fileMeta().getSizeBytes())
-        .header(HttpHeaders.CONTENT_DISPOSITION,
-            "inline; filename=\"" + response.fileMeta().getOriginalName() + "\"")
+        .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
         .body(response.resource());
   }
 }

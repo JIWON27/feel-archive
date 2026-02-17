@@ -15,10 +15,12 @@ import com.feelarchive.api.common.response.PagingResponse;
 import com.feelarchive.domain.archive.ArchiveSearchCondition;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -82,11 +84,14 @@ public class ArchiveController {
   {
     ArchiveImageDownloadResponse response = archiveImageService.download(archiveId, imageId, userId);
 
+    ContentDisposition contentDisposition = ContentDisposition.builder("inline")
+        .filename(response.getFileMeta().getOriginalName(), StandardCharsets.UTF_8)
+        .build();
+
     return ResponseEntity.ok()
         .contentType(MediaType.parseMediaType(response.getFileMeta().getContentType()))
         .contentLength(response.getFileMeta().getSizeBytes())
-        .header(HttpHeaders.CONTENT_DISPOSITION,
-            "inline; filename=\"" + response.getFileMeta().getOriginalName() + "\"")
+        .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
         .body(response.getResource());
   }
 
