@@ -119,38 +119,17 @@ export default function Home() {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-full overflow-hidden">
       {/* 왼쪽 사이드바 - 아카이브 리스트 */}
       <div className="w-full md:w-[400px] lg:w-[450px] flex flex-col border-r border-gray-200 bg-white">
-        {/* 헤더 */}
+        {/* 사이드바 헤더 */}
         <div className="flex-shrink-0 p-4 border-b border-gray-200 bg-white">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold text-gray-900">Feel-Archive</h1>
-            <Link href="/archives/new">
-              <button className="p-2 rounded-full bg-primary text-white hover:bg-primary/90 transition-colors">
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 4v16m8-8H4"
-                  />
-                </svg>
-              </button>
-            </Link>
-          </div>
-
           {/* 검색 바 */}
           <div className="relative">
             <input
               type="text"
               placeholder="아카이브 검색..."
-              className="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
             />
             <svg
               className="absolute left-3 top-2.5 w-5 h-5 text-gray-400"
@@ -169,9 +148,9 @@ export default function Home() {
 
           {/* 현재 위치 표시 */}
           {currentLocation && (
-            <div className="mt-3 flex items-center gap-2 text-sm text-gray-600">
+            <div className="mt-2 flex items-center gap-2 text-xs text-gray-500">
               <svg
-                className="w-4 h-4 text-primary"
+                className="w-3.5 h-3.5 text-primary"
                 fill="currentColor"
                 viewBox="0 0 24 24"
               >
@@ -237,7 +216,7 @@ export default function Home() {
       </div>
 
       {/* 오른쪽 - 지도 */}
-      <div className="flex-1 relative">
+      <div className="hidden md:block flex-1 relative">
         {currentLocation ? (
           <>
             <KakaoMap
