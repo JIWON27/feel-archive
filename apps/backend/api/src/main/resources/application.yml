@@ -3,4 +3,8 @@ spring:
     name: rest-api
   profiles:
     active: local
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 30MB
 
