@@ -1,10 +1,10 @@
 package com.feelarchive.api.timeCapsule.service;
 
+import com.feelarchive.api.common.response.LocationDetail;
 import com.feelarchive.api.timeCapsule.controller.request.TimeCapsuleRequest;
 import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleDetailResponse;
 import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleImageResponse;
 import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleSummaryResponse;
-import com.feelarchive.api.common.response.LocationDetail;
 import com.feelarchive.domain.archive.entity.vo.Location;
 import com.feelarchive.domain.capsule.entity.CapsuleStatus;
 import com.feelarchive.domain.capsule.entity.TimeCapsule;
@@ -28,13 +28,15 @@ public interface TimeCapsuleMapper {
         capsule.getId(),
         isVisible ? capsule.getEmotion() : null,
         isVisible ? summaryContent(capsule.getContent()) : null,
-        isVisible ? capsule.getLocation().getLocationLabel() : null,
+        isVisible ? convertLocation(capsule.getLocation()) : null,
         capsule.getCapsuleStatus(),
         formatDate(capsule.getOpenAt()),
         formatDate(capsule.getCreatedAt())
     );
   }
-  default TimeCapsuleDetailResponse toDetail(TimeCapsule capsule, List<TimeCapsuleImageResponse> images) {
+
+  default TimeCapsuleDetailResponse toDetail(TimeCapsule capsule,
+      List<TimeCapsuleImageResponse> images) {
     boolean isVisible = isTimeCapsuleVisible(capsule);
 
     return new TimeCapsuleDetailResponse(
@@ -46,7 +48,7 @@ public interface TimeCapsuleMapper {
         capsule.getCapsuleStatus(),
         formatDate(capsule.getOpenAt()),
         formatDate(capsule.getCreatedAt())
-        );
+    );
   }
 
 
@@ -55,6 +57,7 @@ public interface TimeCapsuleMapper {
   }
 
   private LocationDetail convertLocation(Location location) {
+    if (location == null) return null;
     return new LocationDetail(location.getLocationLabel(), location.getLatitude(), location.getLongitude());
   }
 
@@ -66,6 +69,6 @@ public interface TimeCapsuleMapper {
     if (Objects.isNull(dateTime)) {
       return null;
     }
-    return dateTime.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+    return dateTime.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"));
   }
 }
