@@ -32,3 +32,6 @@ out/
 build/
 **/build/
 .claude
+
+# 백엔드 파일 업로드 디렉토리 (로컬 런타임 생성 파일)
+upload/
