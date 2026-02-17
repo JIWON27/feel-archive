@@ -37,14 +37,3 @@ security:
     refresh-samesite: None
     refresh-secure: false
 
-app:
-  server:
-    base-url: ${APP_SERVER_URL:http://localhost:8080}
-  client:
-    base-url: ${APP_CLIENT_URL:http://localhost:3000}
-  file:
-    base-dir: "upload"
-    public-base-url: ${app.server.base-url}/api/v1/archives/"
-  time-capsule:
-    batch-size: ${BATCH_SIZE}
-

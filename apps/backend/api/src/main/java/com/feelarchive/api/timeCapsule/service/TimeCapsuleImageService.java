@@ -6,10 +6,10 @@ import static com.feelarchive.domain.capsule.exception.TimeCapsuleExceptionCode.
 import static com.feelarchive.domain.file.exception.FileExceptionCode.FILE_NOT_FOUND;
 import static com.feelarchive.domain.file.exception.FileExceptionCode.FILE_NOT_READABLE;
 
-import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleImageDownloadResponse;
-import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleImageResponse;
 import com.feelarchive.api.common.file.FileProperties;
 import com.feelarchive.api.common.file.FileService;
+import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleImageDownloadResponse;
+import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleImageResponse;
 import com.feelarchive.common.excepion.FeelArchiveException;
 import com.feelarchive.domain.capsule.entity.CapsuleStatus;
 import com.feelarchive.domain.capsule.entity.TimeCapsule;
@@ -111,7 +111,7 @@ public class TimeCapsuleImageService {
   }
 
   private String generateDownloadUrl(Long timeCapsuleId, TimeCapsuleImage timeCapsuleImage) {
-    return fileProperties.getPublicBaseUrl() + timeCapsuleId + "/images/"
+    return fileProperties.getApiPrefix() + "time-capsule/" + timeCapsuleId + "/images/"
         + timeCapsuleImage.getId();
   }
 

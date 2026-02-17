@@ -104,7 +104,7 @@ public class ArchiveImageService {
   }
 
   private String generateDownloadUrl(Long archiveId, ArchiveImage archiveImage) {
-    return fileProperties.getPublicBaseUrl() + archiveId +"/images/" + archiveImage.getId();
+    return fileProperties.getApiPrefix() + "archives/" + archiveId +"/images/" + archiveImage.getId();
   }
 
   private void checkOwner(Archive archive, Long userId) {
