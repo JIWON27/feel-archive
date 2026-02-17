@@ -30,9 +30,7 @@ public class TimeCapsuleOpenScheduler {
     );
     for (TimeCapsule capsule : timeCapsules) {
       try {
-        if (capsule.getUser().isEmailNotificationEnabled()) {
-          timeCapsuleService.openOneCapsule(capsule.getId());
-        }
+        timeCapsuleService.openOneCapsule(capsule.getId());
       } catch (FeelArchiveException e) {
         log.warn("타임캡슐 오픈 실패 (ID: {}): {}", capsule.getId(), e.getMessage());
       } catch (Exception e) {
