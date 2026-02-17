@@ -38,10 +38,11 @@ public class TimeCapsuleService {
   private final ApplicationEventPublisher eventPublisher;
 
   @Transactional
-  public void createTimeCapsule(Long userId, TimeCapsuleRequest request) {
+  public Long createTimeCapsule(Long userId, TimeCapsuleRequest request) {
     User user = userReader.getById(userId);
     TimeCapsule timeCapsule = timeCapsuleMapper.toEntity(request, user);
-    timeCapsuleRepository.save(timeCapsule);
+    TimeCapsule saved = timeCapsuleRepository.save(timeCapsule);
+    return saved.getId();
   }
 
   @Transactional(readOnly = true)
