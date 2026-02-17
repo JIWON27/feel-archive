@@ -6,12 +6,15 @@ import com.feelarchive.api.notification.controller.response.NotificationResponse
 import com.feelarchive.api.timeCapsule.event.TimeCapsuleOpenedEvent;
 import com.feelarchive.api.user.service.UserReader;
 import com.feelarchive.common.excepion.FeelArchiveException;
+import com.feelarchive.domain.email.entitiy.EmailLog;
+import com.feelarchive.domain.email.entitiy.RelatedType;
 import com.feelarchive.domain.notification.entity.Notification;
 import com.feelarchive.domain.notification.entity.NotificationType;
 import com.feelarchive.domain.notification.exception.NotificationExceptionCode;
 import com.feelarchive.domain.notification.repository.NotificationQueryRepository;
 import com.feelarchive.domain.notification.repository.NotificationRepository;
 import com.feelarchive.domain.user.entity.User;
+import jakarta.mail.MessagingException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +36,7 @@ public class NotificationService{
   private final UserReader userReader;
 
   @Transactional
-  public void sendTimeCapsuleNotification(TimeCapsuleOpenedEvent event) {
+  public void sendTimeCapsuleNotification(TimeCapsuleOpenedEvent event) throws MessagingException {
     User user = userReader.getById(event.userId());
 
     Notification notification = Notification.builder()
@@ -47,7 +50,11 @@ public class NotificationService{
     notificationRepository.save(notification);
 
     // TODO SSE 웹 알림
-    mailService.sendTimeCapsuleNotificationMail(event);
+
+    if (user.isEmailNotificationEnabled()) {
+      EmailLog log = create(event);
+      mailService.sendTimeCapsuleNotificationMail(event, log);
+    }
   }
 
   private String generateNotificationContent(LocalDateTime createdAt, LocalDateTime openedAt) {
@@ -57,6 +64,17 @@ public class NotificationService{
     } else {
       return String.format("%d일 전의 내가 보낸 메시지를 확인하세요!", daysDiff);
     }
+  }
+
+  private EmailLog create(TimeCapsuleOpenedEvent event) {
+    return EmailLog.builder()
+        .userId(event.userId())
+        .type(RelatedType.TIME_CAPSULE)
+        .relatedId(event.timeCapsuleId())
+        .subject("[필아카이브] 타임캡슐이 열렸습니다!")
+        .content("TEMPLATE: time-capsule-noti")
+        .emailAddress(event.email())
+        .build();
   }
 
   @Transactional

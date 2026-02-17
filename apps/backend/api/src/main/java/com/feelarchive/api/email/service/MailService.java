@@ -3,15 +3,18 @@ package com.feelarchive.api.email.service;
 import com.feelarchive.api.timeCapsule.event.TimeCapsuleOpenedEvent;
 import com.feelarchive.api.utils.DateUtils;
 import com.feelarchive.domain.email.entitiy.EmailLog;
-import com.feelarchive.domain.email.entitiy.RelatedType;
 import com.feelarchive.domain.email.repository.EmailLogRepository;
+import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.time.temporal.ChronoUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -27,18 +30,15 @@ public class MailService {
   private final TemplateEngine templateEngine;
   private final EmailLogRepository emailLogRepository;
 
-  @Transactional(noRollbackFor = {Exception.class})
-  public void sendTimeCapsuleNotificationMail(TimeCapsuleOpenedEvent event) {
+  @Retryable(
+      retryFor = MessagingException.class,
+      maxAttempts = 3,
+      backoff = @Backoff(delay = 1000, multiplier = 2)
+  )
+  @Transactional(propagation = Propagation.REQUIRES_NEW, noRollbackFor = {Exception.class})
+  public void sendTimeCapsuleNotificationMail(TimeCapsuleOpenedEvent event, EmailLog log)
+      throws MessagingException {
     MimeMessage message = mailSender.createMimeMessage();
-
-    EmailLog log = EmailLog.builder()
-        .userId(event.userId())
-        .type(RelatedType.TIME_CAPSULE)
-        .relatedId(event.timeCapsuleId())
-        .subject("[필아카이브] 타임캡슐이 열렸습니다!")
-        .content("TEMPLATE: time-capsule-noti")
-        .emailAddress(event.email())
-        .build();
 
     try {
       MimeMessageHelper messageHelper = new MimeMessageHelper(message);
@@ -61,6 +61,10 @@ public class MailService {
 
       mailSender.send(message);
       log.markAsSuccess();
+    } catch (MessagingException e) {
+      log.markAsFail(e.getMessage());
+      log.incrementRetryCount();
+      throw e;
     } catch (Exception e) {
       log.markAsFail(e.getMessage());
       throw new RuntimeException(e);
@@ -68,4 +72,5 @@ public class MailService {
       emailLogRepository.save(log);
     }
   }
+
 }
