@@ -64,8 +64,8 @@ public class EmailLog {
   @Column(name = "retry_count")
   int retryCount;
 
-  @Column(name = "send_at")
-  LocalDateTime sendAt;
+  @Column(name = "sent_at")
+  LocalDateTime sentAt;
 
   @CreationTimestamp
   @Column(name = "created_at", updatable = false, nullable = false)
@@ -87,7 +87,7 @@ public class EmailLog {
 
   public void markAsSuccess() {
     this.status = SendStatus.SUCCESS;
-    this.sendAt = LocalDateTime.now();
+    this.sentAt = LocalDateTime.now();
     this.failReason = null;
   }
 
