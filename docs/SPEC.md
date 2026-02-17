@@ -211,14 +211,15 @@
 #### 주요 시나리오
 1. **타임캡슐 공개 시점 도래**
    - 사용자 행동: 없음 (자동 처리)
-   - 시스템 동작: 타임캡슐의 `openAt` 시간이 현재 시각에 도달하면 배치/스케줄러가 타임캡슐 공개 이벤트 발행
+   - 시스템 동작: Spring 스케줄러(`@Scheduled`, 매분 실행)가 `openAt` 시각이 현재 시각 이전인 타임캡슐을 조회하여 배치 처리, 공개 처리 후 `TimeCapsuleOpenedEvent` 발행
    - 결과: 타임캡슐 공개 이벤트 생성
 
 2. **알림 생성 및 이메일 발송 (비동기)**
    - 사용자 행동: 없음 (자동 처리)
    - 시스템 동작:
+     - `@TransactionalEventListener(AFTER_COMMIT)`로 트랜잭션 커밋 후 이벤트 수신
+     - `@Async("timeCapsuleNotificationExecutor")`로 별도 스레드 풀에서 비동기 처리
      - 이벤트 핸들러가 Notification 엔티티 생성 (인앱 알림)
-     - 동시에 이메일 발송 작업을 메시지 큐에 추가
      - 사용자의 `emailNotificationEnabled` 설정 확인
      - 설정이 `true`인 경우 SMTP를 통해 사용자 이메일로 알림 발송
      - EmailLog에 발송 이력 기록
@@ -237,7 +238,7 @@
 | 이메일 제목 | "🎁 타임캡슐이 열렸습니다!" |
 | 이메일 본문 | HTML 템플릿 (타임캡슐 작성일, 공개일 정보 포함) |
 | CTA 버튼 | "타임캡슐 보러가기" (타임캡슐 상세 페이지 링크) |
-| 재시도 정책 | 발송 실패 시 3회 자동 재시도 (1분 → 5분 → 15분, 지수 백오프) |
+| 재시도 정책 | `MessagingException` 발생 시 최대 3회 시도 (Spring Retry, 지수 백오프: 1초 → 2초 → 4초) |
 | 발송 이력 | EmailLog 엔티티에 성공/실패 기록 |
 | 수신 설정 | 사용자가 설정 페이지에서 ON/OFF 가능 |
 | 수동 재발송 | Phase 1(MVP)에서는 미지원, 추후 관리자 API 추가 예정 |
@@ -282,7 +283,6 @@
 | 데이터베이스 | MySQL (공간 데이터 지원) |
 | ORM | JPA + QueryDSL |
 | 캐싱 | Redis (예정) |
-| 메시지 큐 | 이벤트 기반 시스템 (알림 발송) |
 | 배치 | Spring Batch |
 
 #### 인프라
@@ -317,7 +317,10 @@
 
 #### 이벤트 기반 시스템
 - **활용 시나리오**: 타임캡슐 공개 알림 발송
-- **비동기 처리**: 메시지 큐 활용
+- **구현 방식**: Spring 자체 이벤트 (`ApplicationEventPublisher` → `@TransactionalEventListener`)
+- **비동기 처리**: `@Async` + `ThreadPoolTaskExecutor` (스레드 풀명: `timeCapsuleNotificationExecutor`)
+- **실행 시점**: 트랜잭션 커밋 후 (`TransactionPhase.AFTER_COMMIT`)
+- **재시도**: Spring Retry (`@Retryable`) - `MessagingException` 발생 시 최대 3회, 지수 백오프 (1초 → 2초 → 4초)
 
 #### 기타 구현 목표
 - 캐싱 (Redis)
@@ -468,16 +471,18 @@ Notification (알림)
 
 EmailLog (이메일 발송 로그)
 ├── id (PK, Long, auto-increment)
-├── user (FK to User, @ManyToOne, NOT NULL)
-├── timeCapsule (FK to TimeCapsule, @ManyToOne, NOT NULL)
+├── userId (Long, NOT NULL - 수신 사용자 ID)
+├── type (RelatedType enum: TIME_CAPSULE/NOTICE, NOT NULL - 알림 관련 리소스 타입)
+├── relatedId (Long - 관련 리소스 ID, 예: timeCapsuleId)
 ├── emailAddress (String, NOT NULL - 발송 당시 이메일 주소)
 ├── subject (String, NOT NULL - 이메일 제목)
-├── content (String, NOT NULL - 이메일 본문)
-├── status (EmailStatus enum: SUCCESS/FAILED, NOT NULL)
-├── failReason (String, nullable - 실패 사유)
+├── content (String, TEXT, NOT NULL - 이메일 본문)
+├── status (SendStatus enum: NONE/SUCCESS/FAIL, default NONE)
+├── failReason (String, TEXT, nullable - 실패 사유)
 ├── retryCount (int, default 0 - 재시도 횟수)
 ├── sentAt (LocalDateTime, nullable - 실제 발송 시각)
-└── createdAt (LocalDateTime, auto-generated - 로그 생성 시각)
+├── createdAt (LocalDateTime, auto-generated - 로그 생성 시각)
+└── deletedAt (LocalDateTime, nullable - soft delete)
 ```
 
 ### 6.2 감정 타입 (Enum)
@@ -524,9 +529,15 @@ public enum Status {
     INACTIVE    // 비활성
 }
 
-public enum EmailStatus {
+public enum SendStatus {
+    NONE,       // 발송 전
     SUCCESS,    // 발송 성공
-    FAILED      // 발송 실패
+    FAIL        // 발송 실패
+}
+
+public enum RelatedType {
+    TIME_CAPSULE,   // 타임캡슐
+    NOTICE          // 공지사항
 }
 ```
 
