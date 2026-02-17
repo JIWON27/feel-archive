@@ -1,5 +1,6 @@
 package com.feelarchive.api.timeCapsule.controller;
 
+import com.feelarchive.api.common.response.PagingResponse;
 import com.feelarchive.api.timeCapsule.controller.request.TimeCapsuleRequest;
 import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleDetailResponse;
 import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleImageDownloadResponse;
@@ -7,13 +8,15 @@ import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleImageRespo
 import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleSummaryResponse;
 import com.feelarchive.api.timeCapsule.service.TimeCapsuleImageService;
 import com.feelarchive.api.timeCapsule.service.TimeCapsuleService;
-import com.feelarchive.api.common.response.PagingResponse;
 import com.feelarchive.domain.capsule.entity.CapsuleStatus;
 import jakarta.validation.Valid;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -43,8 +46,8 @@ public class TimeCapsuleController {
       @AuthenticationPrincipal Long userId,
       @Valid @RequestBody TimeCapsuleRequest request)
   {
-    timeCapsuleService.createTimeCapsule(userId, request);
-    return ResponseEntity.ok().build();
+    Long timeCapsuleId = timeCapsuleService.createTimeCapsule(userId, request);
+    return ResponseEntity.created(URI.create("/api/v1/time-capsule/"+timeCapsuleId)).build();
   }
 
   @GetMapping
@@ -113,11 +116,14 @@ public class TimeCapsuleController {
   {
     TimeCapsuleImageDownloadResponse response = timeCapsuleImageService.download(timeCapsuleId, imageId, userId);
 
+    ContentDisposition contentDisposition = ContentDisposition.builder("inline")
+        .filename(response.fileMeta().getOriginalName(), StandardCharsets.UTF_8)
+        .build();
+
     return ResponseEntity.ok()
         .contentType(MediaType.parseMediaType(response.fileMeta().getContentType()))
         .contentLength(response.fileMeta().getSizeBytes())
-        .header(HttpHeaders.CONTENT_DISPOSITION,
-            "inline; filename=\"" + response.fileMeta().getOriginalName() + "\"")
+        .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
         .body(response.resource());
   }
 }

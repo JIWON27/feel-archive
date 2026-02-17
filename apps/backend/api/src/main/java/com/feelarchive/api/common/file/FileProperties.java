@@ -7,10 +7,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "app.file")
 public class FileProperties {
   private String baseDir;
-  private String publicBaseUrl;
+  private String apiPrefix;
 
-  public FileProperties(String baseDir, String publicBaseUrl) {
+  public FileProperties(String baseDir, String apiPrefix) {
     this.baseDir = baseDir;
-    this.publicBaseUrl = publicBaseUrl;
+    this.apiPrefix = apiPrefix;
   }
 }

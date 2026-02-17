@@ -37,6 +37,8 @@ public class ArchiveImageService {
 
   @Transactional
   public List<ArchiveImageResponse> uploads(Long archiveId, Long userId, List<MultipartFile> files) {
+    fileService.validateImageConstraints(files, 5, 5 * 1024 * 1024);
+
     Archive archive = archiveReader.getById(archiveId);
     checkOwner(archive, userId);
 
@@ -104,7 +106,7 @@ public class ArchiveImageService {
   }
 
   private String generateDownloadUrl(Long archiveId, ArchiveImage archiveImage) {
-    return fileProperties.getPublicBaseUrl() + archiveId +"/images/" + archiveImage.getId();
+    return fileProperties.getApiPrefix() + "archives/" + archiveId +"/images/" + archiveImage.getId();
   }
 
   private void checkOwner(Archive archive, Long userId) {
