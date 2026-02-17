@@ -1348,6 +1348,70 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 ---
 
+### 4. SSE 구독 (실시간 알림 수신)
+
+SSE(Server-Sent Events)를 통해 타임캡슐 공개 알림을 실시간으로 수신합니다.
+
+**Endpoint**
+```
+GET /api/v1/notifications/subscribe
+```
+
+**인증 필요**: ✅ Yes (Bearer Token)
+
+**Request Example**
+```http
+GET /api/v1/notifications/subscribe HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+Accept: text/event-stream
+```
+
+**Response Headers**
+```http
+Content-Type: text/event-stream
+Cache-Control: no-cache
+Connection: keep-alive
+```
+
+**Response Events**
+
+연결 수립 시 (즉시):
+```
+event: connect
+data: {"message": "connected"}
+```
+
+하트비트 (30초마다):
+```
+event: heartbeat
+data: {}
+```
+
+타임캡슐 공개 알림:
+```
+event: notification
+data: {
+  "notificationId": 123,
+  "title": "타임캡슐이 열렸습니다!",
+  "content": "1년 전에 작성한 타임캡슐을 확인해보세요.",
+  "notificationType": "TIME_CAPSULE_OPENED",
+  "relatedId": 789,
+  "createdAt": "2026-02-17T10:00:00"
+}
+```
+
+**Status Codes**
+- `200 OK`: SSE 스트림 연결 성공
+- `401 Unauthorized`: 인증 토큰 없음 또는 유효하지 않음
+
+**참고사항**
+- 하나의 연결로 `connect`, `heartbeat`, `notification` 이벤트를 모두 수신
+- 연결이 끊기면 브라우저 `EventSource`가 자동으로 재연결 시도
+- 탭 닫기 또는 로그아웃 시 연결 자동 종료
+- 하트비트는 브라우저/프록시의 유휴 연결 자동 종료를 방지하기 위해 30초마다 전송
+
+---
+
 ## 이메일 알림 설정 (Email Notification Settings)
 
 ### 1. 이메일 알림 수신 설정 변경
