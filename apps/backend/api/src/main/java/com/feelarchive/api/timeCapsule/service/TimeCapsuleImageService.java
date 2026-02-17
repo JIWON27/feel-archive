@@ -105,7 +105,7 @@ public class TimeCapsuleImageService {
         .toList();
   }
 
-  private TimeCapsuleImage getTimeCapsuleImage(Long imageId, Long timeCapsuleId) {
+  private TimeCapsuleImage getTimeCapsuleImage(Long timeCapsuleId, Long imageId) {
     return timeCapsuleImageRepository.findByIdAndTimeCapsule_Id(imageId, timeCapsuleId)
         .orElseThrow(() -> new FeelArchiveException(CAPSULE_IMAGE_NOT_FOUND));
   }
