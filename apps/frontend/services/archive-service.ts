@@ -36,8 +36,9 @@ export const archiveService = {
       return 0;
     }
 
-    const id = parseInt(location.split('/').pop() || '0');
-    console.log('[Archive Create] Extracted ID:', id);
+    const segment = location.split('/').pop() || '';
+    const id = parseInt(segment.replace(/\D/g, ''));
+    console.log('[Archive Create] Extracted ID:', id, 'from location:', location);
     return id;
   },
 

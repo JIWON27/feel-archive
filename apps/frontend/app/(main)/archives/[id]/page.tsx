@@ -10,6 +10,7 @@ import {
   useScrapArchive,
 } from '@/hooks/use-archives';
 import { Button } from '@/components/ui/Button';
+import { AuthImage } from '@/components/ui/AuthImage';
 import { EmotionLabels } from '@/types/archive';
 
 export default function ArchiveDetailPage() {
@@ -124,13 +125,13 @@ export default function ArchiveDetailPage() {
 
           {/* 이미지 */}
           {archive.images.length > 0 && (
-            <div className="grid grid-cols-2 gap-4 mb-8">
+            <div className="grid grid-cols-2 gap-2 mb-8">
               {archive.images.map((image) => (
-                <img
+                <AuthImage
                   key={image.id}
                   src={image.url}
                   alt="아카이브 이미지"
-                  className="w-full rounded-lg"
+                  className="w-full h-40 object-contain bg-gray-50 rounded-xl"
                 />
               ))}
             </div>
