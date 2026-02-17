@@ -37,8 +37,9 @@ public class TimeCapsuleImageService {
   private final TimeCapsuleImageRepository timeCapsuleImageRepository;
 
   @Transactional
-  public List<TimeCapsuleImageResponse> uploads(Long timeCapsuleId, Long userId,
-      List<MultipartFile> files) {
+  public List<TimeCapsuleImageResponse> uploads(Long timeCapsuleId, Long userId, List<MultipartFile> files) {
+    fileService.validateImageConstraints(files, 5, 5 * 1024 * 1024);
+
     TimeCapsule timeCapsule = capsuleReader.getById(timeCapsuleId);
     checkOwner(timeCapsule, userId);
 

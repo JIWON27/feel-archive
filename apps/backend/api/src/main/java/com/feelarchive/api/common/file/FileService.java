@@ -11,4 +11,5 @@ public interface FileService {
   void delete(String storageKey);
   void deleteAll(List<String> storageKeys);
   Path getFullPath(String storageKey);
+  void validateImageConstraints(List<MultipartFile> files, int maxCount, long maxEachSize);
 }

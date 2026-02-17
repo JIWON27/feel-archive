@@ -95,6 +95,22 @@ public class LocalFileService implements FileService {
     return fullPath;
   }
 
+  public void validateImageConstraints(List<MultipartFile> files, int maxCount, long maxEachSize) {
+    if (files == null || files.isEmpty()) {
+      return;
+    }
+
+    if (files.size() > maxCount) {
+      throw new FeelArchiveException(FileExceptionCode.EXCEEDED_IMAGE_COUNT);
+    }
+
+    for (MultipartFile file : files) {
+      if (file.getSize() > maxEachSize) {
+        throw new FeelArchiveException(FileExceptionCode.EXCEEDED_FILE_SIZE);
+      }
+    }
+  }
+
   private String generateStorageKey(String dir, String extension) {
     if (dir.endsWith("/")) {
       dir = dir.substring(0, dir.length() - 1);

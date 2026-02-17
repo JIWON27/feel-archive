@@ -37,6 +37,8 @@ public class ArchiveImageService {
 
   @Transactional
   public List<ArchiveImageResponse> uploads(Long archiveId, Long userId, List<MultipartFile> files) {
+    fileService.validateImageConstraints(files, 5, 5 * 1024 * 1024);
+
     Archive archive = archiveReader.getById(archiveId);
     checkOwner(archive, userId);
 
