@@ -68,3 +68,7 @@ Authorization: Bearer {{accessToken}}
 ### [테스트] 타임캡슐 알림 메일 전송
 POST http://127.0.0.1:8080/test/mail/time-capsule?name=테스터&email=mjo4260@naver.com
 Authorization: Bearer {{accessToken}}
+
+### [테스트] 타임캡슐 알림 이벤트 발행
+POST http://127.0.0.1:8080/test/mail/time-capsule-event?name=테스터&email=mjo4260@naver.com
+Authorization: Bearer {{accessToken}}
