@@ -1,19 +1,22 @@
 package com.feelarchive.api.notification.service;
 
 import com.feelarchive.api.common.response.PagingResponse;
+import com.feelarchive.api.email.service.MailService;
 import com.feelarchive.api.notification.controller.response.NotificationResponse;
 import com.feelarchive.api.timeCapsule.event.TimeCapsuleOpenedEvent;
 import com.feelarchive.api.user.service.UserReader;
 import com.feelarchive.common.excepion.FeelArchiveException;
+import com.feelarchive.domain.email.entitiy.EmailLog;
+import com.feelarchive.domain.email.entitiy.RelatedType;
 import com.feelarchive.domain.notification.entity.Notification;
 import com.feelarchive.domain.notification.entity.NotificationType;
 import com.feelarchive.domain.notification.exception.NotificationExceptionCode;
 import com.feelarchive.domain.notification.repository.NotificationQueryRepository;
 import com.feelarchive.domain.notification.repository.NotificationRepository;
 import com.feelarchive.domain.user.entity.User;
+import jakarta.mail.MessagingException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -28,11 +31,12 @@ public class NotificationService{
 
   private final NotificationRepository notificationRepository;
   private final NotificationQueryRepository notificationQueryRepository;
+  private final MailService mailService;
   private final NotificationMapper mapper;
   private final UserReader userReader;
 
   @Transactional
-  public void sendTimeCapsuleNotification(TimeCapsuleOpenedEvent event) {
+  public void sendTimeCapsuleNotification(TimeCapsuleOpenedEvent event) throws MessagingException {
     User user = userReader.getById(event.userId());
 
     Notification notification = Notification.builder()
@@ -45,8 +49,12 @@ public class NotificationService{
 
     notificationRepository.save(notification);
 
-    // TODO SSE 웹 알림, 메일 알림
-    log.info("[타임캡슐 알림 전송 구현체 미개발] 알림 발송 요청됨.");
+    // TODO SSE 웹 알림
+
+    if (user.isEmailNotificationEnabled()) {
+      EmailLog log = create(event);
+      mailService.sendTimeCapsuleNotificationMail(event, log);
+    }
   }
 
   private String generateNotificationContent(LocalDateTime createdAt, LocalDateTime openedAt) {
@@ -56,6 +64,17 @@ public class NotificationService{
     } else {
       return String.format("%d일 전의 내가 보낸 메시지를 확인하세요!", daysDiff);
     }
+  }
+
+  private EmailLog create(TimeCapsuleOpenedEvent event) {
+    return EmailLog.builder()
+        .userId(event.userId())
+        .type(RelatedType.TIME_CAPSULE)
+        .relatedId(event.timeCapsuleId())
+        .subject("[필아카이브] 타임캡슐이 열렸습니다!")
+        .content("TEMPLATE: time-capsule-noti")
+        .emailAddress(event.email())
+        .build();
   }
 
   @Transactional

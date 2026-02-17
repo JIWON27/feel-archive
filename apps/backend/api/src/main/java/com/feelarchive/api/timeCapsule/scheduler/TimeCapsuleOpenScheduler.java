@@ -28,7 +28,7 @@ public class TimeCapsuleOpenScheduler {
         LocalDateTime.now(),
         PageRequest.of(0, batchSize)
     );
-    for  (TimeCapsule capsule : timeCapsules) {
+    for (TimeCapsule capsule : timeCapsules) {
       try {
         timeCapsuleService.openOneCapsule(capsule.getId());
       } catch (FeelArchiveException e) {

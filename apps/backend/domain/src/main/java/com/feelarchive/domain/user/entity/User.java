@@ -30,8 +30,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Getter
-@DynamicInsert // null인 컬럼은 INSERT SQL에서 제외해서 DB 디폴트값을 쓰게 해줌
-@DynamicUpdate // 변경된 컬럼만 UPDATE SQL에 포함시켜 줌
+@DynamicInsert
+@DynamicUpdate
 @NoArgsConstructor
 @Table(name = "users")
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -70,6 +70,9 @@ public class User {
   @Column(name = "status")
   @Enumerated(EnumType.STRING)
   Status status;
+
+  @Column(name = "email_notification_enabled", nullable = false)
+  boolean emailNotificationEnabled;
 
   @CreationTimestamp
   @Column(name = "created_at", updatable = false)
