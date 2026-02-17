@@ -28,9 +28,11 @@ public class TimeCapsuleOpenScheduler {
         LocalDateTime.now(),
         PageRequest.of(0, batchSize)
     );
-    for  (TimeCapsule capsule : timeCapsules) {
+    for (TimeCapsule capsule : timeCapsules) {
       try {
-        timeCapsuleService.openOneCapsule(capsule.getId());
+        if (capsule.getUser().isEmailNotificationEnabled()) {
+          timeCapsuleService.openOneCapsule(capsule.getId());
+        }
       } catch (FeelArchiveException e) {
         log.warn("타임캡슐 오픈 실패 (ID: {}): {}", capsule.getId(), e.getMessage());
       } catch (Exception e) {

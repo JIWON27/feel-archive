@@ -1,6 +1,7 @@
 package com.feelarchive.api.notification.service;
 
 import com.feelarchive.api.common.response.PagingResponse;
+import com.feelarchive.api.email.service.MailService;
 import com.feelarchive.api.notification.controller.response.NotificationResponse;
 import com.feelarchive.api.timeCapsule.event.TimeCapsuleOpenedEvent;
 import com.feelarchive.api.user.service.UserReader;
@@ -13,7 +14,6 @@ import com.feelarchive.domain.notification.repository.NotificationRepository;
 import com.feelarchive.domain.user.entity.User;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -28,6 +28,7 @@ public class NotificationService{
 
   private final NotificationRepository notificationRepository;
   private final NotificationQueryRepository notificationQueryRepository;
+  private final MailService mailService;
   private final NotificationMapper mapper;
   private final UserReader userReader;
 
@@ -45,8 +46,8 @@ public class NotificationService{
 
     notificationRepository.save(notification);
 
-    // TODO SSE 웹 알림, 메일 알림
-    log.info("[타임캡슐 알림 전송 구현체 미개발] 알림 발송 요청됨.");
+    // TODO SSE 웹 알림
+    mailService.sendTimeCapsuleNotificationMail(event);
   }
 
   private String generateNotificationContent(LocalDateTime createdAt, LocalDateTime openedAt) {

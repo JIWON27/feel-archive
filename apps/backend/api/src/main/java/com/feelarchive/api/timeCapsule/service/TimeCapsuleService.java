@@ -3,12 +3,12 @@ package com.feelarchive.api.timeCapsule.service;
 import static com.feelarchive.domain.capsule.exception.TimeCapsuleExceptionCode.CAPSULE_EDIT_TIME_EXPIRED;
 import static com.feelarchive.domain.capsule.exception.TimeCapsuleExceptionCode.CAPSULE_NOT_FOUND;
 
+import com.feelarchive.api.common.response.PagingResponse;
 import com.feelarchive.api.timeCapsule.controller.request.TimeCapsuleRequest;
 import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleDetailResponse;
 import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleImageResponse;
 import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleSummaryResponse;
 import com.feelarchive.api.timeCapsule.event.TimeCapsuleOpenedEvent;
-import com.feelarchive.api.common.response.PagingResponse;
 import com.feelarchive.api.user.service.UserReader;
 import com.feelarchive.common.excepion.FeelArchiveException;
 import com.feelarchive.domain.capsule.entity.CapsuleStatus;
@@ -24,7 +24,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -88,7 +87,7 @@ public class TimeCapsuleService {
     return timeCapsuleRepository.findPendingCapsules(CapsuleStatus.LOCKED, time, pageable);
   }
 
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  @Transactional
   public void openOneCapsule(Long capsuleId) {
     TimeCapsule capsule = getById(capsuleId);
 
@@ -97,6 +96,8 @@ public class TimeCapsuleService {
     eventPublisher.publishEvent(new TimeCapsuleOpenedEvent(
         capsule.getId(),
         capsule.getUser().getId(),
+        capsule.getUser().getName(),
+        capsule.getUser().getEmail().getEmail(),
         capsule.getCreatedAt(),
         capsule.getOpenAt()
     ));
