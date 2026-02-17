@@ -3,6 +3,7 @@ package com.feelarchive.api.notification.service;
 import com.feelarchive.api.common.response.PagingResponse;
 import com.feelarchive.api.email.service.MailService;
 import com.feelarchive.api.notification.controller.response.NotificationResponse;
+import com.feelarchive.api.notification.event.NotificationEvent;
 import com.feelarchive.api.timeCapsule.event.TimeCapsuleOpenedEvent;
 import com.feelarchive.api.user.service.UserReader;
 import com.feelarchive.common.excepion.FeelArchiveException;
@@ -31,6 +32,7 @@ public class NotificationService{
 
   private final NotificationRepository notificationRepository;
   private final NotificationQueryRepository notificationQueryRepository;
+  private final SseService sseService;
   private final MailService mailService;
   private final NotificationMapper mapper;
   private final UserReader userReader;
@@ -49,7 +51,14 @@ public class NotificationService{
 
     notificationRepository.save(notification);
 
-    // TODO SSE 웹 알림
+    sseService.send(user.getId(), "time-capsule", new NotificationEvent(
+        notification.getId(),
+        NotificationType.TIME_CAPSULE.name(),
+        notification.getTitle(),
+        notification.getContent(),
+        notification.getRelatedId(),
+        notification.getCreatedAt()
+    ));
 
     if (user.isEmailNotificationEnabled()) {
       EmailLog log = create(event);
