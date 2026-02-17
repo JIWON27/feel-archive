@@ -1,6 +1,7 @@
 'use client';
 
 import { useProtectedRoute } from '@/hooks/use-protected-route';
+import { Header } from '@/components/layout/Header';
 
 export default function MainLayout({
   children,
@@ -15,5 +16,13 @@ export default function MainLayout({
     return null;
   }
 
-  return <>{children}</>;
+  return (
+    <div className="flex flex-col h-screen">
+      <Header />
+      {/* 헤더 높이(56px)만큼 아래로 */}
+      <main className="flex-1 pt-14 overflow-y-auto">
+        {children}
+      </main>
+    </div>
+  );
 }

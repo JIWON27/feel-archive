@@ -1,7 +1,7 @@
 {
   "project": "feel-archive",
-  "version": "1.2",
-  "lastUpdated": "2026-02-13T16:00:00",
+  "version": "1.3",
+  "lastUpdated": "2026-02-18T00:00:00",
   "tasks": [
     {
       "id": 1,
@@ -220,15 +220,16 @@
       "description": "프론트엔드 타임캡슐 작성 폼 구현",
       "steps": [
         "app/(main)/timecapsule/new/page.tsx 생성",
-        "공개 예정 일시 선택 (DateTimePicker)",
-        "위치 선택 컴포넌트",
-        "감정 태그 선택",
-        "텍스트 입력",
-        "API 호출 및 저장"
+        "감정 태그 단일 선택 (9가지 감정 그리드)",
+        "텍스트 입력 (5000자 제한)",
+        "공개 일시 선택 (datetime-local, 최소 1시간 후)",
+        "작성 후 30분 제한 안내",
+        "API 호출 및 저장 (types/timecapsule.ts, services/timecapsule-service.ts, hooks/use-timecapsule.ts)"
       ],
-      "passes": false,
-      "commit": null,
-      "blockers": []
+      "passes": true,
+      "commit": "feat: 타임캡슐 작성 폼 구현",
+      "blockers": [],
+      "completedAt": "2026-02-17"
     },
     {
       "id": 15,
@@ -236,13 +237,15 @@
       "description": "프론트엔드 내 타임캡슐 목록 페이지 구현",
       "steps": [
         "app/(main)/my/timecapsules/page.tsx 생성",
-        "잠금/열림 상태에 따른 UI 구분",
-        "잠금 상태: 카운트다운 표시",
-        "열림 상태: 상세 보기 가능"
+        "잠금/열림 상태에 따른 UI 구분 (섹션 분리)",
+        "잠금 상태: 봉인 UI + 카운트다운 (일/시간/분)",
+        "열림 상태: 감정 이모지 + 내용 미리보기 + 확인 링크",
+        "무한 스크롤 (useInfiniteQuery)"
       ],
-      "passes": false,
-      "commit": null,
-      "blockers": []
+      "passes": true,
+      "commit": "feat: 내 타임캡슐 목록 페이지 구현",
+      "blockers": [],
+      "completedAt": "2026-02-17"
     },
     {
       "id": 16,
@@ -250,27 +253,37 @@
       "description": "프론트엔드 타임캡슐 상세 페이지 구현",
       "steps": [
         "app/(main)/timecapsule/[id]/page.tsx 생성",
-        "잠금 상태: 블러 처리 또는 봉인 UI",
-        "열림 상태: 전체 내용 표시",
-        "수정 버튼 (30분 내 + 미잠금 상태만)"
+        "잠금 상태: 봉인 다크 UI + 카운트다운 (일/시간/분)",
+        "열림 상태: 감정 배너 + 내용 + 이미지 + 위치 표시",
+        "수정/삭제 버튼 (작성 후 30분 이내 + LOCKED 상태만)",
+        "삭제 확인 모달"
       ],
-      "passes": false,
-      "commit": null,
-      "blockers": []
+      "passes": true,
+      "commit": "feat: 타임캡슐 상세 페이지 구현",
+      "blockers": [],
+      "completedAt": "2026-02-17"
     },
     {
       "id": 17,
       "category": "feature",
       "description": "프론트엔드 알림 표시 구현",
       "steps": [
-        "헤더에 알림 아이콘 + 배지 추가",
-        "알림 드롭다운 또는 페이지 구현",
-        "읽지 않은 알림 개수 표시",
-        "알림 클릭 시 해당 타임캡슐로 이동"
+        "components/layout/Header.tsx 생성 - 전역 헤더 (로고, 네비, 알림벨, 유저메뉴)",
+        "components/notification/NotificationDropdown.tsx 생성 - 미읽음 알림 드롭다운",
+        "app/(main)/notifications/page.tsx 생성 - 알림 전체 목록 페이지",
+        "hooks/use-notifications.ts - 알림 목록, 읽음 처리 훅",
+        "hooks/use-sse.ts - SSE 실시간 알림 (fetch + ReadableStream, event: time-capsule)",
+        "types/notification.ts - NotificationResponse, NotificationEvent 타입",
+        "services/notification-service.ts - 알림 API 서비스",
+        "알림 아이콘 읽지 않은 개수 배지 (최대 9+)",
+        "알림 클릭 시 타임캡슐 상세로 이동",
+        "SSE 수신 시 toast 팝업 표시 (클릭하면 타임캡슐 이동)"
       ],
-      "passes": false,
-      "commit": null,
-      "blockers": []
+      "passes": true,
+      "commit": "feat: SSE 기반 실시간 알림 및 알림 목록 페이지 구현",
+      "blockers": [],
+      "completedAt": "2026-02-17",
+      "notes": "SSE 이벤트명: 'time-capsule' (백엔드 SseService 기준)"
     },
     {
       "id": 18,
@@ -613,6 +626,101 @@
       "passes": false,
       "commit": null,
       "blockers": []
+    },
+    {
+      "id": 39,
+      "category": "feature",
+      "description": "전역 헤더 컴포넌트 구현",
+      "steps": [
+        "components/layout/Header.tsx 생성 (로고, 네비게이션, 알림벨, 유저메뉴)",
+        "app/(main)/layout.tsx 업데이트 - Header 포함, pt-14 offset",
+        "app/(main)/page.tsx 업데이트 - 내장 헤더 제거, h-screen → h-full",
+        "글 쓰기/타임캡슐 작성 버튼 헤더에 추가",
+        "모바일 햄버거 메뉴 버튼 (향후 구현)"
+      ],
+      "passes": true,
+      "commit": "feat: 전역 헤더 컴포넌트 구현 - 네비게이션, 알림, 유저메뉴",
+      "blockers": [],
+      "completedAt": "2026-02-17",
+      "notes": "Header는 (main) layout에 고정 (fixed top-0), 컨텐츠는 pt-14로 offset"
+    },
+    {
+      "id": 40,
+      "category": "feature",
+      "description": "타임캡슐 이미지 업로드 UI 구현",
+      "steps": [
+        "타임캡슐 작성 폼(new/page.tsx)에 ImageUploader 컴포넌트 추가 (최대 5개)",
+        "useCreateTimeCapsule 훅 수정 - { data, images } 인수로 이미지 순차 업로드",
+        "이미지 업로드 실패 시 타임캡슐은 생성 유지, toast 에러 표시"
+      ],
+      "passes": true,
+      "commit": "feat(timecapsule): 타임캡슐 CRUD, 목록/상세 페이지 및 이미지 업로드 구현",
+      "blockers": [],
+      "completedAt": "2026-02-18"
+    },
+    {
+      "id": 41,
+      "category": "fix",
+      "description": "타임캡슐 목록 Pagination 1-indexed 대응",
+      "steps": [
+        "백엔드 WebConfig에 setOneIndexedParameters(true) 추가",
+        "hooks/use-timecapsule.ts: initialPageParam 0→1, getNextPageParam: lastPage.pageNo+1로 복원",
+        "백엔드 응답 날짜 형식 변경 대응 (yyyy.MM.dd HH:mm) - parseDotDate 헬퍼 추가",
+        "TimeCapsuleSummary 타입 수정: address → location?: LocationDetail"
+      ],
+      "passes": true,
+      "commit": "feat(timecapsule): 타임캡슐 CRUD, 목록/상세 페이지 및 이미지 업로드 구현",
+      "blockers": [],
+      "completedAt": "2026-02-18",
+      "notes": "백엔드 setOneIndexedParameters(true) 설정 후 프론트 복원. 날짜 포맷 파싱은 parseDotDate()로 처리"
+    },
+    {
+      "id": 42,
+      "category": "fix",
+      "description": "이미지 업로드 Location 헤더 ID 파싱 버그 수정",
+      "steps": [
+        "services/archive-service.ts: parseInt 전 segment.replace(/\\D/g, '') 적용",
+        "services/timecapsule-service.ts: 동일 방어 코드 적용, 대소문자 헤더 모두 체크",
+        "Location 헤더 값에 따옴표 등 비숫자 문자 포함 시에도 안전하게 ID 추출"
+      ],
+      "passes": true,
+      "commit": "fix(image): 이미지 업로드 ID 파싱 버그 수정 및 JWT 인증 이미지 컴포넌트 구현",
+      "blockers": [],
+      "completedAt": "2026-02-18",
+      "notes": "백엔드 public-base-url YAML 설정의 trailing \" 버그가 근본 원인 (백엔드 수정 완료)"
+    },
+    {
+      "id": 43,
+      "category": "feature",
+      "description": "JWT 인증 이미지 표시 컴포넌트(AuthImage) 구현",
+      "steps": [
+        "components/ui/AuthImage.tsx 생성 - apiClient로 이미지 fetch (JWT 헤더 자동 포함)",
+        "응답 Blob → URL.createObjectURL()로 변환 후 <img src>에 사용",
+        "unmount 시 URL.revokeObjectURL()로 메모리 누수 방지",
+        "로딩 중 skeleton, 오류 시 대체 텍스트 표시",
+        "아카이브/타임캡슐 상세 페이지 <img> 태그를 AuthImage로 교체",
+        "이미지 크기 조정: h-40 object-contain bg-gray-50"
+      ],
+      "passes": true,
+      "commit": "fix(image): 이미지 업로드 ID 파싱 버그 수정 및 JWT 인증 이미지 컴포넌트 구현",
+      "blockers": [],
+      "completedAt": "2026-02-18",
+      "notes": "타임캡슐 이미지 엔드포인트는 인증 필요(anyRequest().authenticated()). <img> 태그는 JWT 헤더 전송 불가하므로 JS fetch 방식으로 처리"
+    },
+    {
+      "id": 44,
+      "category": "fix",
+      "description": "피드/아카이브 작성 페이지 스크롤 버그 수정",
+      "steps": [
+        "app/(main)/layout.tsx: main 태그 overflow-hidden → overflow-y-auto 변경",
+        "기존 타임캡슐 페이지(h-full overflow-y-auto)는 영향 없음",
+        "아카이브 목록/작성 페이지(min-h-screen)의 스크롤 정상 작동"
+      ],
+      "passes": true,
+      "commit": "fix(layout): 피드 및 아카이브 작성 페이지 스크롤 버그 수정",
+      "blockers": [],
+      "completedAt": "2026-02-18",
+      "notes": "overflow-hidden이 min-h-screen 기반 페이지의 스크롤을 막고 있었음"
     }
   ]
 }
