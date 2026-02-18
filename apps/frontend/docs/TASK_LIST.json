@@ -721,6 +721,25 @@
       "blockers": [],
       "completedAt": "2026-02-18",
       "notes": "overflow-hidden이 min-h-screen 기반 페이지의 스크롤을 막고 있었음"
+    },
+    {
+      "id": 45,
+      "category": "feature",
+      "description": "헤더 감정 날씨 TOP3 폴링 기능 구현",
+      "steps": [
+        "services/emotion-service.ts 생성 - GET /api/v1/emotions/ranking API 호출",
+        "hooks/use-emotion-weather.ts 생성 - 5분 폴링 React Query 훅 (refetchInterval: 5분)",
+        "components/emotion/EmotionWeatherTicker.tsx 생성 - 슬라이드업 애니메이션 ticker",
+        "금·은·동 메달 CSS 원형 배지 디자인 (emoji 아이콘 대신 CSS border-radius + box-shadow)",
+        "Header.tsx 로고 오른쪽에 구분선과 함께 EmotionWeatherTicker 배치",
+        "3초마다 1위→2위→3위 슬라이드업 애니메이션으로 순환 표시",
+        "데이터 없을 시 ticker 미표시 (null 반환)"
+      ],
+      "passes": true,
+      "commit": "feat: 헤더 감정 날씨 TOP3 폴링 ticker 구현",
+      "blockers": [],
+      "completedAt": "2026-02-18",
+      "notes": "SSE 방식에서 5분 폴링으로 변경. 실시간성보다 서버 부하 절감 우선. 금(#F59E0B)/은(#9CA3AF)/동(#B45309) CSS 메달"
     }
   ]
 }

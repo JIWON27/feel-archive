@@ -9,6 +9,7 @@ import { NotificationDropdown } from '@/components/notification/NotificationDrop
 import { useAuthStore } from '@/stores/auth-store';
 import { useAuth } from '@/hooks/use-auth';
 import { useNotificationStore } from '@/stores/notification-store';
+import { EmotionWeatherTicker } from '@/components/emotion/EmotionWeatherTicker';
 
 function NavItem({
   href,
@@ -63,11 +64,15 @@ export function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 h-14">
       <div className="flex items-center justify-between h-full px-4 max-w-full">
-        {/* 로고 */}
-        <Link href="/" className="flex items-center gap-2">
-          <span className="text-xl">🗂️</span>
-          <span className="font-bold text-gray-900 text-base">Feel-Archive</span>
-        </Link>
+        {/* 로고 + 감정 날씨 (가로 배치) */}
+        <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-2">
+            <span className="text-xl">🗂️</span>
+            <span className="font-bold text-gray-900 text-base">Feel-Archive</span>
+          </Link>
+          <div className="h-4 w-px bg-gray-200" />
+          <EmotionWeatherTicker />
+        </div>
 
         {/* 네비게이션 */}
         <nav className="hidden md:flex items-center gap-1">
