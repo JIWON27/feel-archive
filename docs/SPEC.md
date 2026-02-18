@@ -1,7 +1,7 @@
 # Feel-Archive 서비스 기획 스펙 문서
 
 > **문서 버전**: 1.0
-> **작성일**: 2026-02-15
+> **작성일**: 2026-02-18
 > **서비스명**: 미확정 (가칭: Feel-Archive)
 
 ---
@@ -443,7 +443,8 @@ ArchiveImage (아카이브 이미지)
 │   ├── contentType (String - MIME 타입)
 │   ├── sizeBytes (Long - 파일 크기, 최대 5MB)
 │   └── extension (String)
-└── createdAt (LocalDateTime, auto-generated)
+├── createdAt (LocalDateTime, auto-generated)
+└── deletedAt (LocalDateTime, nullable - soft delete)
 
 이미지 업로드 제한사항:
 - 최대 개수: 5개
@@ -488,7 +489,8 @@ TimeCapsuleImage (타임캡슐 이미지)
 │   ├── contentType (String - MIME 타입)
 │   ├── sizeBytes (Long - 파일 크기, 최대 5MB)
 │   └── extension (String)
-└── createdAt (LocalDateTime, auto-generated)
+├── createdAt (LocalDateTime, auto-generated)
+└── deletedAt (LocalDateTime, nullable - soft delete)
 
 Notification (알림)
 ├── id (PK, Long, auto-increment)
@@ -593,15 +595,18 @@ GET    /api/v1/users/{id}        회원 정보 조회
 ### 7.3 아카이브
 ```
 POST   /api/v1/archives             글 작성
-GET    /api/v1/archives             글 목록 조회 (필터/정렬)
+GET    /api/v1/archives             글 목록 조회 (필터/정렬, 공개 글만)
+GET    /api/v1/archives/me          내 아카이브 목록 조회 (내 글만, 필터/정렬)
 GET    /api/v1/archives/{id}        글 상세 조회
-PATCH  /api/v1/archives/{id}        글 수정
-DELETE /api/v1/archives/{id}        글 삭제 (soft delete)
+PATCH  /api/v1/archives/{id}        글 수정 (미구현 - 백엔드 작업 필요)
+DELETE /api/v1/archives/{id}        글 삭제 (soft delete) (미구현 - 백엔드 작업 필요)
+PATCH  /api/v1/archives/{id}/status 아카이브 상태(공개/비공개) 변경
 GET    /api/v1/archives/nearby      반경 내 아카이브 조회 (GIS)
                                      Query params: latitude, longitude, radius (기본값 50.0km)
                                      Response: ArchiveSummaryResponse[] (전체 정보 포함)
 POST   /api/v1/archives/{id}/images 이미지 업로드 (최대 5개, 파일당 5MB, 전체 20MB)
 DELETE /api/v1/archives/{archiveId}/images/{imageId}  이미지 삭제
+GET    /api/v1/archives/{archiveId}/images/{imageId}  이미지 다운로드 (JWT 인증 필요)
 ```
 
 ### 7.4 좋아요/스크랩
@@ -615,11 +620,15 @@ GET    /api/v1/archives/scraps         내 스크랩 목록
 
 ### 7.5 타임캡슐
 ```
-POST   /api/v1/time-capsule          타임캡슐 작성
-GET    /api/v1/time-capsule          내 타임캡슐 목록
-GET    /api/v1/time-capsule/{id}     타임캡슐 상세 조회
-PUT    /api/v1/time-capsule/{id}     타임캡슐 수정 (30분 내)
-POST   /api/v1/time-capsule/{id}/images  이미지 업로드
+POST   /api/v1/time-capsule                              타임캡슐 작성
+GET    /api/v1/time-capsule                              내 타임캡슐 목록
+                                                          Query params: status (LOCKED/OPENED), page, size
+GET    /api/v1/time-capsule/{id}                         타임캡슐 상세 조회
+PUT    /api/v1/time-capsule/{id}                         타임캡슐 수정 (작성 후 30분 내)
+DELETE /api/v1/time-capsule/{id}                         타임캡슐 삭제 (작성 후 30분 내 + LOCKED 상태만)
+POST   /api/v1/time-capsule/{id}/images                  이미지 업로드 (최대 5개, 파일당 5MB)
+DELETE /api/v1/time-capsule/{id}/images/{imageId}        이미지 삭제
+GET    /api/v1/time-capsule/{id}/images/{imageId}        이미지 다운로드 (JWT 인증 필요)
 ```
 
 ### 7.6 감정 목록

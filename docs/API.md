@@ -1,6 +1,6 @@
 # Feel-Archive API 문서
 
-> **최종 업데이트**: 2026-02-15
+> **최종 업데이트**: 2026-02-18
 > **Base URL**: `http://localhost:8080` (개발)
 > **API 버전**: v1
 >
@@ -539,7 +539,83 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 ---
 
-### 5. 아카이브 수정
+### 5. 내 아카이브 목록 조회
+
+본인이 작성한 아카이브 목록을 조회합니다 (비공개 글 포함).
+
+**Endpoint**
+```
+GET /api/v1/archives/me
+```
+
+**인증 필요**: ✅ Yes (Bearer Token)
+
+**Query Parameters**
+- `page` (int, optional, default: 0): 페이지 번호
+- `size` (int, optional, default: 20): 페이지 크기
+- `sort` (string, optional): 정렬 기준 (예: `createdAt,desc`)
+
+**Request Example**
+```http
+GET /api/v1/archives/me?page=0&size=10&sort=createdAt,desc HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Response (200 OK)**
+응답 형식은 아카이브 목록 조회와 동일 (ArchiveSummaryResponse Page)
+
+**Status Codes**
+- `200 OK`: 조회 성공
+- `401 Unauthorized`: 인증 토큰 없음 또는 유효하지 않음
+
+---
+
+### 6. 아카이브 상태 변경 (공개/비공개)
+
+아카이브의 공개 상태(visibility)를 변경합니다.
+
+**Endpoint**
+```
+PATCH /api/v1/archives/{archiveId}/status
+```
+
+**인증 필요**: ✅ Yes (Bearer Token)
+
+**Path Parameters**
+- `archiveId` (Long, required): 아카이브 ID
+
+**Request Body**
+```json
+{
+  "visibility": "PUBLIC | PRIVATE (required)"
+}
+```
+
+**Request Example**
+```http
+PATCH /api/v1/archives/456/status HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+Content-Type: application/json
+
+{
+  "visibility": "PRIVATE"
+}
+```
+
+**Response (200 OK)**
+```http
+200 OK
+```
+
+**Status Codes**
+- `200 OK`: 상태 변경 성공
+- `401 Unauthorized`: 인증 토큰 없음 또는 유효하지 않음
+- `403 Forbidden`: 본인이 작성한 아카이브가 아님
+- `404 Not Found`: 존재하지 않는 아카이브 ID
+
+---
+
+### 7. 아카이브 수정
 
 자신이 작성한 아카이브를 수정합니다.
 
@@ -593,7 +669,7 @@ Content-Type: application/json
 
 ---
 
-### 6. 아카이브 삭제 (Soft Delete)
+### 8. 아카이브 삭제 (Soft Delete)
 
 자신이 작성한 아카이브를 삭제합니다 (논리적 삭제).
 
@@ -630,7 +706,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 ---
 
-### 7. 아카이브 이미지 업로드
+### 9. 아카이브 이미지 업로드
 
 아카이브에 이미지를 업로드합니다 (최대 5개).
 
@@ -717,7 +793,7 @@ Content-Type: image/jpeg
 
 ---
 
-### 8. 아카이브 이미지 삭제
+### 10. 아카이브 이미지 삭제
 
 아카이브의 특정 이미지를 삭제합니다.
 
@@ -751,7 +827,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 ---
 
-### 9. 아카이브 이미지 다운로드
+### 11. 아카이브 이미지 다운로드
 
 아카이브의 이미지를 다운로드합니다.
 
@@ -1145,7 +1221,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 **Endpoint**
 ```
-PATCH /api/v1/time-capsule/{id}
+PUT /api/v1/time-capsule/{id}
 ```
 
 **인증 필요**: ✅ Yes (Bearer Token)
@@ -1163,7 +1239,7 @@ PATCH /api/v1/time-capsule/{id}
 
 **Request Example**
 ```http
-PATCH /api/v1/time-capsule/789 HTTP/1.1
+PUT /api/v1/time-capsule/789 HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 Content-Type: application/json
 
@@ -1191,6 +1267,179 @@ Content-Type: application/json
   "status": 400
 }
 ```
+
+---
+
+### 5. 타임캡슐 삭제
+
+타임캡슐을 삭제합니다 (작성 후 30분 이내 + LOCKED 상태만 가능).
+
+**Endpoint**
+```
+DELETE /api/v1/time-capsule/{id}
+```
+
+**인증 필요**: ✅ Yes (Bearer Token)
+
+**Path Parameters**
+- `id` (Long, required): 타임캡슐 ID
+
+**Request Example**
+```http
+DELETE /api/v1/time-capsule/789 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Response (204 No Content)**
+```http
+204 No Content
+```
+
+**Status Codes**
+- `204 No Content`: 삭제 성공
+- `400 Bad Request`: 삭제 불가 (30분 경과 또는 OPENED 상태)
+- `401 Unauthorized`: 인증 토큰 없음 또는 유효하지 않음
+- `403 Forbidden`: 본인이 작성한 타임캡슐이 아님
+- `404 Not Found`: 존재하지 않는 타임캡슐 ID
+
+---
+
+### 6. 타임캡슐 이미지 업로드
+
+타임캡슐에 이미지를 업로드합니다 (최대 5개).
+
+**Endpoint**
+```
+POST /api/v1/time-capsule/{id}/images
+```
+
+**인증 필요**: ✅ Yes (Bearer Token)
+
+**Path Parameters**
+- `id` (Long, required): 타임캡슐 ID
+
+**Request Headers**
+```http
+Content-Type: multipart/form-data
+```
+
+**Request Body (multipart/form-data)**
+```
+images: [파일1, 파일2, ...] (최대 5개)
+```
+
+**제약사항**
+- 파일당 최대 크기: 5MB
+- 최대 개수: 5개
+- 허용 형식: 이미지 파일 (JPEG, PNG 등)
+
+**Request Example**
+```http
+POST /api/v1/time-capsule/789/images HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
+
+------WebKitFormBoundary
+Content-Disposition: form-data; name="images"; filename="photo.jpg"
+Content-Type: image/jpeg
+
+[이미지 바이너리 데이터]
+------WebKitFormBoundary--
+```
+
+**Response (200 OK)**
+```json
+[
+  {
+    "id": 1,
+    "url": "/api/v1/time-capsule/789/images/1"
+  }
+]
+```
+
+**Status Codes**
+- `200 OK`: 업로드 성공 (Location 헤더에 이미지 URL 포함)
+- `400 Bad Request`: 파일 개수 초과, 형식 오류
+- `401 Unauthorized`: 인증 토큰 없음 또는 유효하지 않음
+- `403 Forbidden`: 본인이 작성한 타임캡슐이 아님
+- `404 Not Found`: 존재하지 않는 타임캡슐 ID
+
+---
+
+### 7. 타임캡슐 이미지 삭제
+
+타임캡슐의 특정 이미지를 삭제합니다.
+
+**Endpoint**
+```
+DELETE /api/v1/time-capsule/{timeCapsuleId}/images/{imageId}
+```
+
+**인증 필요**: ✅ Yes (Bearer Token)
+
+**Path Parameters**
+- `timeCapsuleId` (Long, required): 타임캡슐 ID
+- `imageId` (Long, required): 이미지 ID
+
+**Request Example**
+```http
+DELETE /api/v1/time-capsule/789/images/1 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Response (204 No Content)**
+```http
+204 No Content
+```
+
+**Status Codes**
+- `204 No Content`: 삭제 성공
+- `401 Unauthorized`: 인증 토큰 없음 또는 유효하지 않음
+- `403 Forbidden`: 본인이 작성한 타임캡슐이 아님
+- `404 Not Found`: 존재하지 않는 타임캡슐 또는 이미지 ID
+
+---
+
+### 8. 타임캡슐 이미지 다운로드
+
+타임캡슐의 이미지를 다운로드합니다. JWT 인증이 필요하므로 브라우저 `<img>` 태그 대신 JS fetch로 처리해야 합니다.
+
+**Endpoint**
+```
+GET /api/v1/time-capsule/{timeCapsuleId}/images/{imageId}
+```
+
+**인증 필요**: ✅ Yes (Bearer Token)
+
+**Path Parameters**
+- `timeCapsuleId` (Long, required): 타임캡슐 ID
+- `imageId` (Long, required): 이미지 ID
+
+**Request Example**
+```http
+GET /api/v1/time-capsule/789/images/1 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Response (200 OK)**
+```http
+200 OK
+Content-Type: image/jpeg
+Content-Length: 1024000
+Content-Disposition: inline; filename="photo.jpg"
+
+[이미지 바이너리 데이터]
+```
+
+**Status Codes**
+- `200 OK`: 다운로드 성공
+- `401 Unauthorized`: 인증 토큰 없음 또는 유효하지 않음
+- `403 Forbidden`: 본인이 작성한 타임캡슐이 아님 (타임캡슐은 본인만 조회 가능)
+- `404 Not Found`: 존재하지 않는 타임캡슐 또는 이미지 ID
+
+**참고사항**
+- 타임캡슐 이미지는 인증이 필수이므로, `<img src>` 태그로 직접 불러올 수 없습니다
+- 프론트엔드에서 `fetch` + `URL.createObjectURL()`로 처리해야 합니다 (AuthImage 컴포넌트)
 
 ---
 
@@ -1680,6 +1929,15 @@ PRIVATE  비공개
 ---
 
 ## 변경 이력
+
+### 2026-02-18
+- Archive: `GET /api/v1/archives/me` (내 아카이브 목록) 추가
+- Archive: `PATCH /api/v1/archives/{archiveId}/status` (상태 변경) 추가
+- TimeCapsule: `PUT /api/v1/time-capsule/{id}` - 수정 메서드 PATCH → PUT 수정
+- TimeCapsule: `DELETE /api/v1/time-capsule/{id}` (삭제) 추가
+- TimeCapsule: `POST /api/v1/time-capsule/{id}/images` (이미지 업로드) 추가
+- TimeCapsule: `DELETE /api/v1/time-capsule/{id}/images/{imageId}` (이미지 삭제) 추가
+- TimeCapsule: `GET /api/v1/time-capsule/{id}/images/{imageId}` (이미지 다운로드) 추가
 
 ### 2026-02-15
 - 초안 작성
