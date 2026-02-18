@@ -28,6 +28,19 @@ public class AsyncConfig implements AsyncConfigurer {
     return executor;
   }
 
+  @Bean(name = "emotionRankingExecutor")
+  public ThreadPoolTaskExecutor emotionRankingExecutor() {
+    int corePoolSize = 4;
+
+    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+    executor.setCorePoolSize(corePoolSize);
+    executor.setMaxPoolSize(corePoolSize * 2);
+    executor.setQueueCapacity(50);
+    executor.setThreadNamePrefix("emotion-rank-");
+    executor.initialize();
+    return executor;
+  }
+
   @Override
   public Executor getAsyncExecutor() {
     return asyncTaskExecutor();
