@@ -243,6 +243,44 @@
 | 수신 설정 | 사용자가 설정 페이지에서 ON/OFF 가능 |
 | 수동 재발송 | Phase 1(MVP)에서는 미지원, 추후 관리자 API 추가 예정 |
 
+### 2.8 실시간 감정 날씨 (Real-time Emotion Weather)
+
+#### 기능 설명
+대한민국 전체 사용자의 오늘 감정 기록을 집계하여 실시간으로 Top 3 감정 랭킹을 제공합니다. 아카이브가 작성될 때마다 Redis Sorted Set이 업데이트되며, 순위 변동 시 SSE로 실시간 push됩니다.
+
+#### 주요 시나리오
+1. **초기 랭킹 로드**
+   - 사용자 행동: 감정 날씨 페이지/컴포넌트 진입
+   - 시스템 동작: `GET /api/v1/emotions/ranking`으로 현재 Top 3 조회
+   - 결과: 오늘의 감정 날씨 Top 3 표시
+
+2. **실시간 랭킹 수신**
+   - 사용자 행동: SSE 구독 (`GET /api/v1/emotions/ranking/subscribe`)
+   - 시스템 동작: 순위 변동 시 서버에서 자동 push
+   - 결과: 실시간으로 감정 랭킹 업데이트
+
+3. **랭킹 업데이트 트리거**
+   - 사용자 행동: 아카이브 작성
+   - 시스템 동작:
+     - `ArchiveCreatedEvent` 발행
+     - Redis ZSet `ZINCRBY emotion:ranking:{date} {emotion} 1`
+     - 현재 Top 3와 이전 Top 3 비교
+     - 순위 변동 시 SSE로 전체 구독자에게 broadcast
+   - 결과: 구독 중인 모든 클라이언트의 감정 날씨 자동 갱신
+
+#### 상세 규칙
+| 항목 | 설명 |
+|------|------|
+| 집계 범위 | 대한민국 전체 (공개 아카이브만) |
+| 시간 범위 | 오늘 하루 (자정 기준 초기화) |
+| 랭킹 표시 | Top 3 |
+| Push 조건 | Top 3 순위 변동 시에만 |
+| SSE 엔드포인트 | 알림 SSE와 분리 (`/api/v1/emotions/ranking/subscribe`) |
+| Redis 구조 | Sorted Set, Key: `emotion:ranking:{yyyyMMdd}`, TTL: 자정 자동 만료 |
+| 고도화 계획 | Phase 2에서 지역구별 감정 랭킹으로 확장 예정 (geohash 기반) |
+
+---
+
 ### 2.7 SSE 기반 실시간 알림 (Real-time Notification)
 
 #### 기능 설명
@@ -653,6 +691,15 @@ GET    /api/v1/notifications/subscribe    SSE 구독 (실시간 알림 수신)
 PATCH  /api/v1/users/me/settings/email-notification  이메일 알림 수신 여부 변경
                                                        Request Body: { "enabled": boolean }
                                                        Response: 200 OK
+```
+
+### 7.9 실시간 감정 날씨
+```
+GET    /api/v1/emotions/ranking            오늘의 감정 날씨 Top 3 조회
+                                           Response: { date, rankings: [{rank, emotion, count}] }
+GET    /api/v1/emotions/ranking/subscribe  SSE 구독 (실시간 랭킹 push)
+                                           Response: text/event-stream
+                                           Events: connect, heartbeat (30초), emotion-ranking (순위 변동 시)
 ```
 
 ---

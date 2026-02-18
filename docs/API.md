@@ -17,6 +17,7 @@
 - [좋아요/스크랩 (Like/Scrap)](#좋아요스크랩-likescrap)
 - [타임캡슐 (TimeCapsule)](#타임캡슐-timecapsule)
 - [알림 (Notification)](#알림-notification)
+- [실시간 감정 날씨 (Emotion Weather)](#실시간-감정-날씨-emotion-weather)
 - [리포트 (Report)](#리포트-report)
 - [공통 사항](#공통-사항)
 
@@ -1723,6 +1724,112 @@ Content-Type: application/json
 
 ---
 
+## 실시간 감정 날씨 (Emotion Weather)
+
+### 1. 오늘의 감정 날씨 조회
+
+오늘 가장 많이 기록된 감정 Top 3를 조회합니다.
+
+**Endpoint**
+```
+GET /api/v1/emotions/ranking
+```
+
+**인증 필요**: ✅ Yes (Bearer Token)
+
+**Request Example**
+```http
+GET /api/v1/emotions/ranking HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Response (200 OK)**
+```json
+{
+  "date": "2026-02-18",
+  "rankings": [
+    { "rank": 1, "emotion": "HAPPY",   "count": 42 },
+    { "rank": 2, "emotion": "CALM",    "count": 35 },
+    { "rank": 3, "emotion": "EXCITED", "count": 28 }
+  ]
+}
+```
+
+**참고사항**
+- 당일 기록이 없으면 `rankings`는 빈 배열로 반환
+- Redis ZSet (`emotion:ranking:{yyyyMMdd}`)에서 조회하며 자정에 자동 만료
+
+**Status Codes**
+- `200 OK`: 조회 성공
+- `401 Unauthorized`: 인증 토큰 없음 또는 유효하지 않음
+
+---
+
+### 2. 실시간 감정 날씨 SSE 구독
+
+감정 랭킹 Top 3 순위 변동 시 실시간으로 업데이트를 수신합니다.
+
+**Endpoint**
+```
+GET /api/v1/emotions/ranking/subscribe
+```
+
+**인증 필요**: ✅ Yes (Bearer Token)
+
+**Request Example**
+```http
+GET /api/v1/emotions/ranking/subscribe HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+Accept: text/event-stream
+```
+
+**Response Headers**
+```http
+Content-Type: text/event-stream
+Cache-Control: no-cache
+Connection: keep-alive
+```
+
+**Response Events**
+
+연결 수립 시 (즉시):
+```
+event: connect
+data: {"message": "connected"}
+```
+
+하트비트 (30초마다):
+```
+event: heartbeat
+data: {}
+```
+
+Top 3 순위 변동 시:
+```
+event: emotion-ranking
+data: {
+  "date": "2026-02-18",
+  "rankings": [
+    { "rank": 1, "emotion": "HAPPY",   "count": 43 },
+    { "rank": 2, "emotion": "CALM",    "count": 35 },
+    { "rank": 3, "emotion": "EXCITED", "count": 28 }
+  ]
+}
+```
+
+**Status Codes**
+- `200 OK`: SSE 스트림 연결 성공
+- `401 Unauthorized`: 인증 토큰 없음 또는 유효하지 않음
+
+**참고사항**
+- `emotion-ranking` 이벤트는 Top 3 순위 변동이 있을 때만 전송 (단순 count 증가는 무시)
+- 아카이브 작성 → `ArchiveCreatedEvent` → Redis ZSet 업데이트 → 이전 Top 3와 비교 → 변동 시 broadcast
+- 연결이 끊기면 브라우저 `EventSource`가 자동으로 재연결 시도
+- 하트비트는 30초마다 전송 (유휴 연결 유지 목적)
+- 알림 SSE(`/api/v1/notifications/subscribe`)와 별도 엔드포인트로 분리
+
+---
+
 ## 리포트 (Report)
 
 ### 1. 월간 리포트 조회
@@ -1929,6 +2036,10 @@ PRIVATE  비공개
 ---
 
 ## 변경 이력
+
+### 2026-02-18 (2차)
+- Emotion Weather: `GET /api/v1/emotions/ranking` (오늘의 감정 날씨 Top 3 조회) 추가
+- Emotion Weather: `GET /api/v1/emotions/ranking/subscribe` (SSE 구독) 추가
 
 ### 2026-02-18
 - Archive: `GET /api/v1/archives/me` (내 아카이브 목록) 추가
