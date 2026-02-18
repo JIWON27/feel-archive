@@ -6,6 +6,7 @@ import com.feelarchive.api.archive.controller.request.NearbyArchiveRequest;
 import com.feelarchive.api.archive.controller.response.ArchiveDetailResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveImageResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveSummaryResponse;
+import com.feelarchive.api.archive.event.ArchiveCreatedEvent;
 import com.feelarchive.api.common.response.PagingResponse;
 import com.feelarchive.api.user.service.UserReader;
 import com.feelarchive.domain.archive.ArchiveSearchCondition;
@@ -16,6 +17,7 @@ import com.feelarchive.domain.user.entity.User;
 import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,12 +33,15 @@ public class ArchiveService {
   private final ArchiveMapper archiveMapper;
   private final ArchiveReader archiveReader;
   private final UserReader userReader;
+  private final ApplicationEventPublisher eventPublisher;
 
   @Transactional
   public Long create(Long userId, ArchiveRequest request) {
     User user = userReader.getById(userId);
     Archive archive = archiveMapper.toArchive(user, request);
     Archive saved = archiveRepository.save(archive);
+
+    eventPublisher.publishEvent(new ArchiveCreatedEvent(request.getEmotion()));
     return saved.getId();
   }
 
