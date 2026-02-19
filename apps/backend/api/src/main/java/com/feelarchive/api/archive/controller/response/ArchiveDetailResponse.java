@@ -1,5 +1,6 @@
 package com.feelarchive.api.archive.controller.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,7 @@ public class ArchiveDetailResponse {
   String updatedAt;
   int likeCount;
   CommonUserResponse writer;
+  @JsonProperty("isOwner")
   boolean isOwner;
 
   @Getter
