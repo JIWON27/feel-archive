@@ -105,6 +105,14 @@ public class ArchiveService {
   }
 
   @Transactional
+  public void deleteArchive(Long archiveId, Long userId) {
+    Archive archive = archiveReader.getById(archiveId);
+    archive.validateOwner(userId);
+    archiveImageService.deleteAll(archive);
+    archiveRepository.delete(archive);
+  }
+
+  @Transactional
   public List<ArchiveSummaryResponse> getNearByArchives(NearbyArchiveRequest request) {
     BigDecimal userLongitude = request.longitude();
     BigDecimal userLatitude = request.latitude();

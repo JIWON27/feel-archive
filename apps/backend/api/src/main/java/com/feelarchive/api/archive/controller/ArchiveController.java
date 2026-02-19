@@ -67,6 +67,15 @@ public class ArchiveController {
     return ResponseEntity.ok().body(archives);
   }
 
+  @DeleteMapping("/{archiveId}")
+  public ResponseEntity<Void> deleteArchive(
+      @AuthenticationPrincipal Long userId,
+      @PathVariable Long archiveId)
+  {
+    archiveService.deleteArchive(archiveId ,userId);
+    return ResponseEntity.noContent().build();
+  }
+
   @PostMapping(value = "/{id}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<List<ArchiveImageResponse>> uploadImages(
       @AuthenticationPrincipal Long userId,
