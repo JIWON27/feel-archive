@@ -30,10 +30,11 @@ Use this skill after completing a task to ensure SPEC.md stays up-to-date with i
 3. Validate consistency
 4. **Validate API consistency** ⭐ (Critical - prevents API doc drift)
 5. **Validate Data Model consistency** ⭐ (Critical - prevents schema doc drift)
-6. Update SPEC.md
-7. Update API.md (if needed)
-8. Update metadata
-9. Report results
+6. **Validate DTO-level Field consistency** ⭐ (Critical - prevents request/response field drift)
+7. Update SPEC.md
+8. Update API.md (if needed)
+9. Update metadata
+10. Report results
 
 ### 1. Identify Completed Tasks
 
@@ -430,6 +431,121 @@ If user chooses auto-fix:
 ├── createdAt (LocalDateTime, auto-generated)
 └── updatedAt (LocalDateTime, auto-updated)
 ```
+
+---
+
+### 3.7. Validate DTO-level Field Consistency (Critical)
+
+**IMPORTANT**: Always verify that API.md request/response body fields match the actual backend Request/Response DTOs and common response wrappers.
+
+**Why This Matters**:
+- API.md can document field names that never existed in actual DTOs
+- Common wrappers like `PagingResponse` may differ from Spring's default `Page<T>`
+- Field names change during development (e.g., `scheduledAt` → `openAt`)
+- New fields added to DTOs may not be reflected in API.md
+
+**Validation Procedure**:
+
+1. **Identify endpoints to validate**:
+   - Endpoints touched by recently completed tasks
+   - Endpoints whose Request or Response DTOs were modified
+   - Any endpoint flagged during Steps 3.5 or 3.6
+
+2. **Read common response wrappers** (always check these first):
+   ```bash
+   # Find PagingResponse and other common wrappers
+   find apps/backend/api -name "PagingResponse.java" -o -name "ApiResponse.java"
+   ```
+   Extract actual field names and compare with API.md's "페이지네이션" section.
+
+3. **For each target endpoint, read its DTOs**:
+   ```bash
+   # Request DTOs
+   find apps/backend/api -path "*/controller/request/*Request.java"
+   # Response DTOs
+   find apps/backend/api -path "*/controller/response/*Response.java"
+   ```
+
+4. **Compare actual DTO fields vs API.md**:
+
+   **For Request DTOs**:
+   - Field names (e.g., `openAt` not `scheduledAt`)
+   - Required vs optional (`@NotNull`/`@NotBlank` = required)
+   - Field types (e.g., `List<Long> imageIds`)
+   - Nested object field names (e.g., `locationLabel` not `locationName`)
+
+   **For Response DTOs**:
+   - Field names and structure (flat vs nested objects)
+   - Fields present in DTO but missing from API.md
+   - Fields in API.md but absent from DTO (phantom fields)
+   - Nested object structure (e.g., `{ location: { address, latitude, longitude } }`)
+
+5. **Detect common mismatches**:
+   - ❌ **Wrong field name**: `scheduledAt` vs `openAt`, `locationName` vs `locationLabel`
+   - ❌ **Wrong required/optional**: field marked optional in docs but `@NotNull` in DTO
+   - ❌ **Missing field**: `imageIds` in DTO but not in API.md
+   - ❌ **Phantom field**: `isLiked` in API.md but not in DTO
+   - ❌ **Wrong structure**: flat fields in docs but nested object in DTO
+   - ❌ **Wrong wrapper**: Spring `Page<T>` fields instead of `PagingResponse` fields
+   - ❌ **Wrong page indexing**: `default: 0` instead of `default: 1` when `setOneIndexedParameters(true)`
+
+6. **Report mismatches**:
+   ```
+   ⚠️ DTO-level Field Consistency Check Failed!
+
+   Mismatches found:
+
+   1. PagingResponse wrapper (affects all list endpoints)
+      API.md: pageable, first, empty, number, numberOfElements, size
+      Actual PagingResponse.java: pageNo (1-indexed), pageSize, totalElements, totalPages, last
+      Issue: Spring Page<T> fields documented instead of custom PagingResponse
+
+   2. TimeCapsule 작성 Request (POST /api/v1/time-capsule)
+      API.md: scheduledAt (required)
+      Actual TimeCapsuleRequest.java: openAt (required, @Future)
+      Issue: Wrong field name
+
+   3. Archive 수정 Request (PATCH /api/v1/archives/{id})
+      API.md: emotion (optional), content (optional)
+      Actual ArchiveUpdateRequest.java: emotion (@NotNull), content (@NotBlank)
+      Issue: Required fields marked as optional
+      Missing in API.md: imageIds (List<Long>)
+
+   4. CommonUserResponse (writer object in all archive responses)
+      API.md: "id": 123
+      Actual CommonUserResponse.java: userId (Long)
+      Issue: Wrong field name
+
+   Action required: Update API.md to match actual DTOs
+   ```
+
+7. **If mismatches found**:
+   - ❌ **STOP** - Do not proceed to Step 4
+   - Report all mismatches with side-by-side comparison
+   - Wait for user to decide:
+     - Option A: Auto-fix API.md to match DTOs (Recommended)
+     - Option B: User will manually fix
+     - Option C: Update DTOs to match docs (rarely appropriate)
+
+8. **If no mismatches** ✅:
+   - Proceed to Step 4
+
+**Auto-Fix Option**:
+If user chooses auto-fix:
+1. Read all affected DTO files completely
+2. Update API.md request/response body examples to match actual fields
+3. Update common section (페이지네이션) if PagingResponse changed
+4. Update metadata date
+5. Generate fix report
+
+**Key DTOs to always validate** (these are used across many endpoints):
+
+| DTO | Location | Affects |
+|-----|----------|---------|
+| `PagingResponse<T>` | `api/common/response/PagingResponse.java` | All paginated list endpoints |
+| `CommonUserResponse` | `api/archive/controller/response/CommonUserResponse.java` | All archive/capsule responses with writer |
+| `LocationDetail` | `api/common/response/LocationDetail.java` | All location-containing responses |
+| `LocationRequest` | `api/archive/controller/request/LocationRequest.java` | All location-containing requests |
 
 ---
 
