@@ -2,6 +2,7 @@ package com.feelarchive.api.archive.controller;
 
 import com.feelarchive.api.archive.controller.request.ArchiveRequest;
 import com.feelarchive.api.archive.controller.request.ArchiveStatusUpdateRequest;
+import com.feelarchive.api.archive.controller.request.ArchiveUpdateRequest;
 import com.feelarchive.api.archive.controller.request.NearbyArchiveRequest;
 import com.feelarchive.api.archive.controller.response.ArchiveDetailResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveImageDownloadResponse;
@@ -54,6 +55,25 @@ public class ArchiveController {
   {
     Long archiveId = archiveService.create(userId, archiveRequest);
     return ResponseEntity.created(URI.create("/api/v1/archives/"+archiveId)).build();
+  }
+
+  @PatchMapping("/{archiveId}")
+  public ResponseEntity<ArchiveDetailResponse> updateArchive(
+      @AuthenticationPrincipal Long userId,
+      @PathVariable Long archiveId,
+      @RequestBody ArchiveUpdateRequest request)
+  {
+    ArchiveDetailResponse archives = archiveService.updateArchive(archiveId, request,userId);
+    return ResponseEntity.ok().body(archives);
+  }
+
+  @DeleteMapping("/{archiveId}")
+  public ResponseEntity<Void> deleteArchive(
+      @AuthenticationPrincipal Long userId,
+      @PathVariable Long archiveId)
+  {
+    archiveService.deleteArchive(archiveId ,userId);
+    return ResponseEntity.noContent().build();
   }
 
   @PostMapping(value = "/{id}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

@@ -38,6 +38,26 @@ Authorization: Bearer {{accessToken}}
   "location": null
 }
 
+### 아카이브 수정
+PATCH http://127.0.0.1:8080/api/v1/archives/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "emotion": "ANGRY",
+  "content": "짜증난다........",
+  "visibility": "PUBLIC",
+  "location": {
+    "latitude": 37.566535,
+    "longitude": 126.977969,
+    "locationLabel": "최악의 장소"
+  }
+}
+
+### 아카이브 삭제
+DELETE http://127.0.0.1:8080/api/v1/archives/2052
+Authorization: Bearer {{accessToken}}
+
 ### 아카이브 이미지 등록
 POST http://127.0.0.1:8080/api/v1/archives/4/images
 Authorization: Bearer {{accessToken}}

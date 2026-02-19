@@ -21,11 +21,13 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ArchiveImageService {
@@ -69,6 +71,25 @@ public class ArchiveImageService {
   }
 
   @Transactional
+  public void deleteAll(Archive archive) {
+    List<ArchiveImage> archiveImages = archiveImageRepository.findByArchive(archive);
+
+    List<String> storageKeys = archiveImages.stream()
+        .map(img -> img.getFileMeta().getStorageKey())
+        .toList();
+
+    archiveImageRepository.deleteAll(archiveImages);
+
+    if (!storageKeys.isEmpty()) {
+      try {
+        fileService.deleteAll(storageKeys);
+      } catch (Exception e) {
+        log.error("파일 삭제 실패 (storageKeys: {}): {}", storageKeys, e.getMessage());
+      }
+    }
+  }
+
+  @Transactional
   public ArchiveImageDownloadResponse download(Long archiveId, Long imageId, Long userId) {
     ArchiveImage image = getArchiveImage(archiveId, imageId);
     Archive archive = image.getArchive();
@@ -98,6 +119,29 @@ public class ArchiveImageService {
     return archiveImages.stream()
         .map(archiveImage -> ArchiveImageResponse.of(archiveImage.getId(), generateDownloadUrl(archive.getId(), archiveImage)))
         .toList();
+  }
+
+  @Transactional
+  public void syncImages(Archive archive, List<Long> imageIds) {
+    List<ArchiveImage> currentImages = archiveImageRepository.findByArchive(archive);
+
+    List<ArchiveImage> toDelete = currentImages.stream()
+        .filter(img -> !imageIds.contains(img.getId()))
+        .toList();
+
+    if (!toDelete.isEmpty()) {
+      archiveImageRepository.deleteAll(toDelete);
+
+      List<String> storageKeys = toDelete.stream()
+          .map(img -> img.getFileMeta().getStorageKey())
+          .toList();
+
+      try {
+        fileService.deleteAll(storageKeys);
+      } catch (Exception e) {
+        log.error("아카이브 수정 중 삭제된 이미지 삭제 실패: {}", e.getMessage());
+      }
+    }
   }
 
   private ArchiveImage getArchiveImage(Long archiveId, Long imageId) {

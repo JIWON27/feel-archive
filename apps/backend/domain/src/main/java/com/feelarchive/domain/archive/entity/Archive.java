@@ -115,4 +115,11 @@ public class Archive {
       throw new FeelArchiveException(ARCHIVE_FORBIDDEN);
     }
   }
+
+  public void update(Emotion emotion, String content, Visibility visibility, Location location) {
+    this.emotion = emotion;
+    this.content = content;
+    this.visibility = visibility;
+    this.location = location;
+  }
 }
