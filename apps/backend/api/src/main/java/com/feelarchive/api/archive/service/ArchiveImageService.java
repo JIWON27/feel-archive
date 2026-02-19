@@ -100,6 +100,15 @@ public class ArchiveImageService {
         .toList();
   }
 
+  @Transactional
+  public void syncImages(Archive archive, List<Long> imageIds) {
+    List<ArchiveImage> currentImages = archiveImageRepository.findByArchive(archive);
+
+    currentImages.stream()
+        .filter(img -> !imageIds.contains(img.getId()))
+        .forEach(archiveImageRepository::delete);
+  }
+
   private ArchiveImage getArchiveImage(Long archiveId, Long imageId) {
     return archiveImageRepository.findByIdAndArchive_Id(imageId, archiveId)
         .orElseThrow(() -> new com.feelarchive.common.excepion.FeelArchiveException(ARCHIVE_IMAGE_NOT_FOUND));

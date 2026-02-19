@@ -2,6 +2,7 @@ package com.feelarchive.api.archive.service;
 
 import com.feelarchive.api.archive.controller.request.ArchiveRequest;
 import com.feelarchive.api.archive.controller.request.ArchiveStatusUpdateRequest;
+import com.feelarchive.api.archive.controller.request.ArchiveUpdateRequest;
 import com.feelarchive.api.archive.controller.request.NearbyArchiveRequest;
 import com.feelarchive.api.archive.controller.response.ArchiveDetailResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveImageResponse;
@@ -11,11 +12,13 @@ import com.feelarchive.api.common.response.PagingResponse;
 import com.feelarchive.api.user.service.UserReader;
 import com.feelarchive.domain.archive.ArchiveSearchCondition;
 import com.feelarchive.domain.archive.entity.Archive;
+import com.feelarchive.domain.archive.entity.vo.Location;
 import com.feelarchive.domain.archive.repository.ArchiveQueryRepository;
 import com.feelarchive.domain.archive.repository.ArchiveRepository;
 import com.feelarchive.domain.user.entity.User;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -77,6 +80,28 @@ public class ArchiveService {
     archive.validateOwner(userId);
 
     archive.updateVisibility(request.getVisibility());
+  }
+
+  @Transactional
+  public ArchiveDetailResponse updateArchive(Long archiveId, ArchiveUpdateRequest request, Long userId) {
+    Archive archive = archiveReader.getById(archiveId);
+    archive.validateOwner(userId);
+
+    Location location = Optional.ofNullable(request.location())
+        .map(req -> new Location(req.getLatitude(), req.getLongitude(), req.getLocationLabel()))
+        .orElse(null);
+
+    archive.update(
+        request.emotion(),
+        request.content(),
+        request.visibility(),
+        location
+    );
+
+    archiveImageService.syncImages(archive, request.imageIds());
+
+    List<ArchiveImageResponse> images = archiveImageService.getImages(archive);
+    return archiveMapper.toDetail(archive, images, true);
   }
 
   @Transactional
