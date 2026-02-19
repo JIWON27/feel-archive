@@ -1,6 +1,6 @@
 # Feel-Archive API 문서
 
-> **최종 업데이트**: 2026-02-18
+> **최종 업데이트**: 2026-02-19
 > **Base URL**: `http://localhost:8080` (개발)
 > **API 버전**: v1
 >
@@ -316,14 +316,13 @@ POST /api/v1/archives
 **Request Body**
 ```json
 {
-  "emotion": "HAPPY | SAD | ANXIOUS | ANGRY | CALM | EXCITED | LONELY | GRATEFUL | PEACEFUL | THRILLED | NOSTALGIC (required)",
+  "emotion": "HAPPY | SAD | ANXIOUS | ANGRY | CALM | EXCITED | LONELY | GRATEFUL | TIRED (required)",
   "content": "string (required)",
   "visibility": "PUBLIC | PRIVATE (required)",
   "location": {
     "latitude": "number (BigDecimal, optional)",
     "longitude": "number (BigDecimal, optional)",
-    "locationName": "string (optional)",
-    "address": "string (optional)"
+    "locationLabel": "string (optional) - 사용자 메모 또는 역지오코딩 주소"
   }
 }
 ```
@@ -341,8 +340,7 @@ Content-Type: application/json
   "location": {
     "latitude": 37.5665,
     "longitude": 126.9780,
-    "locationName": "서울시청",
-    "address": "서울특별시 중구 세종대로 110"
+    "locationLabel": "서울시청"
   }
 }
 ```
@@ -372,13 +370,13 @@ GET /api/v1/archives
 **인증 필요**: ✅ Yes (Bearer Token)
 
 **Query Parameters**
-- `page` (int, optional, default: 0): 페이지 번호
+- `page` (int, optional, default: 1): 페이지 번호 (1부터 시작)
 - `size` (int, optional, default: 20): 페이지 크기
 - `sort` (string, optional): 정렬 기준 (예: `createdAt,desc`)
 
 **Request Example**
 ```http
-GET /api/v1/archives?page=0&size=10&sort=createdAt,desc HTTP/1.1
+GET /api/v1/archives?page=1&size=10&sort=createdAt,desc HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
@@ -396,28 +394,16 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
       "createdAt": "2026-02-15T14:30:00",
       "likeCount": 5,
       "writer": {
-        "id": 123,
+        "userId": 123,
         "nickname": "길동이"
       }
     }
   ],
-  "pageable": {
-    "pageNumber": 0,
-    "pageSize": 10,
-    "sort": {
-      "sorted": true,
-      "unsorted": false,
-      "empty": false
-    }
-  },
+  "pageNo": 1,
+  "pageSize": 10,
   "totalElements": 100,
   "totalPages": 10,
-  "last": false,
-  "first": true,
-  "size": 10,
-  "number": 0,
-  "numberOfElements": 10,
-  "empty": false
+  "last": false
 }
 ```
 
@@ -454,10 +440,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
   "emotion": "HAPPY",
   "content": "오늘 정말 행복한 하루였다! 친구들과 함께한 시간이 너무 즐거웠어요.",
   "visibility": "PUBLIC",
-  "latitude": 37.5665,
-  "longitude": 126.9780,
-  "locationName": "서울시청",
-  "address": "서울특별시 중구 세종대로 110",
+  "location": {
+    "address": "서울시청",
+    "latitude": 37.5665,
+    "longitude": 126.9780
+  },
   "images": [
     {
       "id": 1,
@@ -466,17 +453,18 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
     }
   ],
   "likeCount": 5,
-  "isLiked": false,
-  "isScrapped": false,
   "isOwner": true,
   "writer": {
-    "id": 123,
+    "userId": 123,
     "nickname": "길동이"
   },
   "createdAt": "2026-02-15T14:30:00",
   "updatedAt": "2026-02-15T14:30:00"
 }
 ```
+
+**참고사항**
+- `location.address`: 사용자가 입력한 위치 메모 (locationLabel). 미입력 시 역지오코딩 주소가 저장됨.
 
 **Status Codes**
 - `200 OK`: 조회 성공
@@ -521,7 +509,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
     "createdAt": "2026-02-15T14:30:00",
     "likeCount": 5,
     "writer": {
-      "id": 123,
+      "userId": 123,
       "nickname": "길동이"
     }
   }
@@ -633,17 +621,27 @@ PATCH /api/v1/archives/{id}
 **Request Body**
 ```json
 {
-  "emotion": "HAPPY | SAD | ... (optional)",
-  "content": "string (optional)",
-  "visibility": "PUBLIC | PRIVATE (optional)",
+  "emotion": "HAPPY | SAD | ANXIOUS | ANGRY | CALM | EXCITED | LONELY | GRATEFUL | TIRED (required)",
+  "content": "string (required)",
+  "visibility": "PUBLIC | PRIVATE (required)",
   "location": {
-    "latitude": "number (optional)",
-    "longitude": "number (optional)",
-    "locationName": "string (optional)",
-    "address": "string (optional)"
-  }
+    "latitude": "number (BigDecimal, optional)",
+    "longitude": "number (BigDecimal, optional)",
+    "locationLabel": "string (optional) - 사용자 메모 또는 역지오코딩 주소"
+  },
+  "imageIds": [1, 2, 3]
 }
 ```
+
+**Validation Rules**
+- `emotion`, `content`, `visibility`: 필수
+- `location`: 선택 (생략 시 위치 정보 유지)
+- `imageIds`: 선택 (최종 연결할 이미지 ID 목록. 생략 시 기존 이미지 유지. 빈 배열([]) 전달 시 모든 이미지 제거)
+
+**이미지 수정 플로우 (지연 연결 방식)**
+1. 신규 추가 이미지를 먼저 `POST /archives/{id}/images`로 업로드하여 ID 획득
+2. 기존 유지할 imageId + 신규 imageId를 합산한 목록을 PATCH 요청에 포함
+3. 백엔드 `syncImages()`가 최종 목록 기준으로 이미지 연결/삭제 일괄 처리
 
 **Request Example**
 ```http
@@ -652,18 +650,46 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 Content-Type: application/json
 
 {
+  "emotion": "CALM",
   "content": "수정된 내용입니다.",
-  "visibility": "PRIVATE"
+  "visibility": "PRIVATE",
+  "imageIds": [1, 3]
 }
 ```
 
 **Response (200 OK)**
-```http
-200 OK
+```json
+{
+  "archiveId": 456,
+  "emotion": "CALM",
+  "content": "수정된 내용입니다.",
+  "visibility": "PRIVATE",
+  "location": {
+    "address": "서울시청",
+    "latitude": 37.5665,
+    "longitude": 126.9780
+  },
+  "images": [
+    {
+      "id": 1,
+      "url": "/api/v1/archives/456/images/1",
+      "originalName": "photo1.jpg"
+    }
+  ],
+  "likeCount": 5,
+  "isOwner": true,
+  "writer": {
+    "userId": 123,
+    "nickname": "길동이"
+  },
+  "createdAt": "2026-02-15T14:30:00",
+  "updatedAt": "2026-02-19T10:00:00"
+}
 ```
 
 **Status Codes**
-- `200 OK`: 수정 성공
+- `200 OK`: 수정 성공 (수정된 아카이브 상세 반환)
+- `400 Bad Request`: 유효성 검증 실패 (필수 필드 누락)
 - `401 Unauthorized`: 인증 토큰 없음 또는 유효하지 않음
 - `403 Forbidden`: 본인이 작성한 아카이브가 아님
 - `404 Not Found`: 존재하지 않는 아카이브 ID
@@ -1017,12 +1043,12 @@ GET /api/v1/archives/scraps
 **인증 필요**: ✅ Yes (Bearer Token)
 
 **Query Parameters**
-- `page` (int, optional, default: 0): 페이지 번호
+- `page` (int, optional, default: 1): 페이지 번호 (1부터 시작)
 - `size` (int, optional, default: 20): 페이지 크기
 
 **Request Example**
 ```http
-GET /api/v1/archives/scraps?page=0&size=10 HTTP/1.1
+GET /api/v1/archives/scraps?page=1&size=10 HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
@@ -1040,14 +1066,16 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
       "createdAt": "2026-02-15T14:30:00",
       "likeCount": 5,
       "writer": {
-        "id": 123,
+        "userId": 123,
         "nickname": "길동이"
       }
     }
   ],
-  "pageable": {...},
+  "pageNo": 1,
+  "pageSize": 10,
   "totalElements": 15,
-  "totalPages": 2
+  "totalPages": 2,
+  "last": true
 }
 ```
 
@@ -1073,12 +1101,13 @@ POST /api/v1/time-capsule
 **Request Body**
 ```json
 {
+  "emotion": "HAPPY | SAD | ANXIOUS | ANGRY | CALM | EXCITED | LONELY | GRATEFUL | TIRED (required)",
   "content": "string (required)",
-  "scheduledAt": "string (required, ISO 8601 datetime)",
+  "openAt": "string (required, ISO 8601 datetime, 미래 시각)",
   "location": {
-    "latitude": "number (optional)",
-    "longitude": "number (optional)",
-    "locationName": "string (optional)"
+    "latitude": "number (BigDecimal, optional)",
+    "longitude": "number (BigDecimal, optional)",
+    "locationLabel": "string (optional)"
   }
 }
 ```
@@ -1090,12 +1119,13 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 Content-Type: application/json
 
 {
+  "emotion": "HAPPY",
   "content": "1년 후의 나에게...",
-  "scheduledAt": "2027-02-15T00:00:00",
+  "openAt": "2027-02-15T00:00:00",
   "location": {
     "latitude": 37.5665,
     "longitude": 126.9780,
-    "locationName": "서울시청"
+    "locationLabel": "서울시청"
   }
 }
 ```
@@ -1108,13 +1138,13 @@ Location: /api/v1/time-capsule/789
 
 **Status Codes**
 - `201 Created`: 작성 성공
-- `400 Bad Request`: 유효성 검증 실패 (과거 날짜 등)
+- `400 Bad Request`: 유효성 검증 실패 (과거 날짜, 감정 누락 등)
 - `401 Unauthorized`: 인증 토큰 없음 또는 유효하지 않음
 
 **참고사항**
 - 작성 후 30분 이내에만 수정 가능
 - 30분 후에는 완전 잠금 (수정/삭제 불가)
-- `scheduledAt` 시점이 되면 자동으로 열람 가능 및 알림 발송
+- `openAt` 시점이 되면 자동으로 열람 가능 및 알림 발송
 
 ---
 
@@ -1135,18 +1165,35 @@ GET /api/v1/time-capsule HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
+**Query Parameters**
+- `page` (int, optional, default: 1): 페이지 번호 (1부터 시작)
+- `size` (int, optional, default: 20): 페이지 크기
+- `status` (string, optional): 상태 필터 (`LOCKED` | `OPENED`)
+
 **Response (200 OK)**
 ```json
-[
-  {
-    "id": 789,
-    "contentPreview": "1년 후의 나에게...",
-    "scheduledAt": "2027-02-15T00:00:00",
-    "isOpened": false,
-    "isLocked": true,
-    "createdAt": "2026-02-15T10:00:00"
-  }
-]
+{
+  "content": [
+    {
+      "id": 789,
+      "emotion": "HAPPY",
+      "contentPreview": "1년 후의 나에게...",
+      "location": {
+        "address": "서울시청",
+        "latitude": 37.5665,
+        "longitude": 126.9780
+      },
+      "status": "LOCKED",
+      "openAt": "2027-02-15T00:00:00",
+      "createdAt": "2026-02-15T10:00:00"
+    }
+  ],
+  "pageNo": 1,
+  "pageSize": 20,
+  "totalElements": 5,
+  "totalPages": 1,
+  "last": true
+}
 ```
 
 **Status Codes**
@@ -1175,32 +1222,40 @@ GET /api/v1/time-capsule/789 HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
-**Response (200 OK) - 열림 상태**
+**Response (200 OK) - 열림 상태 (status: OPENED)**
 ```json
 {
   "id": 789,
+  "emotion": "HAPPY",
   "content": "1년 후의 나에게... 오늘의 감정을 기록해둔다.",
-  "scheduledAt": "2027-02-15T00:00:00",
-  "isOpened": true,
-  "isLocked": true,
+  "images": [
+    {
+      "id": 1,
+      "url": "/api/v1/time-capsule/789/images/1",
+      "originalName": "photo.jpg"
+    }
+  ],
   "location": {
+    "address": "서울시청",
     "latitude": 37.5665,
-    "longitude": 126.9780,
-    "locationName": "서울시청"
+    "longitude": 126.9780
   },
-  "createdAt": "2026-02-15T10:00:00",
-  "openedAt": "2027-02-15T00:00:00"
+  "status": "OPENED",
+  "openAt": "2027-02-15T00:00:00",
+  "createdAt": "2026-02-15T10:00:00"
 }
 ```
 
-**Response (200 OK) - 잠금 상태**
+**Response (200 OK) - 잠금 상태 (status: LOCKED)**
 ```json
 {
   "id": 789,
+  "emotion": "HAPPY",
   "content": null,
-  "scheduledAt": "2027-02-15T00:00:00",
-  "isOpened": false,
-  "isLocked": true,
+  "images": [],
+  "location": null,
+  "status": "LOCKED",
+  "openAt": "2027-02-15T00:00:00",
   "createdAt": "2026-02-15T10:00:00"
 }
 ```
@@ -1212,7 +1267,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 - `404 Not Found`: 존재하지 않는 타임캡슐 ID
 
 **참고사항**
-- 잠금 상태(`isLocked: true`)에서는 `content`가 `null`로 반환됩니다
+- 잠금 상태(`status: LOCKED`)에서는 `content`가 `null`로 반환됩니다
+- `openAt`: 타임캡슐이 열리는 예정 시각 (작성 시 지정한 공개 일시)
 
 ---
 
@@ -1233,8 +1289,14 @@ PUT /api/v1/time-capsule/{id}
 **Request Body**
 ```json
 {
-  "content": "string (optional)",
-  "scheduledAt": "string (optional, ISO 8601 datetime)"
+  "emotion": "HAPPY | SAD | ... (required)",
+  "content": "string (required)",
+  "openAt": "string (required, ISO 8601 datetime, 미래 시각)",
+  "location": {
+    "latitude": "number (BigDecimal, optional)",
+    "longitude": "number (BigDecimal, optional)",
+    "locationLabel": "string (optional)"
+  }
 }
 ```
 
@@ -1497,23 +1559,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
       "readAt": null
     }
   ],
-  "pageable": {
-    "pageNumber": 0,
-    "pageSize": 20,
-    "sort": {
-      "sorted": true,
-      "unsorted": false,
-      "empty": false
-    }
-  },
+  "pageNo": 1,
+  "pageSize": 20,
   "totalElements": 15,
   "totalPages": 1,
-  "last": true,
-  "first": true,
-  "size": 20,
-  "number": 0,
-  "numberOfElements": 15,
-  "empty": false
+  "last": true
 }
 ```
 
@@ -1890,26 +1940,19 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 페이지네이션이 지원되는 엔드포인트는 다음 쿼리 파라미터를 사용합니다:
 
 **Query Parameters**
-- `page` (int, optional, default: 0): 페이지 번호 (0부터 시작)
+- `page` (int, optional, default: 1): 페이지 번호 (**1부터 시작**)
 - `size` (int, optional, default: 20): 페이지당 항목 수
 - `sort` (string, optional): 정렬 기준 (예: `createdAt,desc`)
 
-**응답 형식**
+**응답 형식 (PagingResponse)**
 ```json
 {
   "content": [...],
-  "pageable": {
-    "pageNumber": 0,
-    "pageSize": 20
-  },
+  "pageNo": 1,
+  "pageSize": 20,
   "totalElements": 100,
   "totalPages": 5,
-  "last": false,
-  "first": true,
-  "size": 20,
-  "number": 0,
-  "numberOfElements": 20,
-  "empty": false
+  "last": false
 }
 ```
 

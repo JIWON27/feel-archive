@@ -1,7 +1,7 @@
 # Feel-Archive 서비스 기획 스펙 문서
 
 > **문서 버전**: 1.0
-> **작성일**: 2026-02-18
+> **작성일**: 2026-02-19
 > **서비스명**: 미확정 (가칭: Feel-Archive)
 
 ---
@@ -58,6 +58,9 @@
 - **기록 방식**:
   - 현장 기록 (GPS 기반)
   - 회상 기록 (지도 검색으로 장소 선택)
+- **위치 메모 (locationLabel)**:
+  - 역지오코딩(Kakao Maps)으로 자동 주소가 기본값으로 제공됨
+  - 사용자가 직접 입력한 메모가 우선 적용됨 (미입력 시 역지오코딩 주소 사용)
 - **위치 노출 수준**: 공개 글 작성 시 노출 수준 선택 가능
 
 #### 게시글 구성
@@ -71,7 +74,7 @@
 
 #### 수정/삭제 정책
 - **아카이브 글**: 자유롭게 수정/삭제 가능
-- **이미지 수정**: 수정 시 기존 이미지 전체 삭제 후 새로 업로드 (전체 교체 방식)
+- **이미지 수정**: 지연 연결 방식 - 수정 완료 시 신규 이미지를 먼저 업로드 후 최종 imageIds 목록(기존 유지 + 신규 추가)을 PATCH 요청에 포함하여 일괄 반영. 수정 취소 시 아직 연결되지 않은 이미지는 서버에 남지 않음.
 - **삭제 방식**: Soft Delete (배치로 정리)
 
 ---
@@ -627,8 +630,8 @@ POST   /api/v1/archives             글 작성
 GET    /api/v1/archives             글 목록 조회 (필터/정렬, 공개 글만)
 GET    /api/v1/archives/me          내 아카이브 목록 조회 (내 글만, 필터/정렬)
 GET    /api/v1/archives/{id}        글 상세 조회
-PATCH  /api/v1/archives/{id}        글 수정 (미구현 - 백엔드 작업 필요)
-DELETE /api/v1/archives/{id}        글 삭제 (soft delete) (미구현 - 백엔드 작업 필요)
+PATCH  /api/v1/archives/{id}        글 수정 (emotion/content/visibility 필수, imageIds 선택)
+DELETE /api/v1/archives/{id}        글 삭제 (soft delete)
 PATCH  /api/v1/archives/{id}/status 아카이브 상태(공개/비공개) 변경
 GET    /api/v1/archives/nearby      반경 내 아카이브 조회 (GIS)
                                      Query params: latitude, longitude, radius (기본값 50.0km)
