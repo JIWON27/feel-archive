@@ -14,6 +14,7 @@ interface ArchiveFormProps {
   onSubmit: (data: ArchiveFormData, images: File[]) => void;
   isLoading?: boolean;
   submitLabel?: string;
+  hideImageUploader?: boolean;
 }
 
 export const ArchiveForm: React.FC<ArchiveFormProps> = ({
@@ -21,6 +22,7 @@ export const ArchiveForm: React.FC<ArchiveFormProps> = ({
   onSubmit,
   isLoading = false,
   submitLabel = '작성하기',
+  hideImageUploader = false,
 }) => {
   const [images, setImages] = useState<File[]>([]);
 
@@ -105,14 +107,16 @@ export const ArchiveForm: React.FC<ArchiveFormProps> = ({
         )}
       </div>
 
-      {/* 이미지 업로드 */}
-      <ImageUploader
-        images={images}
-        onChange={setImages}
-        maxImages={5}
-        maxSizePerFile={5}
-        maxTotalSize={20}
-      />
+      {/* 이미지 업로드 (수정 페이지에서는 숨김) */}
+      {!hideImageUploader && (
+        <ImageUploader
+          images={images}
+          onChange={setImages}
+          maxImages={5}
+          maxSizePerFile={5}
+          maxTotalSize={20}
+        />
+      )}
 
       {/* 위치 선택 */}
       <Controller

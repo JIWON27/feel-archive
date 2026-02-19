@@ -89,9 +89,13 @@ export const archiveService = {
     return data;
   },
 
-  // 아카이브 수정 (백엔드 API 추가 필요)
-  async update(id: number, data: ArchiveUpdateRequest): Promise<void> {
-    await apiClient.patch(`/api/v1/archives/${id}`, data);
+  // 아카이브 수정
+  async update(id: number, data: ArchiveUpdateRequest): Promise<ArchiveDetail> {
+    const { data: response } = await apiClient.patch<ArchiveDetail>(
+      `/api/v1/archives/${id}`,
+      data
+    );
+    return response;
   },
 
   // 아카이브 상태 변경 (현재 백엔드 지원)

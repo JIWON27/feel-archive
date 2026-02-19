@@ -123,7 +123,7 @@ export const useCreateArchive = () => {
   });
 };
 
-// 아카이브 수정 (이미지 전체 교체)
+// 아카이브 수정 (수정 완료 시 이미지 업로드 후 일괄 반영)
 export const useUpdateArchive = (id: number) => {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -131,27 +131,24 @@ export const useUpdateArchive = (id: number) => {
   return useMutation({
     mutationFn: async ({
       data,
-      images,
-      existingImages
+      existingImageIds,
+      newFiles,
     }: {
       data: ArchiveUpdateRequest;
-      images: File[];
-      existingImages: Array<{ id: number }>
+      existingImageIds: number[];
+      newFiles: File[];
     }) => {
-      // 1. 아카이브 수정
-      await archiveService.update(id, data);
-
-      // 2. 기존 이미지 전체 삭제
-      if (existingImages.length > 0) {
-        await Promise.all(
-          existingImages.map(img => archiveService.deleteImage(id, img.id))
-        );
+      // 1. 새 파일이 있으면 업로드해서 imageId 획득
+      let newImageIds: number[] = [];
+      if (newFiles.length > 0) {
+        const uploaded = await archiveService.uploadImages(id, newFiles);
+        newImageIds = uploaded.map((img) => img.id);
       }
 
-      // 3. 새 이미지 업로드
-      if (images.length > 0) {
-        await archiveService.uploadImages(id, images);
-      }
+      // 2. 최종 imageIds = 유지할 기존 이미지 + 새로 업로드된 이미지
+      const imageIds = [...existingImageIds, ...newImageIds];
+
+      return archiveService.update(id, { ...data, imageIds });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: archiveKeys.detail(id) });

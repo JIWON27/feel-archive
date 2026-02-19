@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useArchiveDetail, useUpdateArchive } from '@/hooks/use-archives';
 import { ArchiveForm } from '@/components/archive/ArchiveForm';
+import { EditImageUploader, EditImageState } from '@/components/archive/EditImageUploader';
 import { ArchiveFormData } from '@/lib/validations/archive';
 import { Button } from '@/components/ui/Button';
 
@@ -15,11 +16,16 @@ export default function EditArchivePage() {
   const { data: archive, isLoading, error } = useArchiveDetail(id);
   const updateArchive = useUpdateArchive(id);
 
-  const handleSubmit = (data: ArchiveFormData, images: File[]) => {
+  const [imageState, setImageState] = useState<EditImageState>({
+    existingImageIds: [],
+    newFiles: [],
+  });
+
+  const handleSubmit = (data: ArchiveFormData, _files: File[]) => {
     updateArchive.mutate({
       data,
-      images,
-      existingImages: archive?.images || [],
+      existingImageIds: imageState.existingImageIds,
+      newFiles: imageState.newFiles,
     });
   };
 
@@ -79,12 +85,38 @@ export default function EditArchivePage() {
           <p className="mt-2 text-gray-600">내용을 수정해주세요</p>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        {/* 이미지 안내 배너 */}
+        <div className="flex items-start gap-3 bg-blue-50 border border-blue-200 text-blue-800 text-sm rounded-lg px-4 py-3 mb-4">
+          <svg
+            className="w-5 h-5 mt-0.5 shrink-0"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span>이미지 삭제/추가는 수정 완료 시 최종 반영됩니다.</span>
+        </div>
+
+        <div className="bg-white rounded-lg shadow p-6 space-y-6">
+          {/* 이미지 섹션 (즉시 업로드 / 삭제는 상태에서만 제거) */}
+          <EditImageUploader
+            initialImages={archive.images}
+            onStateChange={setImageState}
+          />
+
+          {/* 나머지 폼 필드 (감정, 내용, 위치, 공개 설정) */}
           <ArchiveForm
             defaultValues={defaultValues}
             onSubmit={handleSubmit}
             isLoading={updateArchive.isPending}
-            submitLabel="수정하기"
+            submitLabel="수정 완료"
+            hideImageUploader
           />
         </div>
       </div>

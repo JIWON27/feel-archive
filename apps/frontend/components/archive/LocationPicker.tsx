@@ -32,6 +32,8 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
   const [map, setMap] = useState<any>(null);
   const [marker, setMarker] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [geocodedLabel, setGeocodedLabel] = useState<string>(value?.locationLabel || '');
+  const [customLabel, setCustomLabel] = useState<string>('');
 
   // Kakao Maps 초기화
   useEffect(() => {
@@ -122,16 +124,18 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
     // 주소 검색 (역지오코딩)
     const geocoder = new window.kakao.maps.services.Geocoder();
     geocoder.coord2Address(lng, lat, (result: any, status: any) => {
-      let locationLabel = '';
+      let label = '';
       if (status === window.kakao.maps.services.Status.OK && result[0]) {
-        const address = result[0].address;
-        locationLabel = address.address_name;
+        label = result[0].address.address_name;
       }
+
+      setGeocodedLabel(label);
+      setCustomLabel(''); // 위치 재선택 시 커스텀 입력 초기화
 
       onChange({
         latitude: lat,
         longitude: lng,
-        locationLabel,
+        locationLabel: label,
       });
     });
   };
@@ -184,11 +188,32 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
       />
 
       {value && (
-        <div className="mt-2 p-3 bg-gray-50 rounded text-sm">
-          <p className="text-gray-700">
-            <span className="font-medium">선택된 위치:</span>{' '}
-            {value.locationLabel || `${value.latitude}, ${value.longitude}`}
-          </p>
+        <div className="mt-3 space-y-2">
+          <div className="p-3 bg-gray-50 rounded text-sm text-gray-600">
+            <span className="font-medium">역지오코딩 주소:</span>{' '}
+            {geocodedLabel || `${value.latitude.toFixed(6)}, ${value.longitude.toFixed(6)}`}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              위치 메모 <span className="text-gray-400 font-normal">(선택 · 미입력 시 주소로 저장)</span>
+            </label>
+            <input
+              type="text"
+              value={customLabel}
+              onChange={(e) => {
+                const val = e.target.value;
+                setCustomLabel(val);
+                onChange({
+                  latitude: value.latitude,
+                  longitude: value.longitude,
+                  locationLabel: val.trim() || geocodedLabel,
+                });
+              }}
+              placeholder={geocodedLabel || '예) 자주 가는 카페, 추억의 장소...'}
+              className="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
         </div>
       )}
 

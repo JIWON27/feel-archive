@@ -52,7 +52,8 @@ export interface ArchiveUpdateRequest {
   emotion: EmotionType;
   content: string;
   visibility: Visibility;
-  location: Location;
+  location?: Location;
+  imageIds?: number[];
 }
 
 // 아카이브 상태 변경 요청 (현재 백엔드 지원)

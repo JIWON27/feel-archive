@@ -1,7 +1,7 @@
 {
   "project": "feel-archive",
   "version": "1.3",
-  "lastUpdated": "2026-02-18T00:00:00",
+  "lastUpdated": "2026-02-19T00:00:00",
   "tasks": [
     {
       "id": 1,
@@ -740,6 +740,75 @@
       "blockers": [],
       "completedAt": "2026-02-18",
       "notes": "SSE 방식에서 5분 폴링으로 변경. 실시간성보다 서버 부하 절감 우선. 금(#F59E0B)/은(#9CA3AF)/동(#B45309) CSS 메달"
+    },
+    {
+      "id": 46,
+      "category": "feature",
+      "description": "아카이브 수정 기능 구현 (지연 연결 이미지 방식)",
+      "steps": [
+        "types/archive.ts: ArchiveUpdateRequest에 imageIds?: number[] 추가, location optional로 변경",
+        "services/archive-service.ts: update() 반환 타입 void → Promise<ArchiveDetail> 수정",
+        "hooks/use-archives.ts: useUpdateArchive 재작성 - 수정 완료 시 신규 파일 업로드 후 imageIds 확정하여 PATCH",
+        "components/archive/EditImageUploader.tsx 신규 생성 - 기존 이미지(AuthImage) + 새 파일(로컬 미리보기/NEW 뱃지) 분리 관리",
+        "components/archive/ArchiveForm.tsx: hideImageUploader prop 추가",
+        "app/(main)/archives/[id]/edit/page.tsx 전면 재작성 - imageState(existingImageIds, newFiles) 상태 관리, 이미지 안내 배너 추가",
+        "수정 완료 전까지 이미지는 서버에 전송되지 않음 (로컬 상태로만 관리)"
+      ],
+      "passes": true,
+      "commit": "feat: 아카이브 수정 기능 구현 - 지연 연결 이미지 방식 (수정 완료 시 일괄 반영)",
+      "blockers": [],
+      "completedAt": "2026-02-19",
+      "notes": "백엔드 syncImages()가 최종 imageIds 기준으로 이미지 연결/삭제 일괄 처리. 수정 취소 시 서버에 아무것도 남지 않음"
+    },
+    {
+      "id": 47,
+      "category": "fix",
+      "description": "isOwner Jackson 직렬화 버그 식별",
+      "steps": [
+        "백엔드 boolean isOwner 필드에 Lombok @Getter 적용 시 isOwner() getter 생성",
+        "Jackson이 is 접두사 제거하여 JSON을 'owner'로 직렬화 → 프론트 archive.isOwner가 undefined",
+        "API.md에 'isOwner'로 스펙 정의되어 있으므로 백엔드에 @JsonProperty(\"isOwner\") 추가 필요",
+        "프론트는 isOwner 유지, 백엔드 수정 대기"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": ["백엔드 ArchiveDetailResponse.isOwner 필드에 @JsonProperty(\"isOwner\") 추가 필요"],
+      "notes": "수정 버튼 미표시 원인. 백엔드 수정 후 프론트 변경 없이 정상 동작"
+    },
+    {
+      "id": 48,
+      "category": "feature",
+      "description": "LocationPicker 위치 메모 입력창 추가",
+      "steps": [
+        "components/archive/LocationPicker.tsx 수정",
+        "geocodedLabel 상태: 역지오코딩 결과 주소 보관",
+        "customLabel 상태: 사용자 직접 입력값 보관",
+        "위치 재선택 시 customLabel 초기화",
+        "역지오코딩 주소를 별도 표시 영역에 표시 (참고용)",
+        "입력창 placeholder에 역지오코딩 주소 표시",
+        "미입력 시 역지오코딩 주소를 locationLabel로 전송, 입력 시 입력값 우선"
+      ],
+      "passes": true,
+      "commit": "feat: 아카이브 수정 기능 구현 - 지연 연결 이미지 방식 (수정 완료 시 일괄 반영)",
+      "blockers": [],
+      "completedAt": "2026-02-19",
+      "notes": "백엔드 locationLabel은 사용자 메모용. 카카오 역지오코딩은 기본값으로만 사용"
+    },
+    {
+      "id": 49,
+      "category": "feature",
+      "description": "아카이브 상세 페이지 수정/삭제 버튼 SNS 케밥 메뉴로 변경",
+      "steps": [
+        "app/(main)/archives/[id]/page.tsx 수정",
+        "기존 [수정][삭제] 버튼 두 개 나열 → ··· 케밥 메뉴 버튼으로 변경",
+        "클릭 시 드롭다운: 수정(회색 + 연필 아이콘), 삭제(빨간색 + 휴지통 아이콘)",
+        "menuRef로 외부 클릭 감지 후 메뉴 자동 닫힘 (useEffect + mousedown)"
+      ],
+      "passes": true,
+      "commit": "feat: 아카이브 수정 기능 구현 - 지연 연결 이미지 방식 (수정 완료 시 일괄 반영)",
+      "blockers": [],
+      "completedAt": "2026-02-19",
+      "notes": "인스타그램/트위터 스타일 케밥 메뉴. 삭제는 빨간색으로 위험도 시각적 구분"
     }
   ]
 }
