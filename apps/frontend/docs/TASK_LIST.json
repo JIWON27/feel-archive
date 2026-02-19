@@ -109,7 +109,7 @@
       ],
       "passes": true,
       "commit": "feat: 아카이브 CRUD 및 이미지 업로드 구현",
-      "blockers": ["백엔드 API 수정 필요: PATCH /archives/{id}, DELETE /archives/{id}"],
+      "blockers": [],
       "completedAt": "2026-01-28"
     },
     {
@@ -770,10 +770,11 @@
         "API.md에 'isOwner'로 스펙 정의되어 있으므로 백엔드에 @JsonProperty(\"isOwner\") 추가 필요",
         "프론트는 isOwner 유지, 백엔드 수정 대기"
       ],
-      "passes": false,
-      "commit": null,
-      "blockers": ["백엔드 ArchiveDetailResponse.isOwner 필드에 @JsonProperty(\"isOwner\") 추가 필요"],
-      "notes": "수정 버튼 미표시 원인. 백엔드 수정 후 프론트 변경 없이 정상 동작"
+      "passes": true,
+      "commit": "fix: isOwner Jackson 직렬화 버그 수정 및 아카이브 삭제 API 연동",
+      "blockers": [],
+      "completedAt": "2026-02-19",
+      "notes": "백엔드에서 @JsonProperty(\"isOwner\") 추가 완료. 프론트 변경 없이 정상 동작"
     },
     {
       "id": 48,
