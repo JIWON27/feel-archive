@@ -10,7 +10,6 @@ import com.feelarchive.domain.file.exception.FileExceptionCode;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -57,15 +56,6 @@ public class LocalFileService implements FileService {
   }
 
   @Override
-  public List<FileMeta> uploadAll(String dir, List<MultipartFile> files) {
-    List<FileMeta> fileMetas = new ArrayList<>();
-    for (MultipartFile file : files) {
-      fileMetas.add(upload(dir, file));
-    }
-    return fileMetas;
-  }
-
-  @Override
   public void delete(String storageKey) {
     Path baseDir = Path.of(fileProperties.getBaseDir());
     Path fullPath = baseDir.resolve(storageKey);
@@ -109,6 +99,11 @@ public class LocalFileService implements FileService {
         throw new FeelArchiveException(FileExceptionCode.EXCEEDED_FILE_SIZE);
       }
     }
+  }
+
+  @Override
+  public String getAccessUrl(String storageKey) {
+    return fileProperties.getApiPrefix() + storageKey;
   }
 
   private String generateStorageKey(String dir, String extension) {
