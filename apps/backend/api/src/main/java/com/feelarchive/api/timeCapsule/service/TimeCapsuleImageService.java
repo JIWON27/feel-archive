@@ -6,7 +6,6 @@ import static com.feelarchive.domain.capsule.exception.TimeCapsuleExceptionCode.
 import static com.feelarchive.domain.file.exception.FileExceptionCode.FILE_NOT_FOUND;
 import static com.feelarchive.domain.file.exception.FileExceptionCode.FILE_NOT_READABLE;
 
-import com.feelarchive.api.common.file.FileProperties;
 import com.feelarchive.api.common.file.FileService;
 import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleImageDownloadResponse;
 import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleImageResponse;
@@ -33,7 +32,6 @@ public class TimeCapsuleImageService {
 
   private final TimeCapsuleReader capsuleReader;
   private final FileService fileService;
-  private final FileProperties fileProperties;
   private final TimeCapsuleImageRepository timeCapsuleImageRepository;
 
   @Transactional
@@ -54,8 +52,8 @@ public class TimeCapsuleImageService {
     }
     List<TimeCapsuleImage> timeCapsuleImages = timeCapsuleImageRepository.saveAll(capsules);
     return timeCapsuleImages.stream().map(
-        TimeCapsuleImage -> TimeCapsuleImageResponse.of(TimeCapsuleImage.getId(),
-            generateDownloadUrl(timeCapsuleId, TimeCapsuleImage))).toList();
+        timeCapsuleImage -> TimeCapsuleImageResponse.of(timeCapsuleImage.getId(),
+            fileService.getAccessUrl(timeCapsuleImage.getFileMeta().getStorageKey()))).toList();
   }
 
   @Transactional
@@ -72,6 +70,7 @@ public class TimeCapsuleImageService {
 
   @Transactional
   public TimeCapsuleImageDownloadResponse download(Long timeCapsuleId, Long imageId, Long userId) {
+    // TODO getAccessUrl(String storage)에 맞춰서 수정
     TimeCapsuleImage image = getTimeCapsuleImage(timeCapsuleId, imageId);
     TimeCapsule timeCapsule = image.getTimeCapsule();
 
@@ -102,18 +101,13 @@ public class TimeCapsuleImageService {
         timeCapsule);
     return timeCapsuleImages.stream()
         .map(timeCapsuleImage -> TimeCapsuleImageResponse.of(
-            timeCapsuleImage.getId(), generateDownloadUrl(timeCapsule.getId(), timeCapsuleImage)))
+            timeCapsuleImage.getId(), fileService.getAccessUrl(timeCapsuleImage.getFileMeta().getStorageKey())))
         .toList();
   }
 
   private TimeCapsuleImage getTimeCapsuleImage(Long timeCapsuleId, Long imageId) {
     return timeCapsuleImageRepository.findByIdAndTimeCapsule_Id(imageId, timeCapsuleId)
         .orElseThrow(() -> new FeelArchiveException(CAPSULE_IMAGE_NOT_FOUND));
-  }
-
-  private String generateDownloadUrl(Long timeCapsuleId, TimeCapsuleImage timeCapsuleImage) {
-    return fileProperties.getApiPrefix() + "time-capsule/" + timeCapsuleId + "/images/"
-        + timeCapsuleImage.getId();
   }
 
   private void checkOwner(TimeCapsule timeCapsule, Long userId) {
