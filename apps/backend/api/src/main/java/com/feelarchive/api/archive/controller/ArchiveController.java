@@ -19,6 +19,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ContentDisposition;
@@ -96,6 +97,7 @@ public class ArchiveController {
     return ResponseEntity.noContent().build();
   }
 
+  @Profile("local")
   @GetMapping("/{archiveId}/images/{imageId}")
   public ResponseEntity<Resource> downloadImages(
       @AuthenticationPrincipal Long userId,

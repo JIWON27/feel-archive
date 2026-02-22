@@ -8,7 +8,6 @@ import static com.feelarchive.domain.file.exception.FileExceptionCode.FILE_NOT_R
 
 import com.feelarchive.api.archive.controller.response.ArchiveImageDownloadResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveImageResponse;
-import com.feelarchive.api.common.file.FileProperties;
 import com.feelarchive.api.common.file.FileService;
 import com.feelarchive.common.excepion.FeelArchiveException;
 import com.feelarchive.domain.archive.entity.Archive;
@@ -34,7 +33,6 @@ public class ArchiveImageService {
 
   private final ArchiveReader archiveReader;
   private final FileService fileService;
-  private final FileProperties fileProperties;
   private final ArchiveImageRepository archiveImageRepository;
 
   @Transactional
@@ -55,7 +53,13 @@ public class ArchiveImageService {
       );
     }
     List<ArchiveImage> archiveImages = archiveImageRepository.saveAll(archives);
-    return  archiveImages.stream().map(archiveImage -> ArchiveImageResponse.of(archiveImage.getId(), generateDownloadUrl(archiveId, archiveImage))).toList();
+    return archiveImages.stream()
+        .map(archiveImage ->
+            ArchiveImageResponse.of(
+                archiveImage.getId(),
+                fileService.getAccessUrl(archiveImage.getFileMeta().getStorageKey())
+            ))
+        .toList();
   }
 
   @Transactional
@@ -91,6 +95,7 @@ public class ArchiveImageService {
 
   @Transactional
   public ArchiveImageDownloadResponse download(Long archiveId, Long imageId, Long userId) {
+    // TODO getAccessUrl(String storage)에 맞춰서 수
     ArchiveImage image = getArchiveImage(archiveId, imageId);
     Archive archive = image.getArchive();
     FileMeta fileMeta = image.getFileMeta();
@@ -117,7 +122,11 @@ public class ArchiveImageService {
   public List<ArchiveImageResponse> getImages(Archive archive) {
     List<ArchiveImage> archiveImages = archiveImageRepository.findByArchive(archive);
     return archiveImages.stream()
-        .map(archiveImage -> ArchiveImageResponse.of(archiveImage.getId(), generateDownloadUrl(archive.getId(), archiveImage)))
+        .map(archiveImage ->
+            ArchiveImageResponse.of(
+                archiveImage.getId(),
+                fileService.getAccessUrl(archiveImage.getFileMeta().getStorageKey())
+            ))
         .toList();
   }
 
@@ -147,10 +156,6 @@ public class ArchiveImageService {
   private ArchiveImage getArchiveImage(Long archiveId, Long imageId) {
     return archiveImageRepository.findByIdAndArchive_Id(imageId, archiveId)
         .orElseThrow(() -> new com.feelarchive.common.excepion.FeelArchiveException(ARCHIVE_IMAGE_NOT_FOUND));
-  }
-
-  private String generateDownloadUrl(Long archiveId, ArchiveImage archiveImage) {
-    return fileProperties.getApiPrefix() + "archives/" + archiveId +"/images/" + archiveImage.getId();
   }
 
   private void checkOwner(Archive archive, Long userId) {
