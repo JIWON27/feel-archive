@@ -1,13 +1,11 @@
 package com.feelarchive.api.config;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 import com.feelarchive.api.config.auth.AuthenticationFilter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -27,6 +25,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
   private final AuthenticationFilter authenticationFilter;
+
+  @Value("${app.client.base-url}")
+  private String clientUrl;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -53,10 +54,9 @@ public class SecurityConfig {
   }
 
   @Bean
-  @Profile("local")
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.addAllowedOriginPattern("*");
+    configuration.addAllowedOrigin(clientUrl);
     configuration.addAllowedMethod("*");
     configuration.addAllowedHeader("*");
     configuration.setAllowCredentials(true);
@@ -66,4 +66,5 @@ public class SecurityConfig {
     source.registerCorsConfiguration("/**", configuration);
     return source;
   }
+
 }
