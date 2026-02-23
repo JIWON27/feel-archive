@@ -19,6 +19,7 @@ phases:
     commands:
       # 백엔드 디렉토리로 이동 후 빌드
       - cd apps/backend
+      - chmod +x gradlew
       - ./gradlew :api:bootJar -x test
       # Docker 이미지 빌드 (apps/backend가 Context)
       - docker build -t $ECR_URI:$IMAGE_TAG .
