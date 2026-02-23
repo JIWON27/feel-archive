@@ -15,12 +15,14 @@ export const archiveSchema = z.object({
   // 공개/비공개: 필수 선택
   visibility: z.nativeEnum(Visibility),
 
-  // 위치: 필수
-  location: z.object({
-    latitude: z.number().min(-90).max(90),
-    longitude: z.number().min(-180).max(180),
-    locationLabel: z.string().optional(),
-  }),
+  // 위치: 선택
+  location: z
+    .object({
+      latitude: z.number().min(-90).max(90),
+      longitude: z.number().min(-180).max(180),
+      locationLabel: z.string().optional(),
+    })
+    .optional(),
 });
 
 export type ArchiveFormData = z.infer<typeof archiveSchema>;

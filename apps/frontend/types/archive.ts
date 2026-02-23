@@ -39,12 +39,12 @@ export interface Location {
   locationLabel?: string; // 주소 또는 장소명
 }
 
-// 아카이브 작성 요청 (SPEC.md 기준: 감정 단일 선택, 위치 필수)
+// 아카이브 작성 요청
 export interface ArchiveCreateRequest {
-  emotion: EmotionType; // 단일 선택
-  content: string; // 2000자 이상 허용
+  emotion: EmotionType;
+  content: string;
   visibility: Visibility;
-  location: Location; // 필수
+  location?: Location; // 선택
 }
 
 // 아카이브 수정 요청

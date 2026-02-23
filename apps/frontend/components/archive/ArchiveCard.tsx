@@ -30,8 +30,8 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ archive }) => {
   };
 
   return (
-    <Link href={`/archives/${archive.archiveId}`}>
-      <div className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-6 cursor-pointer">
+    <Link href={`/archives/${archive.archiveId}`} className="block h-full">
+      <div className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-6 cursor-pointer flex flex-col h-full">
         {/* 감정 태그 */}
         <div className="flex flex-wrap gap-2 mb-3">
           <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
@@ -39,8 +39,8 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ archive }) => {
           </span>
         </div>
 
-        {/* 내용 미리보기 */}
-        <p className="text-gray-800 mb-4 line-clamp-3">
+        {/* 내용 미리보기 - flex-1로 남은 공간 채움 */}
+        <p className="text-gray-800 mb-4 line-clamp-3 flex-1">
           {archive.contentPreview}
         </p>
 
@@ -48,7 +48,7 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ archive }) => {
         {archive.address && (
           <div className="flex items-center text-sm text-gray-500 mb-4">
             <svg
-              className="w-4 h-4 mr-1"
+              className="w-4 h-4 mr-1 shrink-0"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -66,7 +66,7 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ archive }) => {
                 d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
               />
             </svg>
-            {archive.address}
+            <span className="truncate">{archive.address}</span>
           </div>
         )}
 

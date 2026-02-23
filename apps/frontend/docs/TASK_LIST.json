@@ -810,6 +810,55 @@
       "blockers": [],
       "completedAt": "2026-02-19",
       "notes": "인스타그램/트위터 스타일 케밥 메뉴. 삭제는 빨간색으로 위험도 시각적 구분"
+    },
+    {
+      "id": 50,
+      "category": "fix",
+      "description": "아카이브 위치 정보 선택 사항으로 변경 및 위치 공유 토글 UI 추가",
+      "steps": [
+        "lib/validations/archive.ts: location 필드 .optional() 추가",
+        "types/archive.ts: ArchiveCreateRequest.location을 optional로 변경",
+        "components/archive/ArchiveForm.tsx: 위치 공유/공유 안함 토글 버튼 UI 추가 (shareLocation state)",
+        "공유 안함 선택 시 location 값 undefined로 초기화 (setValue)",
+        "shareLocation === true일 때만 LocationPicker 렌더링"
+      ],
+      "passes": true,
+      "commit": "feat(frontend): 아카이브 위치 정보 선택 사항으로 변경",
+      "blockers": [],
+      "completedAt": "2026-02-24",
+      "notes": "API.md 기준 location은 optional. 기존 프론트가 필수로 잘못 구현되어 있었음. 백엔드 변경 없음"
+    },
+    {
+      "id": 51,
+      "category": "fix",
+      "description": "LocationPicker stale closure 버그 수정",
+      "steps": [
+        "components/archive/LocationPicker.tsx 수정",
+        "map, marker useState → useRef(mapInstanceRef, markerRef)로 교체",
+        "handleLocationSelect → selectLocation으로 리네임, 내부에서 mapInstanceRef.current 직접 참조",
+        "클릭 이벤트 리스너 등록 시 stale closure로 map이 null이던 문제 해결"
+      ],
+      "passes": true,
+      "commit": "feat(frontend): 아카이브 위치 정보 선택 사항으로 변경",
+      "blockers": [],
+      "completedAt": "2026-02-24",
+      "notes": "useEffect 내 kakao.maps.load 콜백에서 setMap 호출 후 state가 아직 반영되지 않아 클릭 핸들러에서 map === null이 되는 stale closure 문제"
+    },
+    {
+      "id": 52,
+      "category": "fix",
+      "description": "ArchiveCard 위치 유무와 무관하게 카드 높이 통일",
+      "steps": [
+        "components/archive/ArchiveCard.tsx 수정",
+        "Link 컴포넌트에 block h-full 추가",
+        "카드 div에 flex flex-col h-full 추가",
+        "내용 미리보기 p 태그에 flex-1 추가 → 위치 정보 유무와 관계없이 footer가 항상 하단에 고정"
+      ],
+      "passes": true,
+      "commit": "feat(frontend): 아카이브 위치 정보 선택 사항으로 변경",
+      "blockers": [],
+      "completedAt": "2026-02-24",
+      "notes": "CSS Grid는 셀 높이를 자동 맞춤하지만 Link(a 태그)가 h-full 없으면 flex-col이 높이 기준을 못 잡음"
     }
   ]
 }

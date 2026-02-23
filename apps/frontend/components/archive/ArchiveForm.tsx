@@ -25,6 +25,9 @@ export const ArchiveForm: React.FC<ArchiveFormProps> = ({
   hideImageUploader = false,
 }) => {
   const [images, setImages] = useState<File[]>([]);
+  const [shareLocation, setShareLocation] = useState<boolean>(
+    defaultValues?.location != null
+  );
 
   const {
     register,
@@ -118,21 +121,60 @@ export const ArchiveForm: React.FC<ArchiveFormProps> = ({
         />
       )}
 
-      {/* 위치 선택 */}
-      <Controller
-        name="location"
-        control={control}
-        render={({ field }) => (
-          <LocationPicker
-            value={field.value}
-            onChange={field.onChange}
-            error={
-              errors.location?.message ||
-              (errors.location ? '위치를 선택해주세요' : undefined)
-            }
+      {/* 위치 공유 선택 */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          위치 정보
+        </label>
+        <div className="flex gap-3 mb-4">
+          <button
+            type="button"
+            onClick={() => {
+              setShareLocation(true);
+            }}
+            className={`
+              flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-medium transition-colors
+              ${
+                shareLocation
+                  ? 'bg-primary text-white border-primary'
+                  : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
+              }
+            `}
+          >
+            📍 위치 공유
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setShareLocation(false);
+              setValue('location', undefined);
+            }}
+            className={`
+              flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-medium transition-colors
+              ${
+                !shareLocation
+                  ? 'bg-gray-700 text-white border-gray-700'
+                  : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
+              }
+            `}
+          >
+            🚫 공유 안함
+          </button>
+        </div>
+
+        {shareLocation && (
+          <Controller
+            name="location"
+            control={control}
+            render={({ field }) => (
+              <LocationPicker
+                value={field.value}
+                onChange={field.onChange}
+              />
+            )}
           />
         )}
-      />
+      </div>
 
       {/* 공개/비공개 선택 */}
       <div>
