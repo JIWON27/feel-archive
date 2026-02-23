@@ -28,3 +28,8 @@ phases:
       # ECR에 push
       - docker push $ECR_URI:$IMAGE_TAG
       - docker push $ECR_URI:latest
+
+artifacts:
+  files:
+    - appspec.yml
+    - scripts/**/*
