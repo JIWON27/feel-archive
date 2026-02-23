@@ -3,7 +3,7 @@ import { tokenUtils } from './utils/token';
 import { LoginResponse } from '@/types/auth';
 
 // API 기본 URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+const API_BASE_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080';
 
 // Axios 인스턴스 생성
 export const apiClient = axios.create({
