@@ -1,0 +1,31 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_REGION: ap-northeast-2
+    ECR_REPO: feel-archive
+
+phases:
+  pre_build:
+    commands:
+      # ECR 로그인
+      - AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+      # 이미지 태그 설정
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c1-7)
+      - ECR_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO
+
+  build:
+    commands:
+      # 백엔드 디렉토리로 이동 후 빌드
+      - cd apps/backend
+      - ./gradlew :api:bootJar -x test
+      # Docker 이미지 빌드 (apps/backend가 Context)
+      - docker build -t $ECR_URI:$IMAGE_TAG .
+      - docker tag $ECR_URI:$IMAGE_TAG $ECR_URI:latest
+
+  post_build:
+    commands:
+      # ECR에 push
+      - docker push $ECR_URI:$IMAGE_TAG
+      - docker push $ECR_URI:latest
