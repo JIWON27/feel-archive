@@ -1,6 +1,6 @@
 # Feel-Archive API 문서
 
-> **최종 업데이트**: 2026-02-19
+> **최종 업데이트**: 2026-02-24
 > **Base URL**: `http://localhost:8080` (개발)
 > **API 버전**: v1
 >
@@ -372,11 +372,13 @@ GET /api/v1/archives
 **Query Parameters**
 - `page` (int, optional, default: 1): 페이지 번호 (1부터 시작)
 - `size` (int, optional, default: 20): 페이지 크기
-- `sort` (string, optional): 정렬 기준 (예: `createdAt,desc`)
+- `emotion` (string, optional): 감정 필터 (`HAPPY | SAD | ANXIOUS | ANGRY | CALM | EXCITED | LONELY | GRATEFUL | TIRED`)
+- `keyword` (string, optional): 내용 검색 키워드
+- `sortType` (string, optional, default: `LATEST`): 정렬 기준 (`LATEST` | `OLDEST` | `POPULAR` | `VIEWS`)
 
 **Request Example**
 ```http
-GET /api/v1/archives?page=1&size=10&sort=createdAt,desc HTTP/1.1
+GET /api/v1/archives?page=1&size=10&emotion=HAPPY&keyword=서울&sortType=LATEST HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
@@ -448,8 +450,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
   "images": [
     {
       "id": 1,
-      "url": "/api/v1/archives/456/images/1",
-      "originalName": "photo.jpg"
+      "url": "/api/v1/archives/456/images/1"
     }
   ],
   "likeCount": 5,
@@ -540,13 +541,15 @@ GET /api/v1/archives/me
 **인증 필요**: ✅ Yes (Bearer Token)
 
 **Query Parameters**
-- `page` (int, optional, default: 0): 페이지 번호
+- `page` (int, optional, default: 1): 페이지 번호 (1부터 시작)
 - `size` (int, optional, default: 20): 페이지 크기
-- `sort` (string, optional): 정렬 기준 (예: `createdAt,desc`)
+- `emotion` (string, optional): 감정 필터 (`HAPPY | SAD | ANXIOUS | ANGRY | CALM | EXCITED | LONELY | GRATEFUL | TIRED`)
+- `keyword` (string, optional): 내용 검색 키워드
+- `sortType` (string, optional, default: `LATEST`): 정렬 기준 (`LATEST` | `OLDEST` | `POPULAR` | `VIEWS`)
 
 **Request Example**
 ```http
-GET /api/v1/archives/me?page=0&size=10&sort=createdAt,desc HTTP/1.1
+GET /api/v1/archives/me?page=1&size=10&emotion=HAPPY&sortType=LATEST HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
@@ -672,8 +675,7 @@ Content-Type: application/json
   "images": [
     {
       "id": 1,
-      "url": "/api/v1/archives/456/images/1",
-      "originalName": "photo1.jpg"
+      "url": "/api/v1/archives/456/images/1"
     }
   ],
   "likeCount": 5,
@@ -787,17 +789,11 @@ Content-Type: image/jpeg
 [
   {
     "id": 1,
-    "url": "/api/v1/archives/456/images/1",
-    "originalName": "photo1.jpg",
-    "contentType": "image/jpeg",
-    "sizeBytes": 1024000
+    "url": "/api/v1/archives/456/images/1"
   },
   {
     "id": 2,
-    "url": "/api/v1/archives/456/images/2",
-    "originalName": "photo2.jpg",
-    "contentType": "image/jpeg",
-    "sizeBytes": 2048000
+    "url": "/api/v1/archives/456/images/2"
   }
 ]
 ```
@@ -1231,8 +1227,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
   "images": [
     {
       "id": 1,
-      "url": "/api/v1/time-capsule/789/images/1",
-      "originalName": "photo.jpg"
+      "url": "/api/v1/time-capsule/789/images/1"
     }
   ],
   "location": {
@@ -1353,13 +1348,13 @@ DELETE /api/v1/time-capsule/789 HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
-**Response (204 No Content)**
+**Response (200 OK)**
 ```http
-204 No Content
+200 OK
 ```
 
 **Status Codes**
-- `204 No Content`: 삭제 성공
+- `200 OK`: 삭제 성공
 - `400 Bad Request`: 삭제 불가 (30분 경과 또는 OPENED 상태)
 - `401 Unauthorized`: 인증 토큰 없음 또는 유효하지 않음
 - `403 Forbidden`: 본인이 작성한 타임캡슐이 아님
