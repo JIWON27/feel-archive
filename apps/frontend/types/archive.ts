@@ -119,10 +119,11 @@ export interface PagingResponse<T> {
   last: boolean;
 }
 
-// 아카이브 검색 조건
+// 아카이브 검색 조건 (백엔드 ArchiveSearchCondition 기준)
 export interface ArchiveSearchCondition {
   emotion?: EmotionType;
-  sort?: 'latest' | 'oldest' | 'popular'; // 최신순/오래된순/인기순
+  keyword?: string;
+  sortType?: 'LATEST' | 'OLDEST' | 'POPULAR'; // 백엔드 ArchiveSortType enum과 일치
 }
 
 // 주변 아카이브 조회 요청

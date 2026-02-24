@@ -9,8 +9,9 @@ import { EmotionType, EmotionLabels, ArchiveSearchCondition } from '@/types/arch
 
 export default function ArchivesPage() {
   const [condition, setCondition] = useState<ArchiveSearchCondition>({
-    sort: 'latest',
+    sortType: 'LATEST',
   });
+  const [keywordInput, setKeywordInput] = useState('');
 
   const {
     data,
@@ -27,8 +28,13 @@ export default function ArchivesPage() {
     setCondition((prev) => ({ ...prev, emotion }));
   };
 
-  const handleSortChange = (sort: 'latest' | 'oldest' | 'popular') => {
-    setCondition((prev) => ({ ...prev, sort }));
+  const handleSortChange = (sortType: 'LATEST' | 'OLDEST' | 'POPULAR') => {
+    setCondition((prev) => ({ ...prev, sortType }));
+  };
+
+  const handleKeywordSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setCondition((prev) => ({ ...prev, keyword: keywordInput.trim() || undefined }));
   };
 
   if (isLoading) {
@@ -67,8 +73,54 @@ export default function ArchivesPage() {
           </Link>
         </div>
 
-        {/* 필터 & 정렬 */}
+        {/* 검색 & 필터 & 정렬 */}
         <div className="bg-white rounded-lg shadow p-4 mb-6">
+          {/* 키워드 검색 */}
+          <div className="mb-4">
+            <form onSubmit={handleKeywordSearch} className="relative">
+              <input
+                type="text"
+                value={keywordInput}
+                onChange={(e) => setKeywordInput(e.target.value)}
+                placeholder="키워드로 검색..."
+                className="w-full pl-10 pr-20 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+              <svg
+                className="absolute left-3 top-2.5 w-4 h-4 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+              <button
+                type="submit"
+                className="absolute right-2 top-1.5 px-3 py-1 bg-primary text-white text-xs rounded-md hover:bg-primary/90"
+              >
+                검색
+              </button>
+            </form>
+            {condition.keyword && (
+              <div className="mt-1 flex items-center gap-2 text-xs text-gray-500">
+                <span>"{condition.keyword}" 검색 중</span>
+                <button
+                  onClick={() => {
+                    setKeywordInput('');
+                    setCondition((prev) => ({ ...prev, keyword: undefined }));
+                  }}
+                  className="text-primary hover:underline"
+                >
+                  초기화
+                </button>
+              </div>
+            )}
+          </div>
+
           {/* 감정 필터 */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -113,9 +165,9 @@ export default function ArchivesPage() {
             </label>
             <div className="flex gap-2">
               <button
-                onClick={() => handleSortChange('latest')}
+                onClick={() => handleSortChange('LATEST')}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  condition.sort === 'latest'
+                  condition.sortType === 'LATEST'
                     ? 'bg-primary text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
@@ -123,9 +175,9 @@ export default function ArchivesPage() {
                 최신순
               </button>
               <button
-                onClick={() => handleSortChange('oldest')}
+                onClick={() => handleSortChange('OLDEST')}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  condition.sort === 'oldest'
+                  condition.sortType === 'OLDEST'
                     ? 'bg-primary text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
@@ -133,9 +185,9 @@ export default function ArchivesPage() {
                 오래된순
               </button>
               <button
-                onClick={() => handleSortChange('popular')}
+                onClick={() => handleSortChange('POPULAR')}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  condition.sort === 'popular'
+                  condition.sortType === 'POPULAR'
                     ? 'bg-primary text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}

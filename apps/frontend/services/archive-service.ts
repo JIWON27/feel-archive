@@ -50,9 +50,19 @@ export const archiveService = {
       condition?: ArchiveSearchCondition;
     } = {}
   ): Promise<PagingResponse<ArchiveSummary>> {
+    const { page, size, condition } = params;
+    // 백엔드 ArchiveSearchCondition은 flat query params로 받음
     const { data } = await apiClient.get<PagingResponse<ArchiveSummary>>(
       '/api/v1/archives',
-      { params }
+      {
+        params: {
+          page,
+          size,
+          emotion: condition?.emotion,
+          keyword: condition?.keyword,
+          sortType: condition?.sortType,
+        },
+      }
     );
     return data;
   },
@@ -61,10 +71,20 @@ export const archiveService = {
   async getMyList(params: {
     page?: number;
     size?: number;
+    condition?: ArchiveSearchCondition;
   } = {}): Promise<PagingResponse<ArchiveSummary>> {
+    const { page, size, condition } = params;
     const { data } = await apiClient.get<PagingResponse<ArchiveSummary>>(
       '/api/v1/archives/me',
-      { params }
+      {
+        params: {
+          page,
+          size,
+          emotion: condition?.emotion,
+          keyword: condition?.keyword,
+          sortType: condition?.sortType,
+        },
+      }
     );
     return data;
   },

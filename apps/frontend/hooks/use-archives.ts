@@ -47,13 +47,14 @@ export const useArchiveList = (condition?: ArchiveSearchCondition) => {
 };
 
 // 내 아카이브 목록 조회 (무한 스크롤)
-export const useMyArchiveList = () => {
+export const useMyArchiveList = (condition?: ArchiveSearchCondition) => {
   return useInfiniteQuery({
-    queryKey: archiveKeys.myLists(),
+    queryKey: [...archiveKeys.myLists(), condition],
     queryFn: ({ pageParam = 0 }) =>
       archiveService.getMyList({
         page: pageParam,
         size: 20,
+        condition,
       }),
     getNextPageParam: (lastPage) => {
       return lastPage.last ? undefined : lastPage.page + 1;
