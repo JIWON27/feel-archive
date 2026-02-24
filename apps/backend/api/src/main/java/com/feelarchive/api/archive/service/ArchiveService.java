@@ -50,16 +50,14 @@ public class ArchiveService {
 
   @Transactional(readOnly = true)
   public PagingResponse<ArchiveSummaryResponse> getMyArchives(Long userId, ArchiveSearchCondition condition, Pageable pageable) {
-    condition.setUserId(userId);
-    Page<Archive> pages = archiveQueryRepository.search(condition, pageable);
+    Page<Archive> pages = archiveQueryRepository.searchMyArchives(userId, condition, pageable);
     Page<ArchiveSummaryResponse> summaryResponses = pages.map(archiveMapper::toSummary);
     return PagingResponse.of(summaryResponses);
   }
 
   @Transactional(readOnly = true)
   public PagingResponse<ArchiveSummaryResponse> getPublicArchives(ArchiveSearchCondition condition, Pageable pageable) {
-    condition.setUserId(null);
-    Page<Archive> pages = archiveQueryRepository.search(condition, pageable);
+    Page<Archive> pages = archiveQueryRepository.searchPublic(condition, pageable);
     Page<ArchiveSummaryResponse> summaryResponses = pages.map(archiveMapper::toSummary);
     return PagingResponse.of(summaryResponses);
   }
