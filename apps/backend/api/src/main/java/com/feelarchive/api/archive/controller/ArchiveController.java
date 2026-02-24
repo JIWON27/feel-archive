@@ -119,7 +119,7 @@ public class ArchiveController {
 
   @GetMapping
   public ResponseEntity<PagingResponse<ArchiveSummaryResponse>> getPublicArchives(
-      ArchiveSearchCondition condition,
+      @ModelAttribute ArchiveSearchCondition condition,
       Pageable pageable)
   {
     PagingResponse<ArchiveSummaryResponse> response = archiveService.getPublicArchives(condition, pageable);
@@ -138,7 +138,7 @@ public class ArchiveController {
   @GetMapping("/me")
   public ResponseEntity<PagingResponse<ArchiveSummaryResponse>> getMyArchives(
       @AuthenticationPrincipal Long userId,
-      ArchiveSearchCondition condition,
+      @ModelAttribute ArchiveSearchCondition condition,
       Pageable pageable)
   {
     PagingResponse<ArchiveSummaryResponse> response = archiveService.getMyArchives(userId, condition, pageable);
