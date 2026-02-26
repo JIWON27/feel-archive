@@ -41,4 +41,4 @@ security:
     secret: ${JWT_SECRET}
   cookie:
     refresh-samesite: None
-    refresh-secure: false
+    refresh-secure: true
