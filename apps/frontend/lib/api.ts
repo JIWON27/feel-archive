@@ -3,7 +3,9 @@ import { tokenUtils } from './utils/token';
 import { LoginResponse } from '@/types/auth';
 
 // API 기본 URL
-const API_BASE_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080';
+// 프록시를 통해 same-origin 요청으로 처리 (쿠키 전송 문제 방지)
+// next.config.mjs에서 /api/* → http://localhost:8080/api/* 로 프록시됨
+const API_BASE_URL = '';
 
 // Axios 인스턴스 생성
 export const apiClient = axios.create({
