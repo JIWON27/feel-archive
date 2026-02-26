@@ -43,5 +43,5 @@ security:
     refresh-expiration-seconds: 86400000
     secret: ${JWT_SECRET}
   cookie:
-    refresh-samesite: None
+    refresh-samesite: Lax
     refresh-secure: false
