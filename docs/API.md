@@ -1,6 +1,6 @@
 # Feel-Archive API 문서
 
-> **최종 업데이트**: 2026-02-24
+> **최종 업데이트**: 2026-02-26
 > **Base URL**: `http://localhost:8080` (개발)
 > **API 버전**: v1
 >
@@ -395,6 +395,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
       "address": "서울특별시 중구 세종대로 110",
       "createdAt": "2026-02-15T14:30:00",
       "likeCount": 5,
+      "isLiked": false,
+      "isScraped": true,
       "writer": {
         "userId": 123,
         "nickname": "길동이"
@@ -455,6 +457,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
   ],
   "likeCount": 5,
   "isOwner": true,
+  "isLiked": false,
+  "isScraped": true,
   "writer": {
     "userId": 123,
     "nickname": "길동이"
@@ -509,6 +513,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
     "address": "서울특별시 중구 세종대로 110",
     "createdAt": "2026-02-15T14:30:00",
     "likeCount": 5,
+    "isLiked": false,
+    "isScraped": false,
     "writer": {
       "userId": 123,
       "nickname": "길동이"
@@ -680,6 +686,8 @@ Content-Type: application/json
   ],
   "likeCount": 5,
   "isOwner": true,
+  "isLiked": false,
+  "isScraped": false,
   "writer": {
     "userId": 123,
     "nickname": "길동이"
@@ -1061,6 +1069,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
       "address": "서울특별시 중구 세종대로 110",
       "createdAt": "2026-02-15T14:30:00",
       "likeCount": 5,
+      "isLiked": false,
+      "isScraped": true,
       "writer": {
         "userId": 123,
         "nickname": "길동이"
