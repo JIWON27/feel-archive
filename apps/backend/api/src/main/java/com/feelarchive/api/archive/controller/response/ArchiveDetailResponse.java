@@ -2,38 +2,28 @@ package com.feelarchive.api.archive.controller.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.experimental.FieldDefaults;
 
-@Getter
-@Builder
-@AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class ArchiveDetailResponse {
-  Long archiveId;
-  String emotion;
-  String content;
-  List<ArchiveImageResponse>  images;
-  String visibility;
-  LocationDetail location;
-  String createdAt;
-  String updatedAt;
-  int likeCount;
-  CommonUserResponse writer;
+public record ArchiveDetailResponse(
+  Long archiveId,
+  String emotion,
+  String content,
+  List<ArchiveImageResponse> images,
+  String visibility,
+  LocationDetail location,
+  String createdAt,
+  String updatedAt,
+  int likeCount,
+  CommonUserResponse writer,
   @JsonProperty("isOwner")
-  boolean isOwner;
-
-  @Getter
-  @Builder
-  @AllArgsConstructor
-  @FieldDefaults(level = AccessLevel.PRIVATE)
-  public static class LocationDetail {
-    String address;
-    Double latitude;
-    Double longitude;
-  }
-
+  boolean isOwner,
+  @JsonProperty("isLiked")
+  boolean isLiked,
+  @JsonProperty("isScraped")
+  boolean isScraped
+) {
+  public record LocationDetail(
+    String address,
+    Double latitude,
+    Double longitude
+  ){}
 }

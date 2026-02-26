@@ -18,20 +18,20 @@ import org.mapstruct.Named;
 public interface ArchiveMapper {
   Archive toArchive(User user, ArchiveRequest request);
 
-  @Mapping(target = "archiveId", source = "id")
-  @Mapping(target = "writer", source = "user")
-  @Mapping(target = "contentPreview", source = "content", qualifiedByName = "summaryContent")
-  @Mapping(target = "createdAt", source = "createdAt", dateFormat = "yyyy.MM.dd")
+  @Mapping(target = "archiveId", source = "archive.id")
+  @Mapping(target = "writer", source = "archive.user")
+  @Mapping(target = "contentPreview", source = "archive.content", qualifiedByName = "summaryContent")
+  @Mapping(target = "createdAt", source = "archive.createdAt", dateFormat = "yyyy.MM.dd")
   @Mapping(target = "latitude", source = "archive.location.latitude")
   @Mapping(target = "longitude", source = "archive.location.longitude")
   @Mapping(target = "address", source = "archive.location.locationLabel")
-  ArchiveSummaryResponse toSummary(Archive archive);
+  ArchiveSummaryResponse toSummary(Archive archive, boolean isLiked, boolean isScraped);
 
   @Mapping(target = "archiveId", source = "archive.id")
   @Mapping(target = "writer", source = "archive.user")
   @Mapping(target = "createdAt", source = "archive.createdAt", dateFormat = "yyyy.MM.dd")
   @Mapping(target = "updatedAt", source = "archive.updatedAt", dateFormat = "yyyy.MM.dd")
-  ArchiveDetailResponse toDetail(Archive archive, List<ArchiveImageResponse> images, boolean isOwner);
+  ArchiveDetailResponse toDetail(Archive archive, List<ArchiveImageResponse> images, boolean isOwner, boolean isLiked, boolean isScraped);
 
   @Mapping(target = "userId", source = "id")
   @Mapping(target = "nickname", source = "nickname", qualifiedByName = "nicknameToString")

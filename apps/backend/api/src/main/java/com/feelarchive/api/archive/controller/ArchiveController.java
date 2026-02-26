@@ -119,10 +119,11 @@ public class ArchiveController {
 
   @GetMapping
   public ResponseEntity<PagingResponse<ArchiveSummaryResponse>> getPublicArchives(
+      @AuthenticationPrincipal Long userId,
       @ModelAttribute ArchiveSearchCondition condition,
       Pageable pageable)
   {
-    PagingResponse<ArchiveSummaryResponse> response = archiveService.getPublicArchives(condition, pageable);
+    PagingResponse<ArchiveSummaryResponse> response = archiveService.getPublicArchives(userId, condition, pageable);
     return ResponseEntity.ok().body(response);
   }
 
@@ -201,8 +202,11 @@ public class ArchiveController {
   }
 
   @GetMapping("/nearby")
-  public ResponseEntity<List<ArchiveSummaryResponse>> getNearByArchives(@ModelAttribute NearbyArchiveRequest request) {
-    List<ArchiveSummaryResponse> response = archiveService.getNearByArchives(request);
+  public ResponseEntity<List<ArchiveSummaryResponse>> getNearByArchives(
+      @AuthenticationPrincipal Long userId,
+      @ModelAttribute NearbyArchiveRequest request)
+  {
+    List<ArchiveSummaryResponse> response = archiveService.getNearByArchives(userId, request);
     return ResponseEntity.ok().body(response);
   }
 }

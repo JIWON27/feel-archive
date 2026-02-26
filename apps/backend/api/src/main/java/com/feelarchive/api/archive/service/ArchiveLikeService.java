@@ -26,12 +26,12 @@ public class ArchiveLikeService {
   @Transactional
   public void like(Long archiveId, Long userId) {
     Archive archive = archiveReader.getById(archiveId);
-    User user = userReader.getById(userId);
 
-    if (archiveLikeRepository.existsByUserAndArchive(user, archive)) {
+    if (archiveLikeRepository.existsByUser_IdAndArchive_Id(userId, archiveId)) {
       throw new FeelArchiveException(ALREADY_LIKED);
     }
 
+    User user = userReader.getById(userId);
     archiveLikeRepository.save(ArchiveLike.builder()
         .archive(archive)
         .user(user)
