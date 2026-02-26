@@ -10,9 +10,12 @@ import com.feelarchive.api.user.service.UserReader;
 import com.feelarchive.common.excepion.FeelArchiveException;
 import com.feelarchive.domain.archive.entity.Archive;
 import com.feelarchive.domain.archive.entity.ArchiveScrap;
+import com.feelarchive.domain.archive.repository.ArchiveLikeRepository;
 import com.feelarchive.domain.archive.repository.ArchiveScrapQueryRepository;
 import com.feelarchive.domain.archive.repository.ArchiveScrapRepository;
 import com.feelarchive.domain.user.entity.User;
+import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ArchiveScrapService {
 
   private final ArchiveScrapRepository archiveScrapRepository;
+  private final ArchiveLikeRepository archiveLikeRepository;
   private final ArchiveScrapQueryRepository archiveScrapQueryRepository;
   private final ArchiveMapper archiveMapper;
   private final ArchiveReader archiveReader;
@@ -32,12 +36,12 @@ public class ArchiveScrapService {
   @Transactional
   public void scrap(Long archiveId, Long userId) {
     Archive archive = archiveReader.getById(archiveId);
-    User user = userReader.getById(userId);
 
-    if (archiveScrapRepository.existsByUserAndArchive(user, archive)) {
+    if (archiveScrapRepository.existsByUser_IdAndArchive_Id(userId, archiveId)) {
       throw new FeelArchiveException(ALREADY_SCRAPPED);
     }
 
+    User user = userReader.getById(userId);
     archiveScrapRepository.save(ArchiveScrap.builder()
         .archive(archive)
         .user(user)
@@ -57,10 +61,15 @@ public class ArchiveScrapService {
 
   @Transactional(readOnly = true)
   public PagingResponse<ArchiveSummaryResponse> getMyScarps(Long userId, Pageable pageable) {
-    Page<ArchiveScrap> scrapPage = archiveScrapQueryRepository.getMyScraps(userId, pageable);
-    Page<ArchiveSummaryResponse> summaryResponses = scrapPage
+    Page<ArchiveScrap> pages = archiveScrapQueryRepository.getMyScraps(userId, pageable);
+
+    List<Long> archiveIds = pages.map(ArchiveScrap::getArchive).map(Archive::getId).toList();
+    Set<Long> likedIds = archiveLikeRepository.findArchiveIdsByUserIdAndArchiveIdIn(userId, archiveIds);
+    Set<Long> scrapedIds = archiveScrapRepository.findArchiveIdsByUserIdAndArchiveIdIn(userId, archiveIds);
+
+    Page<ArchiveSummaryResponse> summaryResponses = pages
         .map(ArchiveScrap::getArchive)
-        .map(archiveMapper::toSummary);
+        .map(archive -> archiveMapper.toSummary(archive, likedIds.contains(archive.getId()), scrapedIds.contains(archive.getId())));
     return PagingResponse.of(summaryResponses);
   }
 }

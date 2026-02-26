@@ -19,6 +19,7 @@ import com.feelarchive.domain.user.entity.User;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -35,6 +36,7 @@ public class ArchiveService {
   private final ArchiveImageService archiveImageService;
   private final ArchiveMapper archiveMapper;
   private final ArchiveReader archiveReader;
+  private final ArchiveInteractionReader archiveInteractionReader;
   private final UserReader userReader;
   private final ApplicationEventPublisher eventPublisher;
 
@@ -51,14 +53,14 @@ public class ArchiveService {
   @Transactional(readOnly = true)
   public PagingResponse<ArchiveSummaryResponse> getMyArchives(Long userId, ArchiveSearchCondition condition, Pageable pageable) {
     Page<Archive> pages = archiveQueryRepository.searchMyArchives(userId, condition, pageable);
-    Page<ArchiveSummaryResponse> summaryResponses = pages.map(archiveMapper::toSummary);
+    Page<ArchiveSummaryResponse> summaryResponses = toSummaryPage(userId, pages);
     return PagingResponse.of(summaryResponses);
   }
 
   @Transactional(readOnly = true)
-  public PagingResponse<ArchiveSummaryResponse> getPublicArchives(ArchiveSearchCondition condition, Pageable pageable) {
+  public PagingResponse<ArchiveSummaryResponse> getPublicArchives(Long userId, ArchiveSearchCondition condition, Pageable pageable) {
     Page<Archive> pages = archiveQueryRepository.searchPublic(condition, pageable);
-    Page<ArchiveSummaryResponse> summaryResponses = pages.map(archiveMapper::toSummary);
+    Page<ArchiveSummaryResponse> summaryResponses = toSummaryPage(userId, pages);
     return PagingResponse.of(summaryResponses);
   }
 
@@ -68,8 +70,12 @@ public class ArchiveService {
     archive.validateReadAuth(userId);
 
     List<ArchiveImageResponse> images = archiveImageService.getImages(archive);
+
     boolean isOwner = archive.getUser().getId().equals(userId);
-    return archiveMapper.toDetail(archive, images, isOwner);
+    boolean isLiked = archiveInteractionReader.isLiked(userId, archive.getId());
+    boolean isScraped = archiveInteractionReader.isScraped(userId, archive.getId());
+
+    return archiveMapper.toDetail(archive, images, isOwner, isLiked, isScraped);
   }
 
   @Transactional
@@ -98,8 +104,11 @@ public class ArchiveService {
 
     archiveImageService.syncImages(archive, request.imageIds());
 
+    boolean isLiked = archiveInteractionReader.isLiked(userId, archive.getId());
+    boolean isScraped = archiveInteractionReader.isScraped(userId, archive.getId());
+
     List<ArchiveImageResponse> images = archiveImageService.getImages(archive);
-    return archiveMapper.toDetail(archive, images, true);
+    return archiveMapper.toDetail(archive, images, true, isLiked, isScraped);
   }
 
   @Transactional
@@ -111,13 +120,27 @@ public class ArchiveService {
   }
 
   @Transactional
-  public List<ArchiveSummaryResponse> getNearByArchives(NearbyArchiveRequest request) {
+  public List<ArchiveSummaryResponse> getNearByArchives(Long userId, NearbyArchiveRequest request) {
     BigDecimal userLongitude = request.longitude();
     BigDecimal userLatitude = request.latitude();
     double radius = request.radius();
     List<Archive> archives = archiveQueryRepository.findNearbyArchives(userLongitude, userLatitude, radius);
+    return toSummaryList(userId, archives);
+  }
+
+  private Page<ArchiveSummaryResponse> toSummaryPage(Long userId, Page<Archive> pages) {
+    List<Long> archiveIds = pages.map(Archive::getId).toList();
+    Set<Long> likedIds = archiveInteractionReader.getLikedArchiveIds(userId, archiveIds);
+    Set<Long> scrapedIds = archiveInteractionReader.getScrapedArchiveIds(userId, archiveIds);
+    return pages.map(archive -> archiveMapper.toSummary(archive, likedIds.contains(archive.getId()), scrapedIds.contains(archive.getId())));
+  }
+
+  private List<ArchiveSummaryResponse> toSummaryList(Long userId, List<Archive> archives) {
+    List<Long> archiveIds = archives.stream().map(Archive::getId).toList();
+    Set<Long> likedIds = archiveInteractionReader.getLikedArchiveIds(userId, archiveIds);
+    Set<Long> scrapedIds = archiveInteractionReader.getScrapedArchiveIds(userId, archiveIds);
     return archives.stream()
-        .map(archiveMapper::toSummary)
+        .map(archive -> archiveMapper.toSummary(archive, likedIds.contains(archive.getId()), scrapedIds.contains(archive.getId())))
         .toList();
   }
 }
