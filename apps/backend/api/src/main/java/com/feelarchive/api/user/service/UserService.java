@@ -5,6 +5,7 @@ import static com.feelarchive.domain.user.exception.UserExceptionCode.DUPLICATE_
 import static com.feelarchive.domain.user.exception.UserExceptionCode.DUPLICATE_NICKNAME;
 
 import com.feelarchive.api.user.controller.request.UserRequest;
+import com.feelarchive.api.user.controller.response.MyPageResponse;
 import com.feelarchive.api.user.controller.response.UserResponse;
 import com.feelarchive.common.excepion.FeelArchiveException;
 import com.feelarchive.domain.user.entity.User;
@@ -39,6 +40,12 @@ public class UserService {
   public UserResponse getUserById(Long id) {
     User user = userReader.getById(id);
     return userMapper.toResponse(user);
+  }
+
+  @Transactional(readOnly = true)
+  public MyPageResponse getMyInfo(Long id) {
+    User user = userReader.getById(id);
+    return userMapper.toMyPageResponse(user);
   }
 
   private void validateEmail(String email) {
