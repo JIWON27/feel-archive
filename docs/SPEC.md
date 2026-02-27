@@ -277,6 +277,43 @@
 
 ---
 
+### 2.9 설정 페이지 (Settings)
+
+#### 기능 설명
+사용자가 계정 관련 설정을 관리할 수 있는 페이지. 비밀번호 변경, 이메일 알림 설정, 로그아웃, 회원탈퇴 기능을 제공합니다.
+
+#### 주요 시나리오
+1. **비밀번호 변경**
+   - 사용자 행동: 현재 비밀번호 + 새 비밀번호 입력 후 변경 버튼 클릭
+   - 시스템 동작: 현재 비밀번호 검증 후 새 비밀번호로 업데이트
+   - 결과: 성공 시 toast 알림 표시
+
+2. **이메일 알림 설정**
+   - 사용자 행동: 이메일 알림 토글 클릭
+   - 시스템 동작: `emailNotificationEnabled` 값 즉시 업데이트
+   - 결과: 타임캡슐 공개 시 이메일 발송 여부 변경
+
+3. **로그아웃**
+   - 사용자 행동: 로그아웃 버튼 클릭 → 확인 모달
+   - 시스템 동작: Refresh Token 무효화, 쿠키 삭제
+   - 결과: 로그인 페이지로 리다이렉트
+
+4. **회원탈퇴**
+   - 사용자 행동: 회원탈퇴 버튼 클릭 → 확인 모달 → 비밀번호 입력
+   - 시스템 동작: 비밀번호 검증 후 계정 비활성화 (Soft Delete)
+   - 결과: 로그인 페이지로 리다이렉트
+
+#### 상세 규칙
+| 항목 | 설명 |
+|------|------|
+| 비밀번호 변경 | 현재 비밀번호 검증 필수, 새 비밀번호 8-20자 |
+| 이메일 알림 | 페이지 진입 시 현재 설정 상태 조회 (GET /api/v1/users/me) |
+| 로그아웃 | 확인 모달 필수 |
+| 회원탈퇴 | 확인 모달 + 비밀번호 입력으로 이중 확인 |
+| 탈퇴 처리 | Soft Delete (Status: WITHDRAWN) |
+
+---
+
 ### 2.7 SSE 기반 실시간 알림 (Real-time Notification)
 
 #### 기능 설명
@@ -622,8 +659,15 @@ POST   /api/v1/token/reIssue     토큰 재발급
 
 ### 7.2 회원
 ```
-POST   /api/v1/users             회원가입
-GET    /api/v1/users/{id}        회원 정보 조회
+POST   /api/v1/users                                    회원가입
+GET    /api/v1/users/{id}                               회원 정보 조회
+GET    /api/v1/users/me                                 내 정보 조회 (이메일 알림 설정 상태 포함)
+PATCH  /api/v1/users/me/password                        비밀번호 변경
+                                                         Request Body: { currentPassword, newPassword }
+PATCH  /api/v1/users/me/settings/email-notification     이메일 알림 수신 여부 변경
+                                                         Request Body: { "enabled": boolean }
+DELETE /api/v1/users/me                                 회원탈퇴 (비밀번호 확인 후 처리)
+                                                         Request Body: { "password": string }
 ```
 
 ### 7.3 아카이브
@@ -684,10 +728,11 @@ GET    /api/v1/notifications/subscribe    SSE 구독 (실시간 알림 수신)
 
 ### 7.8 이메일 알림 설정
 ```
-PATCH  /api/v1/users/me/settings/email-notification  이메일 알림 수신 여부 변경 (미구현 - 백엔드 작업 필요)
+PATCH  /api/v1/users/me/settings/email-notification  이메일 알림 수신 여부 변경
                                                        Request Body: { "enabled": boolean }
                                                        Response: 200 OK
 ```
+> ⚠️ 이메일 알림 현재 상태는 GET /api/v1/users/me 응답의 emailNotificationEnabled 필드로 조회
 
 ### 7.9 감정 날씨
 ```

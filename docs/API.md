@@ -1,6 +1,6 @@
 # Feel-Archive API 문서
 
-> **최종 업데이트**: 2026-02-26
+> **최종 업데이트**: 2026-02-27
 > **Base URL**: `http://localhost:8080` (개발)
 > **API 버전**: v1
 >
@@ -297,6 +297,179 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 - `200 OK`: 조회 성공
 - `401 Unauthorized`: 인증 토큰 없음 또는 유효하지 않음
 - `404 Not Found`: 존재하지 않는 사용자 ID
+
+---
+
+### 3. 내 정보 조회
+
+로그인한 사용자 본인의 정보를 조회합니다. 이메일 알림 설정 상태를 포함합니다.
+
+**Endpoint**
+```
+GET /api/v1/users/me
+```
+
+**인증 필요**: ✅ Yes (Bearer Token)
+
+**Request Example**
+```http
+GET /api/v1/users/me HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Response (200 OK)**
+```json
+{
+  "id": 123,
+  "email": "hong@example.com",
+  "nickname": "길동이",
+  "emailNotificationEnabled": true
+}
+```
+
+**Status Codes**
+- `200 OK`: 조회 성공
+- `401 Unauthorized`: 인증 토큰 없음 또는 유효하지 않음
+
+---
+
+### 4. 비밀번호 변경
+
+현재 비밀번호를 검증한 후 새 비밀번호로 변경합니다.
+
+**Endpoint**
+```
+PATCH /api/v1/users/me/password
+```
+
+**인증 필요**: ✅ Yes (Bearer Token)
+
+**Request Body**
+```json
+{
+  "currentPassword": "string (required)",
+  "newPassword": "string (required, 8-20자)"
+}
+```
+
+**Request Example**
+```http
+PATCH /api/v1/users/me/password HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+Content-Type: application/json
+
+{
+  "currentPassword": "oldPassword123",
+  "newPassword": "newPassword456"
+}
+```
+
+**Response (200 OK)**
+```http
+200 OK
+```
+
+**Status Codes**
+- `200 OK`: 비밀번호 변경 성공
+- `400 Bad Request`: 유효성 검증 실패 (새 비밀번호 8-20자 미충족)
+- `401 Unauthorized`: 현재 비밀번호 불일치 또는 인증 토큰 유효하지 않음
+
+**Error Example (401)**
+```json
+{
+  "message": "현재 비밀번호가 일치하지 않습니다.",
+  "status": 401
+}
+```
+
+---
+
+### 5. 이메일 알림 설정 변경
+
+타임캡슐 공개 시 이메일 알림 수신 여부를 변경합니다.
+
+**Endpoint**
+```
+PATCH /api/v1/users/me/settings/email-notification
+```
+
+**인증 필요**: ✅ Yes (Bearer Token)
+
+**Request Body**
+```json
+{
+  "enabled": true
+}
+```
+
+**Request Example**
+```http
+PATCH /api/v1/users/me/settings/email-notification HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+Content-Type: application/json
+
+{
+  "enabled": false
+}
+```
+
+**Response (200 OK)**
+```http
+200 OK
+```
+
+**Status Codes**
+- `200 OK`: 설정 변경 성공
+- `400 Bad Request`: enabled 필드 누락
+- `401 Unauthorized`: 인증 토큰 없음 또는 유효하지 않음
+
+---
+
+### 6. 회원탈퇴
+
+비밀번호를 확인한 후 계정을 탈퇴 처리합니다 (Soft Delete).
+
+**Endpoint**
+```
+DELETE /api/v1/users/me
+```
+
+**인증 필요**: ✅ Yes (Bearer Token)
+
+**Request Body**
+```json
+{
+  "password": "string (required)"
+}
+```
+
+**Request Example**
+```http
+DELETE /api/v1/users/me HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+Content-Type: application/json
+
+{
+  "password": "myPassword123"
+}
+```
+
+**Response (204 No Content)**
+```http
+204 No Content
+```
+
+**Status Codes**
+- `204 No Content`: 회원탈퇴 성공
+- `401 Unauthorized`: 비밀번호 불일치 또는 인증 토큰 유효하지 않음
+
+**Error Example (401)**
+```json
+{
+  "message": "비밀번호가 일치하지 않습니다.",
+  "status": 401
+}
+```
 
 ---
 
