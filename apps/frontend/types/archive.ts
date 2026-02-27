@@ -112,8 +112,8 @@ export interface ArchiveImage {
 // 페이징 응답
 export interface PagingResponse<T> {
   content: T[];
-  page: number;
-  size: number;
+  pageNo: number;    // 백엔드 PagingResponse.pageNo (1-based)
+  pageSize: number;  // 백엔드 PagingResponse.pageSize
   totalElements: number;
   totalPages: number;
   last: boolean;
@@ -123,7 +123,7 @@ export interface PagingResponse<T> {
 export interface ArchiveSearchCondition {
   emotion?: EmotionType;
   keyword?: string;
-  sortType?: 'LATEST' | 'OLDEST' | 'POPULAR'; // 백엔드 ArchiveSortType enum과 일치
+  sortType?: 'LATEST' | 'OLDEST' | 'POPULAR' | 'LIKE'; // 백엔드 ArchiveSortType enum과 일치
 }
 
 // 주변 아카이브 조회 요청

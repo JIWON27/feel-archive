@@ -877,6 +877,37 @@
       "notes": "백엔드 ArchiveSearchCondition 필드명(sortType)과 enum값(LATEST 등 대문자) 불일치 및 condition 중첩 객체 전송 문제 수정. 메인 검색바는 state 미연결 상태였음"
     },
     {
+      "id": 55,
+      "category": "feature",
+      "description": "아카이브 정렬 조건 LIKE(좋아요순) 추가",
+      "steps": [
+        "types/archive.ts: ArchiveSearchCondition.sortType에 'LIKE' 추가",
+        "app/(main)/archives/page.tsx: handleSortChange 타입에 'LIKE' 추가, 좋아요순 버튼 추가",
+        "app/(main)/my/archives/page.tsx: 정렬 드롭다운에 LIKE 옵션 추가"
+      ],
+      "passes": true,
+      "commit": "feat(archive): 아카이브 정렬 조건(인기순, 좋아요순) 추가",
+      "blockers": [],
+      "completedAt": "2026-02-27",
+      "notes": "백엔드 ArchiveSortType enum에 LIKE 추가됨에 따라 프론트 UI 반영"
+    },
+    {
+      "id": 56,
+      "category": "fix",
+      "description": "아카이브 무한 스크롤 페이지네이션 API 불일치 수정",
+      "steps": [
+        "types/archive.ts: PagingResponse 필드명 수정 (page → pageNo, size → pageSize) - 백엔드 응답 필드와 일치",
+        "hooks/use-archives.ts: useArchiveList, useMyArchiveList, useScrapList 세 곳의 getNextPageParam 수정",
+        "기존 lastPage.page + 1 → lastPage.pageNo + 1 로 변경 (setOneIndexedParameters(true) 대응)",
+        "원인: page 필드 undefined → NaN → Spring 기본값 page=0 반환 → 첫 페이지 반복"
+      ],
+      "passes": true,
+      "commit": "feat(archive): 아카이브 목록 조회 시 인기순/좋아요순 정렬 지원",
+      "blockers": [],
+      "completedAt": "2026-02-27",
+      "notes": "백엔드 WebConfig.setOneIndexedParameters(true) 설정으로 page는 1-based 입력. pageNo(1-based 응답)를 그대로 다음 요청에 쓰면 Spring이 첫 페이지로 해석하므로 pageNo+1 필요"
+    },
+    {
       "id": 54,
       "category": "feature",
       "description": "내 아카이브 페이지 필터링 기능 추가 및 UX 개선",

@@ -374,7 +374,7 @@ GET /api/v1/archives
 - `size` (int, optional, default: 20): 페이지 크기
 - `emotion` (string, optional): 감정 필터 (`HAPPY | SAD | ANXIOUS | ANGRY | CALM | EXCITED | LONELY | GRATEFUL | TIRED`)
 - `keyword` (string, optional): 내용 검색 키워드
-- `sortType` (string, optional, default: `LATEST`): 정렬 기준 (`LATEST` | `OLDEST` | `POPULAR` | `VIEWS`)
+- `sortType` (string, optional, default: `LATEST`): 정렬 기준 (`LATEST` | `OLDEST` | `POPULAR` | `LIKE`)
 
 **Request Example**
 ```http
@@ -551,7 +551,7 @@ GET /api/v1/archives/me
 - `size` (int, optional, default: 20): 페이지 크기
 - `emotion` (string, optional): 감정 필터 (`HAPPY | SAD | ANXIOUS | ANGRY | CALM | EXCITED | LONELY | GRATEFUL | TIRED`)
 - `keyword` (string, optional): 내용 검색 키워드
-- `sortType` (string, optional, default: `LATEST`): 정렬 기준 (`LATEST` | `OLDEST` | `POPULAR` | `VIEWS`)
+- `sortType` (string, optional, default: `LATEST`): 정렬 기준 (`LATEST` | `OLDEST` | `POPULAR` | `LIKE`)
 
 **Request Example**
 ```http

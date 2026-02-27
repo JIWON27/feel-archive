@@ -39,8 +39,10 @@ export const useArchiveList = (condition?: ArchiveSearchCondition) => {
         size: 20,
         condition,
       }),
+    // setOneIndexedParameters(true): page=1→Spring page 0, page=2→Spring page 1
+    // pageNo는 현재 1-based 페이지 번호 → 다음 요청은 pageNo+1
     getNextPageParam: (lastPage) => {
-      return lastPage.last ? undefined : lastPage.page + 1;
+      return lastPage.last ? undefined : lastPage.pageNo + 1;
     },
     initialPageParam: 0,
   });
@@ -57,7 +59,7 @@ export const useMyArchiveList = (condition?: ArchiveSearchCondition) => {
         condition,
       }),
     getNextPageParam: (lastPage) => {
-      return lastPage.last ? undefined : lastPage.page + 1;
+      return lastPage.last ? undefined : lastPage.pageNo + 1;
     },
     initialPageParam: 0,
   });
@@ -73,7 +75,7 @@ export const useScrapList = () => {
         size: 20,
       }),
     getNextPageParam: (lastPage) => {
-      return lastPage.last ? undefined : lastPage.page + 1;
+      return lastPage.last ? undefined : lastPage.pageNo + 1;
     },
     initialPageParam: 0,
   });

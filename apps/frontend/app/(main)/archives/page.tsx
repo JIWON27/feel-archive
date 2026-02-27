@@ -28,7 +28,7 @@ export default function ArchivesPage() {
     setCondition((prev) => ({ ...prev, emotion }));
   };
 
-  const handleSortChange = (sortType: 'LATEST' | 'OLDEST' | 'POPULAR') => {
+  const handleSortChange = (sortType: 'LATEST' | 'OLDEST' | 'POPULAR' | 'LIKE') => {
     setCondition((prev) => ({ ...prev, sortType }));
   };
 
@@ -193,6 +193,16 @@ export default function ArchivesPage() {
                 }`}
               >
                 인기순
+              </button>
+              <button
+                onClick={() => handleSortChange('LIKE')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  condition.sortType === 'LIKE'
+                    ? 'bg-primary text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                좋아요순
               </button>
             </div>
           </div>

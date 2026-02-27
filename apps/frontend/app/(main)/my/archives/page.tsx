@@ -162,6 +162,7 @@ export default function MyArchivesPage() {
                 <option value="LATEST">최신순</option>
                 <option value="OLDEST">오래된순</option>
                 <option value="POPULAR">인기순</option>
+                <option value="LIKE">좋아요순</option>
               </select>
             </div>
           </div>
