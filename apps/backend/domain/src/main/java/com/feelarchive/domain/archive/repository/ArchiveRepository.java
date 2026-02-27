@@ -21,4 +21,12 @@ public interface ArchiveRepository extends JpaRepository<Archive, Long> {
   @Modifying(clearAutomatically = true)
   @Query("UPDATE Archive a SET a.likeCount = a.likeCount - 1 WHERE a.id = :id")
   void decreaseLikeCount(@Param("id") Long id);
+
+  @Modifying(clearAutomatically = true)
+  @Query("UPDATE Archive a SET a.scrapCount = a.scrapCount + 1 WHERE a.id = :id")
+  void increaseScrapCount(@Param("id") Long id);
+
+  @Modifying(clearAutomatically = true)
+  @Query("UPDATE Archive a SET a.scrapCount = a.scrapCount - 1 WHERE a.id = :id")
+  void decreaseScrapCount(@Param("id") Long id);
 }

@@ -64,7 +64,7 @@ public class ArchiveQueryRepository {
     return PageableExecutionUtils.getPage(archives, pageable, countQuery::fetchOne);
   }
 
-  public List<Archive>  findNearbyArchives(BigDecimal userLongitude, BigDecimal userLatitude, double radius) {
+  public List<Archive> findNearbyArchives(BigDecimal userLongitude, BigDecimal userLatitude, double radius) {
     String userPoint = String.format("POINT(%f %f)", userLatitude, userLongitude);
     NumberExpression<Double> distance = Expressions.numberTemplate(
         Double.class,
@@ -105,15 +105,12 @@ public class ArchiveQueryRepository {
 
   private OrderSpecifier<?>[] getOrderSpecifiers(ArchiveSortType sortType) {
     List<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
-    if (sortType == null) {
-      sortType = ArchiveSortType.LATEST;
-    }
 
     switch (sortType) {
-      // TODO case POPULAR -> orderSpecifiers.add(인기순);
       case LATEST -> orderSpecifiers.add(archive.createdAt.desc());
       case OLDEST -> orderSpecifiers.add(archive.createdAt.asc());
-      // TODO case VIEWS -> orderSpecifiers.add(조회순);
+      case POPULAR -> orderSpecifiers.add(getScore().desc());
+      case LIKE -> orderSpecifiers.add(archive.likeCount.desc());
       default -> orderSpecifiers.add(archive.createdAt.desc());
     }
 
@@ -121,5 +118,9 @@ public class ArchiveQueryRepository {
     orderSpecifiers.add(archive.id.desc());
 
     return orderSpecifiers.toArray(OrderSpecifier[]::new);
+  }
+
+  private NumberExpression<Integer> getScore() {
+    return archive.likeCount.multiply(1).add(archive.scrapCount.multiply(3));
   }
 }

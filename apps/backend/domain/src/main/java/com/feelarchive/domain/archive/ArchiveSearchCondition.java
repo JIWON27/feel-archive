@@ -6,4 +6,8 @@ public record ArchiveSearchCondition(
     Emotion emotion,
     String keyword,
     ArchiveSortType sortType
-) {}
+) {
+  public ArchiveSearchCondition {
+    if (sortType == null) sortType = ArchiveSortType.LATEST;
+  }
+}

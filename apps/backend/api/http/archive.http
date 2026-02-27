@@ -94,6 +94,22 @@ Authorization: Bearer {{accessToken}}
 GET http://127.0.0.1:8080/api/v1/archives?emotion=HAPPY&keyword=부산&page=1&size=10
 Authorization: Bearer {{accessToken}}
 
+### 인기순 조회
+GET http://127.0.0.1:8080/api/v1/archives?sortType=POPULAR&emotion=HAPPY&page=1&size=10
+Authorization: Bearer {{accessToken}}
+
+### 좋아요순 조회
+GET http://127.0.0.1:8080/api/v1/archives?sortType=LIKE&emotion=HAPPY&page=1&size=10
+Authorization: Bearer {{accessToken}}
+
+### 최신순 조회
+GET http://127.0.0.1:8080/api/v1/archives?sortType=LATEST&emotion=HAPPY&page=1&size=10
+Authorization: Bearer {{accessToken}}
+
+### 오래된순 조회
+GET http://127.0.0.1:8080/api/v1/archives?sortType=OLDEST&emotion=HAPPY&page=1&size=10
+Authorization: Bearer {{accessToken}}
+
 ### 존재하지 않는 keyword (빈 결과 확인)
 GET http://127.0.0.1:8080/api/v1/archives?keyword=zzzzzzzzz&page=0&size=10
 Authorization: Bearer {{accessToken}}

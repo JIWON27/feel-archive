@@ -70,6 +70,9 @@ public class Archive {
   @Column(name = "like_count")
   int likeCount;
 
+  @Column(name = "scrap_count")
+  int scrapCount;
+
   @CreationTimestamp
   @Column(name = "created_at", updatable = false, nullable = false)
   LocalDateTime createdAt;
