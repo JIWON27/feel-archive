@@ -11,6 +11,7 @@ import com.feelarchive.common.excepion.FeelArchiveException;
 import com.feelarchive.domain.archive.entity.Archive;
 import com.feelarchive.domain.archive.entity.ArchiveScrap;
 import com.feelarchive.domain.archive.repository.ArchiveLikeRepository;
+import com.feelarchive.domain.archive.repository.ArchiveRepository;
 import com.feelarchive.domain.archive.repository.ArchiveScrapQueryRepository;
 import com.feelarchive.domain.archive.repository.ArchiveScrapRepository;
 import com.feelarchive.domain.user.entity.User;
@@ -29,6 +30,7 @@ public class ArchiveScrapService {
   private final ArchiveScrapRepository archiveScrapRepository;
   private final ArchiveLikeRepository archiveLikeRepository;
   private final ArchiveScrapQueryRepository archiveScrapQueryRepository;
+  private final ArchiveRepository archiveRepository;
   private final ArchiveMapper archiveMapper;
   private final ArchiveReader archiveReader;
   private final UserReader userReader;
@@ -46,17 +48,17 @@ public class ArchiveScrapService {
         .archive(archive)
         .user(user)
         .build());
+
+    archiveRepository.increaseScrapCount(archiveId);
   }
 
   @Transactional
   public void unScrap(Long archiveId, Long userId) {
-    Archive archive = archiveReader.getById(archiveId);
-    User user = userReader.getById(userId);
-
-    ArchiveScrap archiveScrap = archiveScrapRepository.findByUserAndArchive(user, archive)
+    ArchiveScrap archiveScrap = archiveScrapRepository.findByUser_IdAndArchive_Id(userId, archiveId)
         .orElseThrow(() -> new FeelArchiveException(ARCHIVE_SCRAP_NOT_FOUND));
 
     archiveScrapRepository.delete(archiveScrap);
+    archiveRepository.decreaseScrapCount(archiveId);
   }
 
   @Transactional(readOnly = true)
