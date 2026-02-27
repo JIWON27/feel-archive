@@ -10,7 +10,8 @@ public enum ArchiveSortType {
   LATEST("최신순"),
   OLDEST("오래된 순"),
   POPULAR("인기순"),
-  VIEWS("조회순");
+  LIKE("좋아요순"),
+  ;
 
   final String description;
 
