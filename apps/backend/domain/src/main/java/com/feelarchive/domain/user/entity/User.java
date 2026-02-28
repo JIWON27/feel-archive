@@ -26,6 +26,7 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
@@ -35,6 +36,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 @NoArgsConstructor
 @Table(name = "users")
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@SQLRestriction("status = 'ACTIVE'")
 public class User {
 
   @Id
@@ -116,5 +118,9 @@ public class User {
 
   public void updateEmailNotification(boolean value) {
     this.emailNotificationEnabled = value;
+  }
+
+  public void withdraw() {
+    this.status = Status.WITHDRAWN;
   }
 }

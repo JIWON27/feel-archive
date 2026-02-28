@@ -7,6 +7,7 @@ import static com.feelarchive.domain.user.exception.UserExceptionCode.DUPLICATE_
 import com.feelarchive.api.user.controller.request.UpdateEmailNotification;
 import com.feelarchive.api.user.controller.request.UpdatePasswordRequest;
 import com.feelarchive.api.user.controller.request.UserRequest;
+import com.feelarchive.api.user.controller.request.WithdrawRequest;
 import com.feelarchive.api.user.controller.response.MyPageResponse;
 import com.feelarchive.api.user.controller.response.UserResponse;
 import com.feelarchive.common.excepion.FeelArchiveException;
@@ -37,6 +38,17 @@ public class UserService {
     User user = userMapper.toEntity(request, password);
     User savedUser = userRepository.save(user);
     return savedUser.getId();
+  }
+
+  @Transactional
+  public void withdraw(Long id, WithdrawRequest request) {
+    User user = userReader.getById(id);
+
+    if (!passwordEncoder.matches(request.currentPassword(), user.getPassword().getPassword())) {
+      throw new FeelArchiveException(UserExceptionCode.PASSWORD_MISMATCH);
+    }
+
+    user.withdraw();
   }
 
   @Transactional(readOnly = true)
