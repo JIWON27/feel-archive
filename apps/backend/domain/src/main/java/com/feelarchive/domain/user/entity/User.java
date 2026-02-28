@@ -98,6 +98,7 @@ public class User {
     this.birthDate = new BirthDate(birthDate);
     this.role = (role == null) ? Role.USER : role;
     this.status = (status == null) ? Status.ACTIVE : status;
+    this.emailNotificationEnabled = true;
   }
 
   private void validateName(String name) {
