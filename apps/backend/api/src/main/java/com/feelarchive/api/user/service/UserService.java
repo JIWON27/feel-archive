@@ -4,6 +4,7 @@ package com.feelarchive.api.user.service;
 import static com.feelarchive.domain.user.exception.UserExceptionCode.DUPLICATE_EMAIL;
 import static com.feelarchive.domain.user.exception.UserExceptionCode.DUPLICATE_NICKNAME;
 
+import com.feelarchive.api.user.controller.request.UpdateEmailNotification;
 import com.feelarchive.api.user.controller.request.UpdatePasswordRequest;
 import com.feelarchive.api.user.controller.request.UserRequest;
 import com.feelarchive.api.user.controller.response.MyPageResponse;
@@ -48,6 +49,12 @@ public class UserService {
   public MyPageResponse getMyInfo(Long id) {
     User user = userReader.getById(id);
     return userMapper.toMyPageResponse(user);
+  }
+
+  @Transactional
+  public void updateEmailNotification(Long id, UpdateEmailNotification request) {
+    User user = userReader.getById(id);
+    user.updateEmailNotification(request.enable());
   }
 
   @Transactional

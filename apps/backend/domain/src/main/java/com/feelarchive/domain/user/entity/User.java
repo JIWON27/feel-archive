@@ -113,4 +113,8 @@ public class User {
   public void updatePassword(String newPassword) {
     this.password = new Password(newPassword);
   }
+
+  public void updateEmailNotification(boolean value) {
+    this.emailNotificationEnabled = value;
+  }
 }

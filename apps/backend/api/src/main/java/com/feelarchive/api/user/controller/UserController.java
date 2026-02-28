@@ -1,5 +1,6 @@
 package com.feelarchive.api.user.controller;
 
+import com.feelarchive.api.user.controller.request.UpdateEmailNotification;
 import com.feelarchive.api.user.controller.request.UpdatePasswordRequest;
 import com.feelarchive.api.user.controller.request.UserRequest;
 import com.feelarchive.api.user.controller.response.MyPageResponse;
@@ -47,6 +48,15 @@ public class UserController {
       @RequestBody @Valid UpdatePasswordRequest request)
   {
     userService.updatePassword(userId, request);
+    return ResponseEntity.ok().build();
+  }
+
+  @PatchMapping("/me/settings/email-notification")
+  public ResponseEntity<Void> updateEmailNotification(
+    @AuthenticationPrincipal Long userId,
+    @RequestBody @Valid UpdateEmailNotification request)
+  {
+    userService.updateEmailNotification(userId, request);
     return ResponseEntity.ok().build();
   }
 }
