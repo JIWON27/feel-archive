@@ -48,10 +48,10 @@
 |------|------------|----------------|
 | 월간 리포트 | 감정 회고 | 차트 시각화 (Chart.js) |
 
-### 2.4 연기 (Post-MVP)
-- 이미지 업로드 (S3 연동 복잡성)
-- 위치 정밀도 상세 설정
-- 이메일 알림 발송
+### 2.4 연기 (Post-MVP) — 실제 구현 현황 반영
+- ~~이미지 업로드 (S3 연동 복잡성)~~ → ✅ **구현 완료** (AWS S3, 아카이브/타임캡슐 모두)
+- 위치 정밀도 상세 설정 → 미구현 (위치 선택 여부 토글로 대체)
+- ~~이메일 알림 발송~~ → ✅ **구현 완료** (타임캡슐 공개 시 SMTP 발송, Spring Retry 포함)
 
 ---
 
@@ -221,29 +221,50 @@ frontend/
 
 ---
 
-### Phase 5: Infrastructure + Deployment (Week 4)
+### Phase 5: Infrastructure + Deployment (Week 4) ✅ 완료
 
-#### 목표
-프론트엔드 CI/CD 파이프라인 구축 및 배포
+#### 구축된 인프라 (실제 현황)
 
-#### 배포 환경
-- **Vercel**: Next.js 프론트엔드 호스팅
-- **자동 배포**: Git push 시 자동 빌드 및 배포
+**프론트엔드 (Vercel)**
+- Vercel 자동 배포 완료 (2026-02-23)
+- `next.config.mjs`: `NEXT_PUBLIC_API_URL` 환경변수로 API 리버스 프록시 설정
+  - 개발: `http://localhost:8080/api/*`
+  - 프로덕션: EC2 백엔드 URL로 프록시
+- 환경 변수: `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_KAKAO_APP_KEY`
 
-#### CI/CD 파이프라인
-```yaml
-# Frontend: Vercel 자동 배포
-# - main 브랜치 push 시 프로덕션 배포
-# - PR 생성 시 프리뷰 환경 자동 생성
-# - 환경 변수: NEXT_PUBLIC_API_URL, NEXT_PUBLIC_KAKAO_APP_KEY
-```
+**백엔드 (AWS)**
+- **CI**: GitHub → AWS CodeBuild (`buildspec.yml`)
+  - Gradle 빌드 (`:api:bootJar -x test`)
+  - Docker 이미지 빌드 & ECR push (`feel-archive:latest`, `feel-archive:{git-sha7}`)
+- **CD**: AWS CodeDeploy (`appspec.yml` + `scripts/deploy.sh`)
+  - EC2 인스턴스에서 SSM Parameter Store에서 환경변수 조회
+  - ECR에서 이미지 pull 후 Docker 컨테이너 실행 (포트 8080)
+  - Docker 네트워크: `feel-archive-net`
+- **이미지 저장**: AWS S3 (`S3_BUCKET` SSM 파라미터)
+- **시크릿**: AWS SSM Parameter Store (DB_URL, JWT_SECRET, MAIL 등)
+- **캐시/세션**: Redis (REDIS_HOST, REDIS_PORT — ElastiCache 또는 EC2 내)
 
-#### 완료 조건 (DoD)
-- [ ] PR 생성 시 Vercel 프리뷰 환경 자동 생성
-- [ ] main 브랜치 push 시 프로덕션 자동 배포
-- [ ] 프론트엔드: Vercel에서 실행 중
-- [ ] HTTPS 적용 (Vercel 자동 제공)
-- [ ] 환경 변수 설정 완료
+#### SSM Parameter Store 관리 항목
+| 파라미터 | 설명 |
+|---------|------|
+| `DB_URL` | MySQL 연결 URL |
+| `DB_USERNAME` / `DB_PASSWORD` | DB 자격증명 |
+| `REDIS_HOST` / `REDIS_PORT` | Redis 연결 |
+| `JWT_SECRET` | JWT 서명 키 |
+| `MAIL_USERNAME` / `MAIL_PASSWORD` | SMTP 메일 발송 |
+| `KAKAO_REST_API_KEY` | 카카오 역지오코딩 API 키 |
+| `APP_SERVER_URL` | 백엔드 서버 URL |
+| `APP_CLIENT_URL` | 프론트엔드 클라이언트 URL |
+| `S3_BUCKET` | S3 버킷명 |
+| `BATCH_SIZE` | 배치 처리 크기 |
+
+#### 완료 조건 (DoD) — 모두 달성
+- [x] Vercel 자동 배포 연동
+- [x] main 브랜치 push 시 프로덕션 배포
+- [x] HTTPS 적용 (Vercel 자동 제공)
+- [x] 환경 변수 설정 완료
+- [x] 백엔드 CodeBuild → ECR → CodeDeploy 파이프라인
+- [x] AWS SSM Parameter Store 시크릿 관리
 
 ---
 
@@ -260,27 +281,52 @@ frontend/
 
 ## 5. 복구 정보 (Recovery Info)
 
-### 현재 기준점 (Baseline)
-- **마지막 정상 상태**: 주변 아카이브 조회 및 현재 위치 마커 표시 기능 완료
-- **Git commit**: task 32 완료 시점 (2026-02-13)
+### 현재 기준점 (Baseline) — v1.0.0 기준 (2026-03-01)
+- **마지막 정상 상태**: 마이페이지 기능 구현 완료 (develop 브랜치)
+- **Git commit**: `feat(mypage): 마이페이지 기능 구현 및 API 문서 수정`
+- **Branch**: `develop` (main 머지 예정)
 - **확인 방법**:
-  - `npm run dev` 실행
-  - 로그인 후 메인 페이지에서 현재 위치 기반 아카이브 목록 표시 확인
-  - 지도에 파란색 현재 위치 마커 표시 확인
+  - `npm run dev` 실행 (Port 3000)
+  - 로그인 → 홈 화면에서 지도 + 아카이브 목록 표시 확인
+  - `/my/profile` 에서 프로필 조회, 비밀번호 변경, 이메일 알림 설정, 탈퇴 확인
+
+### 구현 완료 기능 (v1.0.0)
+| 기능 | 상태 | 주요 페이지 |
+|------|------|------------|
+| 인증 (로그인/회원가입/로그아웃) | ✅ 완료 | `/login`, `/signup` |
+| 아카이브 CRUD + 이미지 | ✅ 완료 | `/archives`, `/archives/new`, `/archives/[id]` |
+| 아카이브 수정 (지연연결 이미지) | ✅ 완료 | `/archives/[id]/edit` |
+| 좋아요/스크랩 | ✅ 완료 | 아카이브 카드/상세 |
+| 지도 (Kakao Maps) | ✅ 완료 | `/` (홈) |
+| 주변 아카이브 조회 (GIS) | ✅ 완료 | `/` (홈) |
+| 타임캡슐 CRUD + 이미지 | ✅ 완료 | `/timecapsule/new`, `/timecapsule/[id]` |
+| 알림 (SSE + 목록) | ✅ 완료 | `/notifications` |
+| 마이페이지 (프로필 + 설정) | ✅ 완료 | `/my/profile` |
+| 내 아카이브/스크랩/타임캡슐 | ✅ 완료 | `/my/archives`, `/my/scraps`, `/my/timecapsules` |
+| 감정 날씨 Ticker | ✅ 완료 | 헤더 (전역) |
+
+### 미구현 기능 (Post-1.0.0)
+| 기능 | 태스크 ID | 우선순위 |
+|------|----------|---------|
+| 월간 리포트 차트 | #18 | 중간 |
+| 모바일 반응형 | #20 | 높음 |
+| 404 에러 페이지 | #36 | 낮음 |
+| 프로필 수정 | #34 | 중간 |
+| 접근성 개선 | #38 | 낮음 |
+| CI/CD 파이프라인 | #21 | 높음 |
+| Vercel 배포 | #22 | 높음 |
 
 ### 되돌림 전략
-1. **Phase별 독립 배포**: 각 Phase 완료 시 배포 가능 상태 유지
-2. **Feature Flag**: 미완성 기능 비활성화 가능
-3. **Git 브랜치 전략**: feature 브랜치에서 개발, main은 배포 가능 상태 유지
-4. **Vercel Rollback**: 이전 배포 버전으로 즉시 롤백 가능
+1. **Git 브랜치 전략**: develop 브랜치에서 개발, main은 배포 가능 상태
+2. **Vercel Rollback**: 배포 후 이전 버전으로 즉시 롤백 가능
 
 ### 롤백 포인트
-| Checkpoint | 설명 | 롤백 방법 |
-|------------|------|----------|
-| Phase 1 완료 | 인증 UI 동작 | 해당 커밋으로 revert |
-| Phase 2 완료 | 지도/피드 뷰 동작 | 해당 커밋으로 revert |
-| Phase 3 완료 | 상호작용 UI 동작 | 해당 커밋으로 revert |
-| Phase 4 완료 | 리포트 차트 표시 | 해당 커밋으로 revert |
+| Checkpoint | 설명 | Git 브랜치/커밋 |
+|------------|------|----------------|
+| task 32 완료 | 주변 아카이브 + 위치 마커 (2026-02-13) | feature 브랜치 |
+| task 46 완료 | 아카이브 수정 지연연결 이미지 (2026-02-19) | feature 브랜치 |
+| task 45 완료 | 감정 날씨 Ticker (2026-02-18) | feature 브랜치 |
+| task 56 완료 | 마이페이지 + 무한스크롤 수정 (2026-02-27) | develop 브랜치 |
 
 ---
 

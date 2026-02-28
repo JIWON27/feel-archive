@@ -1871,7 +1871,7 @@ data: {}
 
 타임캡슐 공개 알림:
 ```
-event: notification
+event: time-capsule
 data: {
   "notificationId": 123,
   "title": "타임캡슐이 열렸습니다!",
@@ -1887,7 +1887,7 @@ data: {
 - `401 Unauthorized`: 인증 토큰 없음 또는 유효하지 않음
 
 **참고사항**
-- 하나의 연결로 `connect`, `heartbeat`, `notification` 이벤트를 모두 수신
+- 하나의 연결로 `connect`, `heartbeat`, `time-capsule` 이벤트를 모두 수신
 - 연결이 끊기면 브라우저 `EventSource`가 자동으로 재연결 시도
 - 탭 닫기 또는 로그아웃 시 연결 자동 종료
 - 하트비트는 브라우저/프록시의 유휴 연결 자동 종료를 방지하기 위해 30초마다 전송

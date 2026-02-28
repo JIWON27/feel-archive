@@ -1,6 +1,7 @@
 # Feel-Archive 프론트엔드 라우팅 문서
 
 > **작성일**: 2026-01-26
+> **최종 업데이트**: 2026-03-01 (v1.0.0 기준)
 > **프레임워크**: Next.js 14 (App Router)
 
 ---
@@ -28,7 +29,8 @@ Feel-Archive는 Next.js 14의 App Router를 사용하며, Route Groups를 통해
 
 ### `(main)` 라우트 그룹
 - **레이아웃**: Protected Route - 미인증 사용자는 자동으로 로그인 페이지로 리다이렉트
-- **스타일**: 전체 서비스 레이아웃 (헤더, 사이드바 등)
+- **헤더**: 전역 헤더 (`Header.tsx`) 포함 — 로고, 감정날씨 ticker, 알림벨, 유저메뉴
+- **스타일**: `pt-14` (헤더 고정 offset)
 
 ---
 
@@ -36,20 +38,19 @@ Feel-Archive는 Next.js 14의 App Router를 사용하며, Route Groups를 통해
 
 | URL | 페이지 | 설명 | 주요 기능 |
 |-----|--------|------|----------|
-| `/` | 홈 (메인) | WhatsApp 스타일 2단 레이아웃 | • 왼쪽: 아카이브 리스트<br>• 오른쪽: Kakao Maps<br>• 현재 위치 기반 표시<br>• 마커 클릭 시 미리보기 |
+| `/` | 홈 (메인) | WhatsApp 스타일 2단 레이아웃 | • 왼쪽: 아카이브 리스트 (무한스크롤)<br>• 오른쪽: Kakao Maps<br>• 현재 위치 GPS 자동 감지 (기본: 용산 ITX역)<br>• 주변 50km 내 아카이브 우선 표시<br>• 마커 클릭 시 미리보기 카드 |
 
 ### 홈 페이지 구성
 - **왼쪽 사이드바 (400-450px)**:
-  - 검색 바
   - 현재 위치 표시
   - 아카이브 리스트 (무한 스크롤)
-  - 새 아카이브 작성 버튼
 
 - **오른쪽 지도 (나머지 공간)**:
   - Kakao Maps
-  - 감정별 색상 마커
-  - 마커 클릭 시 미리보기 카드
-  - 선택 아카이브와 리스트 동기화
+  - 감정별 색상 마커 (GIS 정보 있는 아카이브만)
+  - 마커 클릭 시 상단 미리보기 카드
+  - 현재 위치 파란색 마커 (Google Maps 스타일)
+  - 리스트 클릭 시 지도 해당 위치로 panTo
 
 ---
 
@@ -67,32 +68,35 @@ Feel-Archive는 Next.js 14의 App Router를 사용하며, Route Groups를 통해
 ### `/archives` - 목록 페이지
 **기능**:
 - 무한 스크롤 (React Query `useInfiniteQuery`)
-- 필터링: 감정별 (전체, 행복, 슬픔, 불안함, 화난, 차분한, 신난, 외로운, 감사한)
-- 정렬: 최신순, 오래된순, 인기순
+- 감정별 필터링 (전체, 행복, 슬픔, 불안함, 화난, 차분한, 신난, 외로운, 감사한, 지친)
+- 정렬: 최신순(`LATEST`), 오래된순(`OLDEST`), 인기순(`POPULAR`), 좋아요순(`LIKE`)
+- 키워드 검색
 - 카드 형식 표시 (2열 그리드)
 
 ### `/archives/new` - 작성 페이지
 **입력 필드**:
-- 감정 태그: 복수 선택 (최소 1개)
+- 감정 태그: **단일 선택** (9가지 감정 중 1개 필수)
 - 내용: 텍스트 입력 (최대 5000자)
-- 위치: Kakao Maps 선택 (필수)
-- 공개 설정: 공개/비공개 라디오 버튼
+- 위치: **선택사항** — 위치 공유 토글로 ON/OFF 가능, ON 시 Kakao Maps에서 선택
+- 이미지: 최대 5개, 파일당 5MB, 전체 20MB
+- 공개 설정: 공개/비공개 선택
 
 **기능**:
 - 현재 위치 GPS 자동 가져오기
 - 지도 클릭으로 위치 선택
+- 역지오코딩 자동 주소 → 사용자 메모 우선 적용
 - 실시간 유효성 검사 (Zod)
 
 ### `/archives/[id]` - 상세 페이지
 **표시 정보**:
-- 감정 태그 (복수)
+- 감정 태그 (단일)
 - 전체 내용
-- 이미지 갤러리 (있는 경우)
-- 위치 정보
+- 이미지 갤러리 (JWT 인증 fetch로 표시 — `AuthImage`)
+- 위치 정보 (있는 경우)
 - 작성자, 작성일, 수정일
 - 좋아요 개수 및 버튼
 - 스크랩 버튼
-- 수정/삭제 버튼 (본인 글만)
+- `···` 케밥 메뉴 (본인 글만: 수정, 삭제)
 
 **기능**:
 - 좋아요 토글
@@ -102,7 +106,38 @@ Feel-Archive는 Next.js 14의 App Router를 사용하며, Route Groups를 통해
 
 ### `/archives/[id]/edit` - 수정 페이지
 **권한**: 본인이 작성한 글만 접근 가능 (`isOwner` 체크)
-**기능**: 작성 폼 재사용, 기존 데이터 로드
+**기능**:
+- 기존 데이터 로드
+- 이미지 지연 연결 방식 — 수정 완료 시 신규 이미지 업로드 후 imageIds 일괄 반영
+- 기존 이미지 유지/삭제, 신규 이미지 추가 분리 관리 (`EditImageUploader`)
+
+---
+
+## 🎯 타임캡슐
+
+| URL | 페이지 | 설명 | 인증 필요 |
+|-----|--------|------|----------|
+| `/timecapsule/new` | 타임캡슐 작성 | 새 타임캡슐 작성 폼 | ✅ |
+| `/timecapsule/[id]` | 타임캡슐 상세 | 잠금/열림 상태별 UI | ✅ |
+
+### `/timecapsule/new` - 작성 페이지
+**입력 필드**:
+- 감정 태그: 단일 선택 (9가지)
+- 내용: 텍스트 입력 (최대 5000자)
+- 공개 일시: datetime 선택 (최소 1시간 후)
+- 위치: 선택사항
+- 이미지: 최대 5개
+
+### `/timecapsule/[id]` - 상세 페이지
+**잠금 상태 (`LOCKED`)**:
+- 봉인 다크 UI
+- 카운트다운 (일/시간/분)
+- 수정/삭제 버튼 (작성 후 30분 이내 + LOCKED 상태만)
+
+**열림 상태 (`OPENED`)**:
+- 감정 배너 + 전체 내용
+- 이미지 갤러리 (`AuthImage`)
+- 위치 정보 (있는 경우)
 
 ---
 
@@ -110,14 +145,26 @@ Feel-Archive는 Next.js 14의 App Router를 사용하며, Route Groups를 통해
 
 | URL | 페이지 | 설명 | 인증 필요 |
 |-----|--------|------|----------|
+| `/my/profile` | 마이페이지 | 프로필 + 계정 설정 통합 | ✅ |
 | `/my/archives` | 내 아카이브 | 내가 쓴 글 (공개+비공개) | ✅ |
 | `/my/scraps` | 스크랩 목록 | 스크랩한 아카이브 | ✅ |
+| `/my/timecapsules` | 내 타임캡슐 | 타임캡슐 목록 (잠금/열림 분리) | ✅ |
+
+### `/my/profile` - 마이페이지
+**표시 내용**:
+- 프로필 정보: 닉네임, 이메일, 가입일 등 (`GET /api/v1/users/me`)
+- 비밀번호 변경 (`PATCH /api/v1/users/me/password`)
+- 이메일 알림 토글 (`PATCH /api/v1/users/me/settings/email-notification`)
+- 로그아웃 (확인 모달)
+- 회원탈퇴 (확인 모달 + 비밀번호 입력)
 
 ### `/my/archives` - 내 아카이브
 **표시 내용**:
 - 공개 + 비공개 글 모두 표시
-- 무한 스크롤
-- 카드 형식 (2열 그리드)
+- 감정 이모지 칩 필터 (가로 스크롤)
+- 정렬 드롭다운 (LATEST/OLDEST/POPULAR/LIKE)
+- 키워드 검색 토글
+- 무한 스크롤, 총 개수 표시
 
 ### `/my/scraps` - 스크랩 목록
 **표시 내용**:
@@ -126,14 +173,34 @@ Feel-Archive는 Next.js 14의 App Router를 사용하며, Route Groups를 통해
 - 스크랩 해제 버튼
 - 빈 상태 처리
 
+### `/my/timecapsules` - 내 타임캡슐
+**표시 내용**:
+- 잠금 상태 섹션: 봉인 UI + 카운트다운
+- 열림 상태 섹션: 감정 이모지 + 내용 미리보기 + 확인 링크
+- 무한 스크롤
+
+---
+
+## 🔔 알림
+
+| URL | 페이지 | 설명 | 인증 필요 |
+|-----|--------|------|----------|
+| `/notifications` | 알림 목록 | 전체 알림 (무한 스크롤) | ✅ |
+
+### `/notifications` - 알림 목록
+**표시 내용**:
+- 읽음/읽지않음 알림 목록
+- 무한 스크롤
+- 개별 읽음 처리
+- 전체 읽음 처리 버튼
+
 ---
 
 ## 🎯 동적 라우팅 파라미터
 
 ### `[id]` - 아카이브 ID
 - **타입**: `number`
-- **예시**: `/archives/123`
-- **사용처**: 상세 조회, 수정 페이지
+- **예시**: `/archives/123`, `/timecapsule/456`
 
 ---
 
@@ -144,7 +211,7 @@ Feel-Archive는 Next.js 14의 App Router를 사용하며, Route Groups를 통해
 | 현재 위치 | 인증 상태 | 리다이렉트 |
 |----------|----------|-----------|
 | `/login` 또는 `/signup` | 로그인됨 | → `/` |
-| `/` 또는 `(main)` 그룹 | 미인증 | → `/login` |
+| `(main)` 그룹 전체 | 미인증 | → `/login` |
 | `/archives/[id]/edit` | 본인 글 아님 | → `/archives/[id]` |
 
 ### 로그인 후 동작
@@ -155,6 +222,7 @@ Feel-Archive는 Next.js 14의 App Router를 사용하며, Route Groups를 통해
 1. 아카이브 작성 성공 → `/archives/[생성된 ID]`
 2. 아카이브 수정 성공 → `/archives/[ID]`
 3. 아카이브 삭제 성공 → `/archives`
+4. 타임캡슐 작성 성공 → `/my/timecapsules`
 
 ---
 
@@ -179,9 +247,18 @@ Feel-Archive
    │     ├─ (상세)
    │     └─ /edit (수정)
    │
-   └─ 마이페이지
-      ├─ /my/archives (내 글)
-      └─ /my/scraps (스크랩)
+   ├─ 타임캡슐
+   │  ├─ /timecapsule/new (작성)
+   │  └─ /timecapsule/[id] (상세)
+   │
+   ├─ 마이페이지
+   │  ├─ /my/profile (프로필 + 설정)
+   │  ├─ /my/archives (내 글)
+   │  ├─ /my/scraps (스크랩)
+   │  └─ /my/timecapsules (내 타임캡슐)
+   │
+   └─ 알림
+      └─ /notifications (알림 목록)
 ```
 
 ---
@@ -193,7 +270,7 @@ Feel-Archive
 - 목록: 2열 그리드
 
 ### 모바일 (md 미만)
-- 홈: 사이드바 전체 화면 (지도는 숨김 또는 탭 전환)
+- 홈: 사이드바 전체 화면 (지도는 숨김)
 - 목록: 1열 그리드
 
 ---
@@ -224,7 +301,6 @@ Feel-Archive
 ### 목록 (`/archives`)
 - **레이아웃**: 그리드 (2열)
 - **배경**: gray-50
-- **여백**: `py-8`
 
 ### 상세 (`/archives/[id]`)
 - **레이아웃**: 단일 컬럼 (max-w-4xl)
@@ -239,23 +315,20 @@ Feel-Archive
 
 ## 🔗 주요 네비게이션 링크
 
-### 헤더 (추후 구현 예정)
+### 헤더 (구현 완료)
 - 로고 → `/`
-- 아카이브 → `/archives`
-- 내 페이지 → `/my/archives`
-- 로그아웃 버튼
-
-### 푸터 (추후 구현 예정)
-- 서비스 소개
-- 개인정보 처리방침
-- 문의하기
+- 감정 날씨 Ticker (5분 폴링, 슬라이드업 애니메이션)
+- 알림벨 → 드롭다운 / `/notifications`
+- 글쓰기 버튼 → `/archives/new`
+- 타임캡슐 버튼 → `/timecapsule/new`
+- 유저메뉴 → `/my/profile`, 로그아웃
 
 ---
 
 ## 📊 데이터 로딩 전략
 
 ### SSR vs CSR
-- **모든 페이지**: CSR (Client-Side Rendering)
+- **모든 페이지**: CSR (Client-Side Rendering, `'use client'`)
 - **이유**: 인증 필요, 실시간 데이터
 
 ### React Query 활용
@@ -263,64 +336,40 @@ Feel-Archive
 - **상세 페이지**: `useQuery` (단일 데이터)
 - **작성/수정**: `useMutation` (데이터 변경)
 
-### 캐싱 전략
-- **목록**: `staleTime: 60s` (1분간 캐시)
-- **상세**: `staleTime: 60s`
-- **Invalidation**: 작성/수정/삭제 시 관련 쿼리 무효화
+### 페이지네이션 방식
+- **아카이브/타임캡슐**: 1-based (`pageNo` 필드, `setOneIndexedParameters(true)`)
+- **알림**: 0-based (Spring Page 표준, `number` 필드)
+
+### 이미지 표시
+- **AuthImage 컴포넌트**: JWT 토큰이 필요한 이미지를 Axios로 fetch 후 Blob URL 변환
+- **사용처**: 아카이브 상세, 타임캡슐 상세, 수정 페이지
 
 ---
 
-## 🚀 향후 추가 예정 라우트
-
-### 타임캡슐
-- `/timecapsules` - 내 타임캡슐 목록
-- `/timecapsules/new` - 타임캡슐 작성
-- `/timecapsules/[id]` - 타임캡슐 상세
-
-### 리포트
-- `/report` - 월간 감정 리포트
-
-### 설정
-- `/settings` - 계정 설정
-- `/settings/profile` - 프로필 수정
-
----
-
-## 📝 URL 쿼리 파라미터 (향후 구현)
+## 📝 URL 쿼리 파라미터
 
 ### `/archives` - 필터링
 ```
-/archives?emotion=HAPPY&sort=latest
+/archives?emotion=HAPPY&sortType=LATEST&keyword=서울
 ```
-- `emotion`: 감정 필터 (HAPPY, SAD, ANXIOUS 등)
-- `sort`: 정렬 (latest, oldest, popular)
-- `page`: 페이지 번호 (무한 스크롤 전환 시)
-
-### `/` - 지도 위치
-```
-/?lat=37.5665&lng=126.978&zoom=5
-```
-- `lat`: 위도
-- `lng`: 경도
-- `zoom`: 지도 확대 레벨
+- `emotion`: 감정 필터 (HAPPY, SAD, ANXIOUS, ANGRY, CALM, EXCITED, LONELY, GRATEFUL, TIRED)
+- `sortType`: 정렬 (LATEST, OLDEST, POPULAR, LIKE)
+- `keyword`: 내용 검색어
+- `page`, `size`: 페이지네이션 (1-based)
 
 ---
 
-## 🔍 SEO 및 메타데이터 (향후 개선)
+## 🚀 미구현 / 향후 예정 라우트
 
-### 현재 구현
-- 모든 페이지: 공통 메타데이터 (layout.tsx)
-
-### 향후 개선
-- 페이지별 동적 메타데이터
-- 아카이브 상세: 감정 태그, 첫 줄 미리보기
-- Open Graph 태그
-- Twitter Card
+| URL | 기능 | 상태 |
+|-----|------|------|
+| `/my/profile/edit` | 프로필 수정 (닉네임, 프로필 사진) | 미구현 |
+| `/my/report` | 월간 감정 리포트 (차트) | 미구현 |
 
 ---
 
 **참고**:
 - 모든 라우트는 인증 시스템 통합
-- JWT 토큰 기반 인증
-- 401 에러 시 자동 토큰 갱신
+- JWT 토큰 기반 인증 (Access Token: localStorage, Refresh Token: HttpOnly Cookie)
+- 401 에러 시 자동 토큰 갱신 (Axios interceptor)
 - 갱신 실패 시 로그아웃 및 로그인 페이지 이동

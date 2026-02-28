@@ -341,7 +341,8 @@
       ],
       "passes": false,
       "commit": null,
-      "blockers": []
+      "blockers": [],
+      "notes": "백엔드는 AWS CodeBuild(buildspec.yml + appspec.yml + scripts/deploy.sh)로 CI/CD 구축 완료. 프론트엔드 GitHub Actions는 미구현 상태이나 Vercel 자동 배포(task 22)로 대체."
     },
     {
       "id": 22,
@@ -354,9 +355,11 @@
         "커스텀 도메인 연결 (선택)",
         "배포 확인"
       ],
-      "passes": false,
-      "commit": null,
-      "blockers": []
+      "passes": true,
+      "commit": "chore: trigger vercel deploy",
+      "blockers": [],
+      "completedAt": "2026-02-23",
+      "notes": "Vercel 자동 배포 완료. next.config.mjs에서 NEXT_PUBLIC_API_URL 환경변수로 API 프록시 설정 (리버스 프록시 방식, commit: chore: Vercel 리버스 프록시 설정 추가). 백엔드는 AWS EC2(Docker) + CodeBuild + CodeDeploy 파이프라인 구축 완료."
     },
     {
       "id": 23,
@@ -545,9 +548,11 @@
         "프로필 수정 버튼 추가",
         "로그아웃 버튼 추가"
       ],
-      "passes": false,
-      "commit": null,
-      "blockers": []
+      "passes": true,
+      "commit": "feat(mypage): 마이페이지 기능 구현 및 API 문서 수정",
+      "blockers": [],
+      "completedAt": "2026-02-27",
+      "notes": "프로필 조회 및 로그아웃 기능 포함. 통계 표시 및 프로필 수정은 미구현 (task 34 별도). 설정 기능(비번변경, 이메일알림, 탈퇴)은 동일 페이지에 통합."
     },
     {
       "id": 34,
@@ -577,9 +582,11 @@
         "비밀번호 변경 API 연동 (백엔드 API 확인 필요)",
         "회원탈퇴 API 연동 (백엔드 API 확인 필요)"
       ],
-      "passes": false,
-      "commit": null,
-      "blockers": ["백엔드 API 확인 필요: PATCH /api/members/me/password, DELETE /api/members/me"]
+      "passes": true,
+      "commit": "feat(mypage): 마이페이지 기능 구현 및 API 문서 수정",
+      "blockers": [],
+      "completedAt": "2026-02-27",
+      "notes": "별도 /settings 페이지 대신 /my/profile에 통합 구현. 비밀번호 변경(PATCH /api/v1/users/me/password), 이메일 알림 토글(PATCH /api/v1/users/me/settings/email-notification, body: {enable: boolean}), 로그아웃, 회원탈퇴(DELETE /api/v1/users, body: {currentPassword}) 모두 구현 완료."
     },
     {
       "id": 36,

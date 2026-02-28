@@ -1,286 +1,174 @@
 # 백엔드 API 수정 요청 사항
 
 > **작성일**: 2026-01-26
+> **최종 업데이트**: 2026-03-01 (v1.0.0 기준 — 모든 항목 해결 완료)
 > **작성자**: 프론트엔드 개발팀
-> **프론트엔드 구현 완료**: 아카이브 CRUD 전체 기능
 
 ---
 
-## 📋 요약
+## ✅ 전체 요약 (v1.0.0 기준)
 
-SPEC.md 기준으로 프론트엔드 구현이 완료되었으나, 현재 백엔드 API와 SPEC 간 차이점이 존재합니다. 아래 항목들의 수정이 필요합니다.
+**모든 주요 요청 사항이 해결 완료되었습니다.**
+현재 프론트엔드와 백엔드 API가 정상적으로 연동되어 있습니다.
 
 ---
 
-## 🔴 필수 수정 사항
+## ✅ 해결 완료된 항목
 
-### 1. PATCH /api/v1/archives/{id} - 아카이브 전체 수정 API 추가
+### 1. PATCH /api/v1/archives/{id} - 아카이브 전체 수정 API ✅ 구현 완료
 
-**현재 상태:**
-- `PATCH /api/v1/archives/{id}/status` - 공개/비공개 상태만 변경 가능
+**현재 상태**: 구현 완료
+**엔드포인트**: `PATCH /api/v1/archives/{archiveId}`
+**Request Body**:
+```json
+{
+  "emotion": "HAPPY",
+  "content": "수정된 내용",
+  "visibility": "PUBLIC",
+  "location": { "latitude": 37.5, "longitude": 126.9, "locationLabel": "서울" },
+  "imageIds": [1, 2, 3]
+}
+```
+- `location`: optional
+- `imageIds`: 유지할 이미지 ID 목록 (서버가 기존 이미지와 비교하여 동기화)
 
-**요청 사항:**
-```java
-@PatchMapping("/api/v1/archives/{archiveId}")
-public ResponseEntity<Void> updateArchive(
-    @PathVariable Long archiveId,
-    @Valid @RequestBody ArchiveUpdateRequest request,
-    @AuthenticationPrincipal Long userId
-) {
-    archiveService.update(archiveId, request, userId);
-    return ResponseEntity.ok().build();
+**Response**: `ArchiveDetailResponse` (200 OK)
+
+---
+
+### 2. DELETE /api/v1/archives/{id} - 아카이브 삭제 API ✅ 구현 완료
+
+**현재 상태**: 구현 완료
+**엔드포인트**: `DELETE /api/v1/archives/{archiveId}`
+**Response**: 204 No Content
+- Soft Delete 방식 (`deletedAt` 필드 설정)
+
+---
+
+### 3. 위치 정보 선택사항 처리 ✅ 해결 완료
+
+**결정**: 위치는 **선택사항**으로 확정
+- 프론트엔드: ArchiveForm에 위치 공유 토글 추가 (`shareLocation` 상태)
+- `shareLocation === false` 시 location 값 undefined로 전송
+- 백엔드: `location` 필드 optional 처리로 유지
+
+---
+
+### 4. ArchiveSummaryResponse isLiked / isScraped 필드 ✅ 구현 완료
+
+현재 백엔드 응답에 `isLiked`, `isScraped` 포함:
+```json
+{
+  "archiveId": 456,
+  "emotion": "HAPPY",
+  "contentPreview": "...",
+  "latitude": 37.5665,
+  "longitude": 126.9780,
+  "address": "서울시청",
+  "createdAt": "2026-02-15T14:30:00",
+  "likeCount": 5,
+  "isLiked": false,
+  "isScraped": true,
+  "writer": { "userId": 123, "nickname": "길동이" }
 }
 ```
 
-**ArchiveUpdateRequest:**
-```java
-public record ArchiveUpdateRequest(
-    @NotNull Emotion emotion,
-    @NotBlank String content,
-    @NotNull Visibility visibility,
-    @NotNull LocationRequest location
-) {}
-```
+---
 
-**이유:**
-- SPEC.md 2.1: "아카이브 글: 자유롭게 수정/삭제 가능"
-- 사용자가 감정, 내용, 위치를 모두 수정할 수 있어야 함
+### 5. ArchiveDetailResponse isLiked / isScraped / isOwner 필드 ✅ 구현 완료
 
-**비즈니스 규칙:**
-- 본인이 작성한 글만 수정 가능 (userId 검증)
-- 수정 시 `updatedAt` 타임스탬프 갱신
+현재 백엔드 응답에 `isLiked`, `isScraped`, `isOwner` 모두 포함.
+- `isOwner` Jackson 직렬화: `@JsonProperty("isOwner")` 적용 완료
 
 ---
 
-### 2. DELETE /api/v1/archives/{id} - 아카이브 삭제 API 추가 (Soft Delete)
+### 6. 주변 아카이브 조회 API ✅ 구현 완료
 
-**현재 상태:**
-- 아카이브 삭제 API 없음
+**엔드포인트**: `GET /api/v1/archives/nearby`
+**Query Parameters**: `latitude`, `longitude`, `radius` (default: 50.0)
+**Response**: `List<ArchiveSummaryResponse>` (전체 정보 포함)
 
-**요청 사항:**
-```java
-@DeleteMapping("/api/v1/archives/{archiveId}")
-public ResponseEntity<Void> deleteArchive(
-    @PathVariable Long archiveId,
-    @AuthenticationPrincipal Long userId
-) {
-    archiveService.delete(archiveId, userId);
-    return ResponseEntity.noContent().build();
-}
-```
-
-**이유:**
-- SPEC.md 2.1: "삭제 방식: Soft Delete (배치로 정리)"
-- 사용자가 자신의 글을 삭제할 수 있어야 함
-
-**구현 방법:**
-- `Archive` 엔티티의 `deletedAt` 필드를 현재 시간으로 설정
-- 실제 데이터는 유지 (물리적 삭제는 배치 작업)
-- 조회 쿼리에서 `deletedAt IS NULL` 조건 추가
-
-**비즈니스 규칙:**
-- 본인이 작성한 글만 삭제 가능 (userId 검증)
-- Soft Delete 후 30일 경과 시 배치로 물리적 삭제 (별도 구현)
-
----
-
-## 🟡 선택 수정 사항
-
-### 3. LocationRequest 필수 여부
-
-**현재 상태:**
-- `LocationRequest`가 선택사항 (nullable)
-
-**권장 사항:**
-- SPEC.md에서는 "장소: 필수"로 명시됨
-- 프론트엔드는 필수로 구현함
-- 백엔드도 `@NotNull` 추가 권장
-
-**또는:**
-- SPEC.md를 수정하여 "장소: 선택사항"으로 변경
-- 현재 백엔드 구현 유지
-
----
-
-## 🟢 주변 아카이브 조회 API 구현 완료
-
-**API 명세:**
-```
-GET /api/v1/archives/nearby
-Query Parameters:
-  - latitude: BigDecimal (필수) - 위도
-  - longitude: BigDecimal (필수) - 경도
-  - radius: double (선택, 기본값: 50.0) - 반경(미터)
-Response: List<ArchiveSummaryResponse>
-```
-
-**백엔드 구현 변경 사항:**
-- **2026-02-12**: `@RequestBody` → `@ModelAttribute` (Query Parameter 방식)
-- **2026-02-13**: `ArchiveMarkerResponse` → `ArchiveSummaryResponse` (전체 정보 포함)
-
-**프론트엔드 구현:**
+프론트엔드 구현:
 ```typescript
-// query parameter로 전송
 const { data } = await apiClient.get<ArchiveSummary[]>('/api/v1/archives/nearby', {
-  params: {
-    latitude: request.latitude,
-    longitude: request.longitude,
-    radius: request.radius,
-  },
+  params: { latitude, longitude, radius },
 });
 ```
 
-**메인 페이지 동작:**
-- GPS로 현재 위치 획득 (또는 기본 위치: 용산 ITX역)
-- 반경 50km 내 아카이브 조회
-- **주변 아카이브 우선 표시** (내용, 날짜, 작성자 포함)
-- 지도에 마커로 표시
-- 결과 없으면 전체 목록으로 폴백
-
 ---
 
-## 🟢 이미지 API 구현 완료
+## 📋 현재 구현 완료 범위
 
-백엔드에서 이미지 관련 API가 이미 구현되어 있습니다:
-
-**이미지 업로드:**
-```java
-POST /api/v1/archives/{id}/images
-Content-Type: multipart/form-data
-RequestPart: images (List<MultipartFile>)
-Response: List<ArchiveImageResponse>
-```
-
-**이미지 삭제:**
-```java
-DELETE /api/v1/archives/{archiveId}/images/{imageId}
-Response: 204 No Content
-```
-
-**이미지 다운로드:**
-```java
-GET /api/v1/archives/{archiveId}/images/{imageId}
-Response: Resource (이미지 파일)
-```
-
-**프론트엔드 구현 방식:**
-- 아카이브 작성 시: 아카이브 생성 후 자동으로 이미지 업로드
-- 아카이브 수정 시: 기존 이미지 전체 삭제 후 새 이미지 업로드 (전체 교체)
-- 제한사항: 최대 5개, 파일당 5MB, 전체 20MB
-
----
-
-## 🟢 Response DTO 변경 사항
-
-### ArchiveSummaryResponse
-
-**현재:**
-```java
-public record ArchiveSummaryResponse(
-    Long archiveId,
-    String emotion,
-    String contentPreview,
-    String address,
-    LocalDateTime createdAt,
-    int likeCount,
-    CommonUserResponse writer
-) {}
-```
-
-**요청:**
-```java
-public record ArchiveSummaryResponse(
-    Long archiveId,
-    String emotion,  // 단일 값 유지
-    String contentPreview,
-    String address,
-    LocalDateTime createdAt,
-    int likeCount,
-    Boolean isLiked,  // 현재 사용자가 좋아요 했는지
-    Boolean isScraped,  // 현재 사용자가 스크랩 했는지
-    CommonUserResponse writer
-) {}
-```
-
-### ArchiveDetailResponse
-
-**현재:**
-```java
-public record ArchiveDetailResponse(
-    Long archiveId,
-    String emotion,
-    String content,
-    List<ArchiveImageResponse> images,
-    String visibility,
-    LocationResponse location,
-    LocalDateTime createdAt,
-    LocalDateTime updatedAt,
-    int likeCount,
-    CommonUserResponse writer,
-    Boolean isOwner
-) {}
-```
-
-**요청:**
-```java
-public record ArchiveDetailResponse(
-    Long archiveId,
-    String emotion,  // 단일 값 유지
-    String content,
-    List<ArchiveImageResponse> images,
-    String visibility,
-    LocationResponse location,
-    LocalDateTime createdAt,
-    LocalDateTime updatedAt,
-    int likeCount,
-    Boolean isLiked,  // 추가
-    Boolean isScraped,  // 추가
-    CommonUserResponse writer,
-    Boolean isOwner
-) {}
-```
-
----
-
----
-
-## ✅ 구현 우선순위
-
-| 우선순위 | 항목 | 이유 |
-|---------|-----|-----|
-| 🔴 높음 | #1 아카이브 수정 API | 사용자가 글을 수정할 수 없음 |
-| 🔴 높음 | #2 아카이브 삭제 API | 사용자가 글을 삭제할 수 없음 |
-| 🟡 중간 | #3 위치 필수 여부 | SPEC과 불일치, 정책 결정 필요 |
-
----
-
----
-
-## 📞 연락처
-
-질문이나 논의가 필요한 사항이 있으면 프론트엔드 팀에 연락주세요.
-
-**프론트엔드 구현 완료 범위:**
-- ✅ 아카이브 작성 (감정 단일 선택, 위치 필수, 이미지 최대 5개)
-- ✅ 아카이브 목록 조회 (무한 스크롤, 필터링, 정렬)
-- ✅ 아카이브 상세 조회
-- ✅ 아카이브 수정 (이미지 전체 교체 방식)
-- ✅ 아카이브 삭제
+### 아카이브
+- ✅ 아카이브 작성 (감정 단일 선택, 위치 선택사항, 이미지 최대 5개)
+- ✅ 아카이브 목록 조회 (무한 스크롤, 감정/키워드 필터, LATEST/OLDEST/POPULAR/LIKE 정렬)
+- ✅ 아카이브 상세 조회 (isOwner/isLiked/isScraped 포함)
+- ✅ 아카이브 수정 (지연 연결 이미지 방식)
+- ✅ 아카이브 삭제 (Soft Delete)
 - ✅ 이미지 업로드 (최대 5개, 파일당 5MB, 전체 20MB)
 - ✅ 이미지 삭제
-- ✅ 좋아요/스크랩 기능
-- ✅ 내 아카이브 목록
-- ✅ 스크랩 목록
-- ✅ WhatsApp 스타일 메인 페이지 (지도 + 목록)
+- ✅ 좋아요/스크랩 기능 (토글)
+- ✅ 내 아카이브 목록 (공개+비공개, 필터/정렬)
+- ✅ 스크랩 목록 (무한 스크롤)
+- ✅ 주변 아카이브 조회 (GPS 기반 반경 50km)
 
-**테스트 완료:**
-- ✅ TypeScript 타입 검증 통과
-- ✅ Next.js 빌드 성공
-- ✅ 모든 페이지 라우팅 정상 작동
+### 지도
+- ✅ Kakao Maps 통합 (WhatsApp 스타일 2단 레이아웃)
+- ✅ 감정별 마커 색상/이모지
+- ✅ 현재 위치 파란색 마커
+- ✅ 리스트-지도 양방향 동기화
+
+### 인증
+- ✅ 로그인, 회원가입, 로그아웃
+- ✅ JWT 자동 갱신 (Axios interceptor)
+
+### 마이페이지
+- ✅ 프로필 조회 (`GET /api/v1/users/me`)
+- ✅ 비밀번호 변경 (`PATCH /api/v1/users/me/password`)
+- ✅ 이메일 알림 설정 (`PATCH /api/v1/users/me/settings/email-notification`, body: `{enable: boolean}`)
+- ✅ 회원탈퇴 (`DELETE /api/v1/users`, body: `{currentPassword}`)
+
+### 타임캡슐
+- ✅ 작성, 목록, 상세, 수정, 삭제 (30분 제한)
+- ✅ 이미지 업로드/표시 (AuthImage - JWT 인증)
+
+### 알림
+- ✅ SSE 실시간 수신 (`event: time-capsule`)
+- ✅ 알림 목록 (무한 스크롤, Spring Page 포맷)
+- ✅ 개별/전체 읽음 처리
+
+### 감정 날씨
+- ✅ Top 3 조회 (5분 폴링, Ticker 애니메이션)
+
+---
+
+## 🔴 미구현 기능 (1.0.0 이후 예정)
+
+| 기능 | 설명 |
+|------|------|
+| 프로필 수정 | 닉네임, 프로필 사진 변경 (`PATCH /api/v1/users/me`) |
+| 월간 리포트 | 감정 통계 차트 |
+| 모바일 반응형 | 터치 최적화, 모바일 네비게이션 |
+| 404 에러 페이지 | `app/not-found.tsx` |
+| 접근성 개선 | ARIA, 키보드 네비게이션 |
+
+## ✅ CI/CD 현황
+
+**백엔드**: AWS CodeBuild → ECR → CodeDeploy → EC2 완전 자동화
+- `buildspec.yml`: Gradle 빌드 + Docker 이미지 빌드 & ECR push
+- `appspec.yml` + `scripts/deploy.sh`: SSM에서 환경변수 조회 후 컨테이너 실행
+- 시크릿: AWS SSM Parameter Store
+
+**프론트엔드**: Vercel 자동 배포 완료
+- `NEXT_PUBLIC_API_URL` 환경변수로 API 프록시 (EC2 백엔드 연결)
+- main 브랜치 push 시 자동 배포
+
+**이미지 저장**: AWS S3 (로컬 저장에서 S3로 전환 완료)
 
 ---
 
 **참고 문서:**
-- `/Users/minjiwon/Desktop/feel-archive/docs/SPEC.md` - 서비스 기획 스펙
-- `/Users/minjiwon/Desktop/feel-archive/apps/frontend/types/archive.ts` - 프론트엔드 타입 정의
-- `/Users/minjiwon/Desktop/feel-archive/apps/frontend/services/archive-service.ts` - API 호출 구현
+- `/docs/SPEC.md` - 서비스 기획 스펙
+- `/docs/API.md` - API 상세 명세
+- `/apps/frontend/docs/ROUTES.md` - 라우팅 현황
+- `/apps/frontend/types/` - TypeScript 타입 정의
