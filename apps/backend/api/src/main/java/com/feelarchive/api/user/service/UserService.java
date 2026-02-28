@@ -4,6 +4,7 @@ package com.feelarchive.api.user.service;
 import static com.feelarchive.domain.user.exception.UserExceptionCode.DUPLICATE_EMAIL;
 import static com.feelarchive.domain.user.exception.UserExceptionCode.DUPLICATE_NICKNAME;
 
+import com.feelarchive.api.user.controller.request.UpdatePasswordRequest;
 import com.feelarchive.api.user.controller.request.UserRequest;
 import com.feelarchive.api.user.controller.response.MyPageResponse;
 import com.feelarchive.api.user.controller.response.UserResponse;
@@ -11,6 +12,7 @@ import com.feelarchive.common.excepion.FeelArchiveException;
 import com.feelarchive.domain.user.entity.User;
 import com.feelarchive.domain.user.entity.vo.Email;
 import com.feelarchive.domain.user.entity.vo.Nickname;
+import com.feelarchive.domain.user.exception.UserExceptionCode;
 import com.feelarchive.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -46,6 +48,18 @@ public class UserService {
   public MyPageResponse getMyInfo(Long id) {
     User user = userReader.getById(id);
     return userMapper.toMyPageResponse(user);
+  }
+
+  @Transactional
+  public void updatePassword(Long id, UpdatePasswordRequest request) {
+    User user = userReader.getById(id);
+
+    if (!passwordEncoder.matches(request.currentPassword(), user.getPassword().getPassword())) {
+      throw new FeelArchiveException(UserExceptionCode.PASSWORD_MISMATCH);
+    }
+
+    String newPassword = passwordEncoder.encode(request.newPassword());
+    user.updatePassword(newPassword);
   }
 
   private void validateEmail(String email) {

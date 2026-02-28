@@ -1,5 +1,6 @@
 package com.feelarchive.api.user.controller;
 
+import com.feelarchive.api.user.controller.request.UpdatePasswordRequest;
 import com.feelarchive.api.user.controller.request.UserRequest;
 import com.feelarchive.api.user.controller.response.MyPageResponse;
 import com.feelarchive.api.user.controller.response.UserResponse;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,5 +39,14 @@ public class UserController {
   @GetMapping("/me")
   public ResponseEntity<MyPageResponse> getMyInfo(@AuthenticationPrincipal Long userId){
     return ResponseEntity.ok(userService.getMyInfo(userId));
+  }
+
+  @PatchMapping("/me/password")
+  public ResponseEntity<Void> updatePassword(
+      @AuthenticationPrincipal Long userId,
+      @RequestBody @Valid UpdatePasswordRequest request)
+  {
+    userService.updatePassword(userId, request);
+    return ResponseEntity.ok().build();
   }
 }
