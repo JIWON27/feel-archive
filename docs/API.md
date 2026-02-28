@@ -287,9 +287,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
   "name": "홍길동",
   "email": "hong@example.com",
   "nickname": "길동이",
-  "gender": "MALE",
-  "birthDate": "1990-01-01",
-  "createdAt": "2026-01-15T10:30:00"
+  "phone": "01012345678"
 }
 ```
 
@@ -321,9 +319,15 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```json
 {
   "id": 123,
-  "email": "hong@example.com",
+  "name": "홍길동",
   "nickname": "길동이",
-  "emailNotificationEnabled": true
+  "email": "hong@example.com",
+  "phone": "01012345678",
+  "gender": "MALE",
+  "birthDate": "1990-01-01",
+  "emailNotificationEnabled": true,
+  "status": "ACTIVE",
+  "createdAt": "2026-01-15T10:30:00"
 }
 ```
 
@@ -398,7 +402,7 @@ PATCH /api/v1/users/me/settings/email-notification
 **Request Body**
 ```json
 {
-  "enabled": true
+  "enable": true
 }
 ```
 
@@ -409,7 +413,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 Content-Type: application/json
 
 {
-  "enabled": false
+  "enable": false
 }
 ```
 
@@ -420,7 +424,7 @@ Content-Type: application/json
 
 **Status Codes**
 - `200 OK`: 설정 변경 성공
-- `400 Bad Request`: enabled 필드 누락
+- `400 Bad Request`: enable 필드 누락
 - `401 Unauthorized`: 인증 토큰 없음 또는 유효하지 않음
 
 ---
@@ -431,7 +435,7 @@ Content-Type: application/json
 
 **Endpoint**
 ```
-DELETE /api/v1/users/me
+DELETE /api/v1/users
 ```
 
 **인증 필요**: ✅ Yes (Bearer Token)
@@ -439,18 +443,18 @@ DELETE /api/v1/users/me
 **Request Body**
 ```json
 {
-  "password": "string (required)"
+  "currentPassword": "string (required)"
 }
 ```
 
 **Request Example**
 ```http
-DELETE /api/v1/users/me HTTP/1.1
+DELETE /api/v1/users HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 Content-Type: application/json
 
 {
-  "password": "myPassword123"
+  "currentPassword": "myPassword123"
 }
 ```
 
@@ -1906,12 +1910,12 @@ PATCH /api/v1/users/me/settings/email-notification
 **Request Body**
 ```json
 {
-  "enabled": "boolean (required)"
+  "enable": "boolean (required)"
 }
 ```
 
 **Validation Rules**
-- `enabled`: boolean 타입, 필수
+- `enable`: boolean 타입, 필수
   - `true`: 이메일 알림 수신
   - `false`: 이메일 알림 수신 안함
 
@@ -1922,7 +1926,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 Content-Type: application/json
 
 {
-  "enabled": false
+  "enable": false
 }
 ```
 
@@ -1933,7 +1937,7 @@ Content-Type: application/json
 
 **Status Codes**
 - `200 OK`: 설정 변경 성공
-- `400 Bad Request`: 유효성 검증 실패 (enabled 필드 누락 또는 타입 오류)
+- `400 Bad Request`: 유효성 검증 실패 (enable 필드 누락 또는 타입 오류)
 - `401 Unauthorized`: 인증 토큰 없음 또는 유효하지 않음
 
 **참고사항**

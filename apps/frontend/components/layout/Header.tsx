@@ -156,6 +156,13 @@ export function Header() {
               <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden">
                 <div className="py-1">
                   <Link
+                    href="/my/profile"
+                    onClick={() => setShowUserMenu(false)}
+                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    마이페이지
+                  </Link>
+                  <Link
                     href="/my/archives"
                     onClick={() => setShowUserMenu(false)}
                     className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
