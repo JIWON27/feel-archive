@@ -28,6 +28,8 @@ public enum UserExceptionCode implements FeelArchiveErrorCode {
   BIRTHDATE_REQUIRED("U014", HttpStatus.BAD_REQUEST, "생년월일을 입력해주세요."),
   BIRTHDATE_IN_FUTURE("U015", HttpStatus.BAD_REQUEST, "생년월일은 오늘 이후일 수 없습니다."),
   ROLE_REQUIRED("U016", HttpStatus.BAD_REQUEST, "회원 권한은 필수입니다."),
+
+  PASSWORD_MISMATCH("U017", HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
   ;
 
   final String code;

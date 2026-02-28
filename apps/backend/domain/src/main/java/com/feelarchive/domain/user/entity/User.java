@@ -26,6 +26,7 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
@@ -35,6 +36,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 @NoArgsConstructor
 @Table(name = "users")
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@SQLRestriction("status = 'ACTIVE'")
 public class User {
 
   @Id
@@ -96,6 +98,7 @@ public class User {
     this.birthDate = new BirthDate(birthDate);
     this.role = (role == null) ? Role.USER : role;
     this.status = (status == null) ? Status.ACTIVE : status;
+    this.emailNotificationEnabled = true;
   }
 
   private void validateName(String name) {
@@ -112,5 +115,13 @@ public class User {
 
   public void updatePassword(String newPassword) {
     this.password = new Password(newPassword);
+  }
+
+  public void updateEmailNotification(boolean value) {
+    this.emailNotificationEnabled = value;
+  }
+
+  public void withdraw() {
+    this.status = Status.WITHDRAWN;
   }
 }
