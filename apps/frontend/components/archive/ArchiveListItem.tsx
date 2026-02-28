@@ -1,7 +1,9 @@
 'use client';
 
 import React from 'react';
-import { ArchiveSummary, EmotionLabels } from '@/types/archive';
+import { ArchiveSummary } from '@/types/archive';
+import { useEmotions } from '@/hooks/use-emotions';
+import { EMOTION_EMOJI } from '@/types/emotion';
 
 interface ArchiveListItemProps {
   archive: ArchiveSummary;
@@ -14,6 +16,7 @@ export const ArchiveListItem: React.FC<ArchiveListItemProps> = ({
   isSelected = false,
   onClick,
 }) => {
+  const { getLabel } = useEmotions();
   return (
     <div
       onClick={onClick}
@@ -27,7 +30,7 @@ export const ArchiveListItem: React.FC<ArchiveListItemProps> = ({
         {/* 아바타 */}
         <div className="flex-shrink-0">
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-2xl">
-            {getEmotionEmoji(archive.emotion)}
+            {EMOTION_EMOJI[archive.emotion] ?? '📍'}
           </div>
         </div>
 
@@ -44,7 +47,7 @@ export const ArchiveListItem: React.FC<ArchiveListItemProps> = ({
 
           <div className="flex items-center gap-2 mb-1">
             <span className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full">
-              {EmotionLabels[archive.emotion]}
+              {getLabel(archive.emotion)}
             </span>
           </div>
 
@@ -118,17 +121,3 @@ function formatTime(dateString: string): string {
   });
 }
 
-// 감정 이모지
-function getEmotionEmoji(emotion: string): string {
-  const emojis: Record<string, string> = {
-    HAPPY: '😊',
-    SAD: '😢',
-    ANXIOUS: '😰',
-    ANGRY: '😠',
-    CALM: '😌',
-    EXCITED: '🤩',
-    LONELY: '😔',
-    GRATEFUL: '🙏',
-  };
-  return emojis[emotion] || '📍';
-}

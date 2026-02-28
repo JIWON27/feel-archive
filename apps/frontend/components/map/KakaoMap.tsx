@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { ArchiveSummary, EmotionLabels } from '@/types/archive';
+import { ArchiveSummary } from '@/types/archive';
+import { EMOTION_EMOJI, EMOTION_COLOR } from '@/types/emotion';
 
 declare global {
   interface Window {
@@ -233,7 +234,7 @@ export const KakaoMap: React.FC<KakaoMapProps> = ({
         );
 
         // 감정에 따른 마커 색상
-        const emotionColor = getEmotionColor(archive.emotion);
+        const emotionColor = EMOTION_COLOR[archive.emotion] ?? '#D19D5E';
 
         // DOM 요소로 마커 생성
         const markerDiv = document.createElement('div');
@@ -254,7 +255,7 @@ export const KakaoMap: React.FC<KakaoMapProps> = ({
 
         const emojiSpan = document.createElement('span');
         emojiSpan.style.cssText = 'color: white; font-size: 20px;';
-        emojiSpan.textContent = getEmotionEmoji(archive.emotion);
+        emojiSpan.textContent = EMOTION_EMOJI[archive.emotion] ?? '📍';
         markerDiv.appendChild(emojiSpan);
 
         const customOverlay = new window.kakao.maps.CustomOverlay({
@@ -315,32 +316,3 @@ export const KakaoMap: React.FC<KakaoMapProps> = ({
   );
 };
 
-// 감정에 따른 색상 매핑
-function getEmotionColor(emotion: string): string {
-  const colors: Record<string, string> = {
-    HAPPY: '#FFD700',
-    SAD: '#4169E1',
-    ANXIOUS: '#9370DB',
-    ANGRY: '#DC143C',
-    CALM: '#32CD32',
-    EXCITED: '#FF69B4',
-    LONELY: '#708090',
-    GRATEFUL: '#FF8C00',
-  };
-  return colors[emotion] || '#D19D5E';
-}
-
-// 감정에 따른 이모지
-function getEmotionEmoji(emotion: string): string {
-  const emojis: Record<string, string> = {
-    HAPPY: '😊',
-    SAD: '😢',
-    ANXIOUS: '😰',
-    ANGRY: '😠',
-    CALM: '😌',
-    EXCITED: '🤩',
-    LONELY: '😔',
-    GRATEFUL: '🙏',
-  };
-  return emojis[emotion] || '📍';
-}

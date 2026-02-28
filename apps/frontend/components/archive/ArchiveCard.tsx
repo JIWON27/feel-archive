@@ -2,7 +2,8 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArchiveSummary, EmotionLabels } from '@/types/archive';
+import { ArchiveSummary } from '@/types/archive';
+import { useEmotions } from '@/hooks/use-emotions';
 import { useLikeArchive, useScrapArchive } from '@/hooks/use-archives';
 
 interface ArchiveCardProps {
@@ -10,6 +11,7 @@ interface ArchiveCardProps {
 }
 
 export const ArchiveCard: React.FC<ArchiveCardProps> = ({ archive }) => {
+  const { getLabel } = useEmotions();
   const likeArchive = useLikeArchive();
   const scrapArchive = useScrapArchive();
 
@@ -35,7 +37,7 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ archive }) => {
         {/* 감정 태그 */}
         <div className="flex flex-wrap gap-2 mb-3">
           <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
-            {EmotionLabels[archive.emotion]}
+            {getLabel(archive.emotion)}
           </span>
         </div>
 

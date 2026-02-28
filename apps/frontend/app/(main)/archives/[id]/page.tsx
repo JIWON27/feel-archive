@@ -1,7 +1,5 @@
 'use client';
 
-'use client';
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -13,13 +11,14 @@ import {
 } from '@/hooks/use-archives';
 import { Button } from '@/components/ui/Button';
 import { AuthImage } from '@/components/ui/AuthImage';
-import { EmotionLabels } from '@/types/archive';
+import { useEmotions } from '@/hooks/use-emotions';
 
 export default function ArchiveDetailPage() {
   const params = useParams();
   const router = useRouter();
   const id = parseInt(params.id as string);
 
+  const { getLabel } = useEmotions();
   const { data: archive, isLoading, error } = useArchiveDetail(id);
   const deleteArchive = useDeleteArchive();
   const likeArchive = useLikeArchive();
@@ -156,7 +155,7 @@ export default function ArchiveDetailPage() {
           {/* 감정 태그 */}
           <div className="flex flex-wrap gap-2 mb-6">
             <span className="px-4 py-2 bg-primary/10 text-primary text-sm font-medium rounded-full">
-              {EmotionLabels[archive.emotion]}
+              {getLabel(archive.emotion)}
             </span>
           </div>
 

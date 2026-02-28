@@ -2,18 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useEmotionWeather } from '@/hooks/use-emotion-weather';
-
-const EMOTION_META: Record<string, { label: string; emoji: string }> = {
-  HAPPY:    { label: '행복한', emoji: '😊' },
-  SAD:      { label: '슬픈',   emoji: '😢' },
-  ANXIOUS:  { label: '불안한', emoji: '😰' },
-  ANGRY:    { label: '화난',   emoji: '😤' },
-  CALM:     { label: '차분한', emoji: '😌' },
-  EXCITED:  { label: '신난',   emoji: '🎉' },
-  LONELY:   { label: '외로운', emoji: '😔' },
-  GRATEFUL: { label: '감사한', emoji: '🙏' },
-  TIRED:    { label: '지친',   emoji: '😴' },
-};
+import { useEmotions } from '@/hooks/use-emotions';
+import { EMOTION_EMOJI } from '@/types/emotion';
 
 // 금·은·동 메달 스타일 (CSS only)
 const MEDAL_STYLES = [
@@ -36,6 +26,7 @@ const SLIDE_STYLE = `
 
 export function EmotionWeatherTicker() {
   const { data: rankings } = useEmotionWeather();
+  const { getLabel } = useEmotions();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [animKey, setAnimKey] = useState(0);
 
@@ -53,7 +44,7 @@ export function EmotionWeatherTicker() {
   if (!hasData) return null;
 
   const current = rankings[currentIndex];
-  const meta = EMOTION_META[current.emotion] ?? { label: current.emotion, emoji: '❓' };
+  const meta = { label: getLabel(current.emotion), emoji: EMOTION_EMOJI[current.emotion] ?? '❓' };
   const medal = MEDAL_STYLES[currentIndex];
 
   return (

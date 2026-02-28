@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { archiveSchema, ArchiveFormData } from '@/lib/validations/archive';
-import { EmotionType, EmotionLabels, Visibility } from '@/types/archive';
+import { EmotionType, Visibility } from '@/types/archive';
+import { useEmotions } from '@/hooks/use-emotions';
 import { Button } from '@/components/ui/Button';
 import { LocationPicker } from './LocationPicker';
 import { ImageUploader } from './ImageUploader';
@@ -24,6 +25,7 @@ export const ArchiveForm: React.FC<ArchiveFormProps> = ({
   submitLabel = '작성하기',
   hideImageUploader = false,
 }) => {
+  const { emotions } = useEmotions();
   const [images, setImages] = useState<File[]>([]);
   const [shareLocation, setShareLocation] = useState<boolean>(
     defaultValues?.location != null
@@ -61,8 +63,8 @@ export const ArchiveForm: React.FC<ArchiveFormProps> = ({
           감정 태그 선택 (단일 선택)
         </label>
         <div className="flex flex-wrap gap-2">
-          {Object.entries(EmotionLabels).map(([key, label]) => {
-            const emotion = key as EmotionType;
+          {emotions.map(({ name, label }) => {
+            const emotion = name as EmotionType;
             const isSelected = selectedEmotion === emotion;
 
             return (

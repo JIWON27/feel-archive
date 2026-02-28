@@ -3,21 +3,11 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { EmotionType, EmotionLabels } from '@/types/archive';
+import { EmotionType } from '@/types/archive';
 import { useCreateTimeCapsule } from '@/hooks/use-timecapsule';
 import { ImageUploader } from '@/components/archive/ImageUploader';
-
-const EMOTION_EMOJIS: Record<EmotionType, string> = {
-  [EmotionType.HAPPY]: '😊',
-  [EmotionType.SAD]: '😢',
-  [EmotionType.ANXIOUS]: '😰',
-  [EmotionType.ANGRY]: '😤',
-  [EmotionType.CALM]: '😌',
-  [EmotionType.EXCITED]: '🤩',
-  [EmotionType.LONELY]: '🥺',
-  [EmotionType.GRATEFUL]: '🙏',
-  [EmotionType.TIRED]: '😩',
-};
+import { useEmotions } from '@/hooks/use-emotions';
+import { EMOTION_EMOJI } from '@/types/emotion';
 
 // 로컬 시간 기준으로 datetime-local input 형식(YYYY-MM-DDTHH:mm) 반환
 function toLocalDateTimeString(d: Date): string {
@@ -36,6 +26,7 @@ function getDefaultOpenAt() {
 export default function NewTimeCapsulePage() {
   const router = useRouter();
   const { mutate: createCapsule, isPending } = useCreateTimeCapsule();
+  const { emotions } = useEmotions();
 
   const [emotion, setEmotion] = useState<EmotionType | null>(null);
   const [content, setContent] = useState('');
@@ -84,19 +75,19 @@ export default function NewTimeCapsulePage() {
               지금 나의 감정은? <span className="text-red-500">*</span>
             </label>
             <div className="grid grid-cols-3 gap-2">
-              {Object.values(EmotionType).map((e) => (
+              {emotions.map(({ name, label }) => (
                 <button
-                  key={e}
+                  key={name}
                   type="button"
-                  onClick={() => setEmotion(e)}
+                  onClick={() => setEmotion(name as EmotionType)}
                   className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all ${
-                    emotion === e
+                    emotion === name
                       ? 'border-primary bg-primary/10'
                       : 'border-transparent bg-gray-50 hover:bg-gray-100'
                   }`}
                 >
-                  <span className="text-2xl">{EMOTION_EMOJIS[e]}</span>
-                  <span className="text-xs font-medium text-gray-700">{EmotionLabels[e]}</span>
+                  <span className="text-2xl">{EMOTION_EMOJI[name]}</span>
+                  <span className="text-xs font-medium text-gray-700">{label}</span>
                 </button>
               ))}
             </div>

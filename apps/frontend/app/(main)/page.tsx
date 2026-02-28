@@ -7,10 +7,12 @@ import { useArchiveList, useNearbyArchives } from '@/hooks/use-archives';
 import { ArchiveListItem } from '@/components/archive/ArchiveListItem';
 import { KakaoMap } from '@/components/map/KakaoMap';
 import { Button } from '@/components/ui/Button';
-import { ArchiveSummary, EmotionLabels, NearbyArchiveRequest } from '@/types/archive';
+import { ArchiveSummary, NearbyArchiveRequest } from '@/types/archive';
+import { useEmotions } from '@/hooks/use-emotions';
 
 export default function Home() {
   const router = useRouter();
+  const { getLabel } = useEmotions();
   const [currentLocation, setCurrentLocation] = useState<{
     lat: number;
     lng: number;
@@ -213,7 +215,7 @@ export default function Home() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full">
-                        {EmotionLabels[selectedArchive.emotion]}
+                        {getLabel(selectedArchive.emotion)}
                       </span>
                     </div>
                     <p className="text-sm text-gray-800 line-clamp-2 mb-2">

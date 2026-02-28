@@ -5,21 +5,12 @@ import Link from 'next/link';
 import { useMyArchiveList } from '@/hooks/use-archives';
 import { ArchiveCard } from '@/components/archive/ArchiveCard';
 import { Button } from '@/components/ui/Button';
-import { EmotionType, EmotionLabels, ArchiveSearchCondition } from '@/types/archive';
-
-const EMOTION_EMOJI: Record<EmotionType, string> = {
-  [EmotionType.HAPPY]: '😊',
-  [EmotionType.SAD]: '😢',
-  [EmotionType.ANXIOUS]: '😰',
-  [EmotionType.ANGRY]: '😠',
-  [EmotionType.CALM]: '😌',
-  [EmotionType.EXCITED]: '🤩',
-  [EmotionType.LONELY]: '🥺',
-  [EmotionType.GRATEFUL]: '🙏',
-  [EmotionType.TIRED]: '😴',
-};
+import { EmotionType, ArchiveSearchCondition } from '@/types/archive';
+import { useEmotions } from '@/hooks/use-emotions';
+import { EMOTION_EMOJI } from '@/types/emotion';
 
 export default function MyArchivesPage() {
+  const { emotions, getLabel } = useEmotions();
   const [condition, setCondition] = useState<ArchiveSearchCondition>({
     sortType: 'LATEST',
   });
@@ -112,8 +103,8 @@ export default function MyArchivesPage() {
               >
                 전체
               </button>
-              {Object.entries(EmotionLabels).map(([key, label]) => {
-                const emotion = key as EmotionType;
+              {emotions.map(({ name, label }) => {
+                const emotion = name as EmotionType;
                 const isSelected = condition.emotion === emotion;
                 return (
                   <button
@@ -125,7 +116,7 @@ export default function MyArchivesPage() {
                         : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
                     }`}
                   >
-                    <span>{EMOTION_EMOJI[emotion]}</span>
+                    <span>{EMOTION_EMOJI[name]}</span>
                     {label}
                   </button>
                 );
@@ -204,7 +195,7 @@ export default function MyArchivesPage() {
               <span>필터:</span>
               {condition.emotion && (
                 <span className="flex items-center gap-1 px-2 py-0.5 bg-primary/10 text-primary rounded-full">
-                  {EMOTION_EMOJI[condition.emotion]} {EmotionLabels[condition.emotion]}
+                  {EMOTION_EMOJI[condition.emotion]} {getLabel(condition.emotion)}
                   <button onClick={() => handleEmotionFilter(undefined)} className="ml-1 hover:text-primary/70">×</button>
                 </span>
               )}

@@ -5,9 +5,11 @@ import Link from 'next/link';
 import { useArchiveList } from '@/hooks/use-archives';
 import { ArchiveCard } from '@/components/archive/ArchiveCard';
 import { Button } from '@/components/ui/Button';
-import { EmotionType, EmotionLabels, ArchiveSearchCondition } from '@/types/archive';
+import { EmotionType, ArchiveSearchCondition } from '@/types/archive';
+import { useEmotions } from '@/hooks/use-emotions';
 
 export default function ArchivesPage() {
+  const { emotions } = useEmotions();
   const [condition, setCondition] = useState<ArchiveSearchCondition>({
     sortType: 'LATEST',
   });
@@ -137,8 +139,8 @@ export default function ArchivesPage() {
               >
                 전체
               </button>
-              {Object.entries(EmotionLabels).map(([key, label]) => {
-                const emotion = key as EmotionType;
+              {emotions.map(({ name, label }) => {
+                const emotion = name as EmotionType;
                 const isSelected = condition.emotion === emotion;
 
                 return (

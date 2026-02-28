@@ -13,19 +13,6 @@ export enum EmotionType {
   TIRED = 'TIRED',       // 지친
 }
 
-// 감정 타입 한글 라벨 매핑
-export const EmotionLabels: Record<EmotionType, string> = {
-  [EmotionType.HAPPY]: '행복한',
-  [EmotionType.SAD]: '슬픈',
-  [EmotionType.ANXIOUS]: '불안한',
-  [EmotionType.ANGRY]: '화난',
-  [EmotionType.CALM]: '차분한',
-  [EmotionType.EXCITED]: '신난',
-  [EmotionType.LONELY]: '외로운',
-  [EmotionType.GRATEFUL]: '감사한',
-  [EmotionType.TIRED]: '지친',
-};
-
 // 공개 설정
 export enum Visibility {
   PUBLIC = 'PUBLIC',

@@ -5,20 +5,9 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useTimeCapsuleDetail, useDeleteTimeCapsule } from '@/hooks/use-timecapsule';
 import { CapsuleStatus } from '@/types/timecapsule';
-import { EmotionLabels, EmotionType } from '@/types/archive';
 import { AuthImage } from '@/components/ui/AuthImage';
-
-const EMOTION_EMOJIS: Record<EmotionType, string> = {
-  [EmotionType.HAPPY]: '😊',
-  [EmotionType.SAD]: '😢',
-  [EmotionType.ANXIOUS]: '😰',
-  [EmotionType.ANGRY]: '😤',
-  [EmotionType.CALM]: '😌',
-  [EmotionType.EXCITED]: '🤩',
-  [EmotionType.LONELY]: '🥺',
-  [EmotionType.GRATEFUL]: '🙏',
-  [EmotionType.TIRED]: '😩',
-};
+import { useEmotions } from '@/hooks/use-emotions';
+import { EMOTION_EMOJI } from '@/types/emotion';
 
 // 백엔드에서 "yyyy.MM.dd HH:mm" 형식으로 오므로 파싱 처리
 function parseDotDate(dateStr: string): Date {
@@ -44,6 +33,7 @@ export default function TimeCapsuleDetailPage() {
 
   const { data: capsule, isLoading, error } = useTimeCapsuleDetail(id);
   const { mutate: deleteCapsule, isPending: isDeleting } = useDeleteTimeCapsule();
+  const { getLabel } = useEmotions();
 
   // 수정 가능 여부: 작성 후 30분 이내 && LOCKED 상태
   const canEdit = (() => {
@@ -178,12 +168,12 @@ export default function TimeCapsuleDetailPage() {
           <div className="space-y-4">
             {/* 상단 배너 */}
             <div className="bg-gradient-to-r from-primary/20 to-amber-100 rounded-2xl p-5 text-center">
-              <div className="text-5xl mb-2">{EMOTION_EMOJIS[capsule.emotion]}</div>
+              <div className="text-5xl mb-2">{EMOTION_EMOJI[capsule.emotion]}</div>
               <p className="text-sm text-gray-600">
                 <span className="font-semibold">{formatDate(capsule.createdAt)}</span>에 보낸 메시지
               </p>
               <span className="inline-block mt-2 text-xs px-3 py-1 bg-primary text-white rounded-full font-medium">
-                {EmotionLabels[capsule.emotion]}
+                {getLabel(capsule.emotion)}
               </span>
             </div>
 

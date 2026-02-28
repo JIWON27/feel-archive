@@ -4,20 +4,8 @@ import React from 'react';
 import Link from 'next/link';
 import { useTimeCapsuleList } from '@/hooks/use-timecapsule';
 import { CapsuleStatus, TimeCapsuleSummary } from '@/types/timecapsule';
-import { EmotionLabels } from '@/types/archive';
-import { EmotionType } from '@/types/archive';
-
-const EMOTION_EMOJIS: Record<EmotionType, string> = {
-  [EmotionType.HAPPY]: '😊',
-  [EmotionType.SAD]: '😢',
-  [EmotionType.ANXIOUS]: '😰',
-  [EmotionType.ANGRY]: '😤',
-  [EmotionType.CALM]: '😌',
-  [EmotionType.EXCITED]: '🤩',
-  [EmotionType.LONELY]: '🥺',
-  [EmotionType.GRATEFUL]: '🙏',
-  [EmotionType.TIRED]: '😩',
-};
+import { useEmotions } from '@/hooks/use-emotions';
+import { EMOTION_EMOJI } from '@/types/emotion';
 
 // 백엔드에서 "yyyy.MM.dd HH:mm" 형식으로 오므로 파싱 처리
 function parseDotDate(dateStr: string): Date {
@@ -26,6 +14,7 @@ function parseDotDate(dateStr: string): Date {
 }
 
 function TimeCapsuleListItem({ capsule }: { capsule: TimeCapsuleSummary }) {
+  const { getLabel } = useEmotions();
   const isLocked = capsule.status === CapsuleStatus.LOCKED;
   const openDate = parseDotDate(capsule.openAt);
   const now = new Date();
@@ -66,7 +55,7 @@ function TimeCapsuleListItem({ capsule }: { capsule: TimeCapsuleSummary }) {
               isLocked ? 'bg-gray-100' : 'bg-primary/10'
             }`}
           >
-            {isLocked ? '🔒' : EMOTION_EMOJIS[capsule.emotion]}
+            {isLocked ? '🔒' : EMOTION_EMOJI[capsule.emotion]}
           </div>
 
           <div className="flex-1 min-w-0">
@@ -82,7 +71,7 @@ function TimeCapsuleListItem({ capsule }: { capsule: TimeCapsuleSummary }) {
               </span>
               {!isLocked && (
                 <span className="text-xs text-gray-500">
-                  {EmotionLabels[capsule.emotion]}
+                  {getLabel(capsule.emotion)}
                 </span>
               )}
             </div>
