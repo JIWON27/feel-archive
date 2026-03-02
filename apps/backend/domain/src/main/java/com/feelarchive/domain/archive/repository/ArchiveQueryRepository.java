@@ -33,6 +33,7 @@ public class ArchiveQueryRepository {
   public Page<Archive> searchPublic(ArchiveSearchCondition condition, Pageable pageable) {
     List<Archive> archives = jpaQueryFactory
         .selectFrom(archive)
+        .join(archive.user).fetchJoin()
         .where(containsKeyword(condition.keyword()), emotionEq(condition.emotion()), isPublic())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize())
@@ -50,6 +51,7 @@ public class ArchiveQueryRepository {
   public Page<Archive> searchMyArchives(Long userId, ArchiveSearchCondition condition, Pageable pageable) {
     List<Archive> archives = jpaQueryFactory
         .selectFrom(archive)
+        .join(archive.user).fetchJoin()
         .where(containsKeyword(condition.keyword()), emotionEq(condition.emotion()), ownedBy(userId))
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize())
@@ -75,6 +77,7 @@ public class ArchiveQueryRepository {
 
     return jpaQueryFactory
         .selectFrom(archive)
+        .join(archive.user).fetchJoin()
         .where(distance.loe(radius))
         .limit(10)
         .orderBy(distance.asc())
