@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useArchiveList, useNearbyArchives } from '@/hooks/use-archives';
+import { useNearbyArchives } from '@/hooks/use-archives';
 import { ArchiveListItem } from '@/components/archive/ArchiveListItem';
 import { KakaoMap } from '@/components/map/KakaoMap';
 import { Button } from '@/components/ui/Button';
@@ -28,23 +28,14 @@ export default function Home() {
     null
   );
 
-  // 주변 아카이브 조회 (위치 기반) - 우선 표시
+  // 주변 아카이브 조회 (위치 기반)
   const {
     data: nearbyArchives,
-    isLoading: isLoadingNearby,
-    error: nearbyError,
+    isLoading,
+    error,
   } = useNearbyArchives(nearbyRequest);
 
-  // 전체 아카이브 목록 조회 (폴백용)
-  const { data, isLoading: isLoadingAll, error: allError } = useArchiveList();
-
-  // 주변 아카이브를 우선 표시, 없으면 전체 목록 사용
-  const allArchives = nearbyArchives && nearbyArchives.length > 0
-    ? nearbyArchives
-    : data?.pages.flatMap((page) => page.content) || [];
-
-  const isLoading = isLoadingNearby || isLoadingAll;
-  const error = nearbyError || allError;
+  const allArchives = nearbyArchives ?? [];
 
   // 현재 위치 가져오기 및 주변 아카이브 조회 요청 설정
   useEffect(() => {
@@ -164,12 +155,15 @@ export default function Home() {
           ) : allArchives.length === 0 ? (
             <div className="flex items-center justify-center h-full">
               <div className="text-center px-4">
-                <div className="text-6xl mb-4">📝</div>
-                <p className="text-gray-500 mb-4">
-                  아직 작성된 아카이브가 없습니다
+                <div className="text-6xl mb-4">📍</div>
+                <p className="text-gray-700 font-medium mb-1">
+                  주변 아카이브가 없습니다
+                </p>
+                <p className="text-gray-400 text-sm mb-4">
+                  반경 50km 내에 기록된 아카이브가 없어요
                 </p>
                 <Link href="/archives/new">
-                  <Button>첫 아카이브 작성하기</Button>
+                  <Button>이 장소에 첫 기록 남기기</Button>
                 </Link>
               </div>
             </div>
