@@ -13,6 +13,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+
   data:
     redis:
       host: ${REDIS_HOST}
@@ -39,9 +40,14 @@ spring:
 
 security:
   token:
-    access-expiration-seconds: 3600
+    access-expiration-seconds: 3600000
     refresh-expiration-seconds: 86400000
     secret: ${JWT_SECRET}
   cookie:
     refresh-samesite: Lax
     refresh-secure: false
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true
