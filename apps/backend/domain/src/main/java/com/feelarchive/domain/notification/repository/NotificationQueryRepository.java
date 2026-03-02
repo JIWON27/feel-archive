@@ -1,11 +1,8 @@
 package com.feelarchive.domain.notification.repository;
 
-import static com.feelarchive.domain.archive.entity.QArchive.archive;
-import static com.feelarchive.domain.notification.entity.QNotification.*;
+import static com.feelarchive.domain.notification.entity.QNotification.notification;
 
-import com.feelarchive.domain.emotion.entity.Emotion;
 import com.feelarchive.domain.notification.entity.Notification;
-import com.feelarchive.domain.notification.entity.QNotification;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -27,6 +24,7 @@ public class NotificationQueryRepository {
 
     List<Notification> notifications = jpaQueryFactory
         .selectFrom(notification)
+        .join(notification.user).fetchJoin()
         .where(isReadEq(isRead), notification.user.id.eq(userId))
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize())
