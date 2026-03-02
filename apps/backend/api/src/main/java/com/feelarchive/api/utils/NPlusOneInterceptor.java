@@ -6,12 +6,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @Slf4j
 @Component
+@Profile("!prod")
 public class NPlusOneInterceptor implements HandlerInterceptor {
 
   private static final int N_PLUS_ONE_THRESHOLD = 2; // 동일 쿼리 2회 이상이면 의심

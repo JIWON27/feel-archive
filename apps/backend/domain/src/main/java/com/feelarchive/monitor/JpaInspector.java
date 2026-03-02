@@ -1,9 +1,11 @@
 package com.feelarchive.monitor;
 
 import org.hibernate.resource.jdbc.spi.StatementInspector;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("!prod")
 public class JpaInspector implements StatementInspector {
 
   private final QueryMetricsManager queryMetricsManager;
