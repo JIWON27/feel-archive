@@ -45,7 +45,7 @@ public class ArchiveImageService {
     List<ArchiveImage> archives = new ArrayList<>();
 
     for (MultipartFile file : files) {
-      FileMeta fileMeta = fileService.upload("archive/" + archiveId, file);
+      FileMeta fileMeta = fileService.upload("archives/" + archiveId, file);
       archives.add(ArchiveImage.builder()
           .archive(archive)
           .fileMeta(fileMeta)
@@ -94,9 +94,9 @@ public class ArchiveImageService {
   }
 
   @Transactional
-  public ArchiveImageDownloadResponse download(Long archiveId, Long imageId, Long userId) {
-    // TODO getAccessUrl(String storage)에 맞춰서 수
-    ArchiveImage image = getArchiveImage(archiveId, imageId);
+  public ArchiveImageDownloadResponse download(Long archiveId, String fileName, Long userId) {
+    String storageKey = "archives/" + archiveId + "/" + fileName;
+    ArchiveImage image = getArchiveImage(storageKey);
     Archive archive = image.getArchive();
     FileMeta fileMeta = image.getFileMeta();
     Path fullPath = fileService.getFullPath(fileMeta.getStorageKey());
@@ -155,6 +155,11 @@ public class ArchiveImageService {
 
   private ArchiveImage getArchiveImage(Long archiveId, Long imageId) {
     return archiveImageRepository.findByIdAndArchive_Id(imageId, archiveId)
+        .orElseThrow(() -> new com.feelarchive.common.excepion.FeelArchiveException(ARCHIVE_IMAGE_NOT_FOUND));
+  }
+
+  private ArchiveImage getArchiveImage(String storageKey) {
+    return archiveImageRepository.findByFileMeta_StorageKey(storageKey)
         .orElseThrow(() -> new com.feelarchive.common.excepion.FeelArchiveException(ARCHIVE_IMAGE_NOT_FOUND));
   }
 

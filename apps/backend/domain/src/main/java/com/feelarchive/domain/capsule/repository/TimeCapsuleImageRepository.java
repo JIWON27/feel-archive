@@ -11,4 +11,5 @@ import org.springframework.stereotype.Repository;
 public interface TimeCapsuleImageRepository extends JpaRepository<TimeCapsuleImage, Long> {
   Optional<TimeCapsuleImage> findByIdAndTimeCapsule_Id(Long id, Long timeCapsuleId);
   List<TimeCapsuleImage> findByTimeCapsule(TimeCapsule timeCapsule);
+  Optional<TimeCapsuleImage> findByFileMeta_StorageKey(String fileMetaStorageKey);
 }
