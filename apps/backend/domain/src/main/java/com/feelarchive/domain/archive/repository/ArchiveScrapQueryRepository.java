@@ -3,6 +3,7 @@ package com.feelarchive.domain.archive.repository;
 import static com.feelarchive.domain.archive.entity.QArchiveScrap.archiveScrap;
 
 import com.feelarchive.domain.archive.entity.ArchiveScrap;
+import com.feelarchive.domain.archive.entity.QArchive;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
@@ -20,6 +21,8 @@ public class ArchiveScrapQueryRepository {
 
   public Page<ArchiveScrap> getMyScraps(Long userId, Pageable pageable) {
     List<ArchiveScrap> scraps = jpaQueryFactory.selectFrom(archiveScrap)
+        .join(archiveScrap.archive).fetchJoin()
+        .join(QArchive.archive.user).fetchJoin()
         .where(archiveScrap.user.id.eq(userId))
         .orderBy(archiveScrap.createdAt.desc())
         .offset(pageable.getOffset())

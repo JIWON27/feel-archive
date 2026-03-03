@@ -90,7 +90,7 @@ public class TimeCapsuleService {
 
   @Transactional
   public void openOneCapsule(Long capsuleId) {
-    TimeCapsule capsule = getById(capsuleId);
+    TimeCapsule capsule = getByIdWithUser(capsuleId);
 
     capsule.updateStatus(CapsuleStatus.OPENED);
 
@@ -104,8 +104,13 @@ public class TimeCapsuleService {
     ));
   }
 
-  private TimeCapsule getById(Long archiveId) {
-    return timeCapsuleRepository.findById(archiveId)
+  private TimeCapsule getById(Long timeCapsuleId) {
+    return timeCapsuleRepository.findById(timeCapsuleId)
+        .orElseThrow(() -> new FeelArchiveException(CAPSULE_NOT_FOUND));
+  }
+
+  private TimeCapsule getByIdWithUser(Long id) {
+    return timeCapsuleRepository.findByIdWithUser(id)
         .orElseThrow(() -> new FeelArchiveException(CAPSULE_NOT_FOUND));
   }
 }

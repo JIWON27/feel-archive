@@ -69,9 +69,9 @@ public class TimeCapsuleImageService {
   }
 
   @Transactional
-  public TimeCapsuleImageDownloadResponse download(Long timeCapsuleId, Long imageId, Long userId) {
-    // TODO getAccessUrl(String storage)에 맞춰서 수정
-    TimeCapsuleImage image = getTimeCapsuleImage(timeCapsuleId, imageId);
+  public TimeCapsuleImageDownloadResponse download(Long timeCapsuleId, String fileName, Long userId) {
+    String storageKey = "time-capsule/" + timeCapsuleId + "/" + fileName;
+    TimeCapsuleImage image = getTimeCapsuleImage(storageKey);
     TimeCapsule timeCapsule = image.getTimeCapsule();
 
     checkOwner(timeCapsule, userId);
@@ -107,6 +107,11 @@ public class TimeCapsuleImageService {
 
   private TimeCapsuleImage getTimeCapsuleImage(Long timeCapsuleId, Long imageId) {
     return timeCapsuleImageRepository.findByIdAndTimeCapsule_Id(imageId, timeCapsuleId)
+        .orElseThrow(() -> new FeelArchiveException(CAPSULE_IMAGE_NOT_FOUND));
+  }
+
+  private TimeCapsuleImage getTimeCapsuleImage(String storageKey) {
+    return timeCapsuleImageRepository.findByFileMeta_StorageKey(storageKey)
         .orElseThrow(() -> new FeelArchiveException(CAPSULE_IMAGE_NOT_FOUND));
   }
 

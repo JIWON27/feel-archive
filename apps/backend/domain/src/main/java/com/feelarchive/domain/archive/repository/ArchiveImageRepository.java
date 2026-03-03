@@ -11,4 +11,5 @@ import org.springframework.stereotype.Repository;
 public interface ArchiveImageRepository extends JpaRepository<ArchiveImage, Long> {
   Optional<ArchiveImage> findByIdAndArchive_Id(Long id, Long archiveId);
   List<ArchiveImage> findByArchive(Archive archive);
+  Optional<ArchiveImage> findByFileMeta_StorageKey(String fileMetaStorageKey);
 }

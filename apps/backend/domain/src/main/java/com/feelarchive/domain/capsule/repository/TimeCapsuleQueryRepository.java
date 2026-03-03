@@ -23,6 +23,7 @@ public class TimeCapsuleQueryRepository {
 
   public Page<TimeCapsule> getMyTimeCapsule(Long userId, CapsuleStatus capsuleStatus, Pageable pageable) {
     List<TimeCapsule> capsules = jpaQueryFactory.selectFrom(timeCapsule)
+        .join(timeCapsule.user).fetchJoin()
         .where(timeCapsule.user.id.eq(userId), statusEq(capsuleStatus))
         .orderBy(timeCapsule.openAt.desc())
         .offset(pageable.getOffset())

@@ -5,10 +5,7 @@ import com.feelarchive.api.archive.controller.request.ArchiveStatusUpdateRequest
 import com.feelarchive.api.archive.controller.request.ArchiveUpdateRequest;
 import com.feelarchive.api.archive.controller.request.NearbyArchiveRequest;
 import com.feelarchive.api.archive.controller.response.ArchiveDetailResponse;
-import com.feelarchive.api.archive.controller.response.ArchiveImageDownloadResponse;
-import com.feelarchive.api.archive.controller.response.ArchiveImageResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveSummaryResponse;
-import com.feelarchive.api.archive.service.ArchiveImageService;
 import com.feelarchive.api.archive.service.ArchiveLikeService;
 import com.feelarchive.api.archive.service.ArchiveScrapService;
 import com.feelarchive.api.archive.service.ArchiveService;
@@ -16,15 +13,9 @@ import com.feelarchive.api.common.response.PagingResponse;
 import com.feelarchive.domain.archive.ArchiveSearchCondition;
 import jakarta.validation.Valid;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,9 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,7 +34,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class ArchiveController {
 
   private final ArchiveService archiveService;
-  private final ArchiveImageService archiveImageService;
   private final ArchiveLikeService archiveLikeService;
   private final ArchiveScrapService archiveScrapService;
 
@@ -75,46 +63,6 @@ public class ArchiveController {
   {
     archiveService.deleteArchive(archiveId ,userId);
     return ResponseEntity.noContent().build();
-  }
-
-  @PostMapping(value = "/{id}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<List<ArchiveImageResponse>> uploadImages(
-      @AuthenticationPrincipal Long userId,
-      @RequestPart("images") List<MultipartFile> images,
-      @PathVariable Long id)
-  {
-    List<ArchiveImageResponse> responses = archiveImageService.uploads(id, userId, images);
-    return ResponseEntity.ok().body(responses);
-  }
-
-  @DeleteMapping("/{archiveId}/images/{imageId}")
-  public ResponseEntity<Void> deleteImages(
-      @AuthenticationPrincipal Long userId,
-      @PathVariable Long archiveId,
-      @PathVariable Long imageId)
-  {
-    archiveImageService.delete(archiveId, imageId, userId);
-    return ResponseEntity.noContent().build();
-  }
-
-  @Profile("local")
-  @GetMapping("/{archiveId}/images/{imageId}")
-  public ResponseEntity<Resource> downloadImages(
-      @AuthenticationPrincipal Long userId,
-      @PathVariable Long archiveId,
-      @PathVariable Long imageId)
-  {
-    ArchiveImageDownloadResponse response = archiveImageService.download(archiveId, imageId, userId);
-
-    ContentDisposition contentDisposition = ContentDisposition.builder("inline")
-        .filename(response.getFileMeta().getOriginalName(), StandardCharsets.UTF_8)
-        .build();
-
-    return ResponseEntity.ok()
-        .contentType(MediaType.parseMediaType(response.getFileMeta().getContentType()))
-        .contentLength(response.getFileMeta().getSizeBytes())
-        .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
-        .body(response.getResource());
   }
 
   @GetMapping
