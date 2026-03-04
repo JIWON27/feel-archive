@@ -17,10 +17,12 @@ export const apiClient = axios.create({
 });
 
 // Request Interceptor: Authorization 헤더에 JWT 자동 추가
+// 외부 URL(S3 등)은 Bearer 토큰 미지원이므로 제외
 apiClient.interceptors.request.use(
   (config) => {
     const token = tokenUtils.getAccessToken();
-    if (token) {
+    const isExternalUrl = config.url?.startsWith('http');
+    if (token && !isExternalUrl) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
