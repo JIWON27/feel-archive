@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: rest-api
+  profiles:
+    active: local
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 30MB
+app:
+  server:
+    base-url: ${APP_SERVER_URL:http://localhost:8080}
+  client:
+    base-url: ${APP_CLIENT_URL:http://localhost:3000}
+  file:
+    base-dir: upload
+    api-prefix: ${app.server.base-url}/api/v1/
+  time-capsule:
+    batch-size: ${BATCH_SIZE}

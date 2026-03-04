@@ -1,0 +1,37 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: feel-mysql
+    mem_limit: 350m
+    restart: always
+    ports:
+      - "13306:3306"
+    volumes:
+      - ./db/mysql/data:/var/lib/mysql
+      - ./logs/mysql:/var/log/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: feel_archive
+    command:
+      - --innodb_buffer_pool_size=128M
+      - --performance_schema=OFF
+      - --table_open_cache=64
+      - --thread_cache_size=4
+      - --max_connections=30
+      - --log-error=/var/log/mysql/error.log
+    networks:
+      - feel-archive-net
+
+  redis:
+    image: redis:latest
+    container_name: feel-redis
+    mem_limit: 50m
+    restart: always
+    ports:
+      - "16379:6379"
+    networks:
+      - feel-archive-net
+
+networks:
+  feel-archive-net:
+    name: feel-archive-net

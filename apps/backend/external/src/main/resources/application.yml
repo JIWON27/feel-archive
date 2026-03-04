@@ -1,0 +1,2 @@
+kakao:
+  rest-api-key: ${KAKAO_REST_API_KEY}

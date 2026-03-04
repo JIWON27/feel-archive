@@ -1,0 +1,7 @@
+rootProject.name = 'backend'
+
+include("external")
+include("api")
+include("batch")
+include("common")
+include("domain")

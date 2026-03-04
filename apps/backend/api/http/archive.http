@@ -1,0 +1,160 @@
+### 아카이브 생성
+POST http://127.0.0.1:8080/api/v1/archives
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "emotion": "ANXIOUS",
+  "content": "인생의 노잼시기가 왔다..",
+  "visibility": "PUBLIC",
+  "location": {
+    "latitude": 37.566535,
+    "longitude": 126.977969,
+    "locationLabel": "시청역"
+  }
+}
+
+### 아카이브 생성
+POST http://127.0.0.1:8080/api/v1/archives
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "emotion": "ANXIOUS",
+  "content": "인생의 노잼시기가 왔다..",
+  "visibility": "PRIVATE",
+  "location": null
+}
+
+### [예외] 아카이브 생성
+POST http://127.0.0.1:8080/api/v1/archives
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "emotion": null,
+  "content": null,
+  "visibility": "PRIVATE",
+  "location": null
+}
+
+### 아카이브 수정
+PATCH http://127.0.0.1:8080/api/v1/archives/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "emotion": "ANGRY",
+  "content": "짜증난다........",
+  "visibility": "PUBLIC",
+  "location": {
+    "latitude": 37.566535,
+    "longitude": 126.977969,
+    "locationLabel": "최악의 장소"
+  }
+}
+
+### 아카이브 삭제
+DELETE http://127.0.0.1:8080/api/v1/archives/2052
+Authorization: Bearer {{accessToken}}
+
+### 아카이브 이미지 등록
+POST http://127.0.0.1:8080/api/v1/archives/4/images
+Authorization: Bearer {{accessToken}}
+Content-Type: multipart/form-data; boundary=----boundary
+
+------boundary
+Content-Disposition: form-data; name="images"; filename="test.png"
+Content-Type: image/png
+
+< ./test.png
+------boundary
+
+### 아카이브 이미지 삭제
+DELETE http://127.0.0.1:8080/api/v1/archives/4/images/6
+Authorization: Bearer {{accessToken}}
+
+### 아카이브 이미지 다운로드
+GET http://127.0.0.1:8080/api/v1/archives/1/images/2
+Authorization: Bearer {{accessToken}}
+
+### 필터 없이 전체 조회
+GET http://127.0.0.1:8080/api/v1/archives?page=1&size=10
+Authorization: Bearer {{accessToken}}
+
+### emotion만
+GET http://127.0.0.1:8080/api/v1/archives?emotion=HAPPY&page=1&size=10
+Authorization: Bearer {{accessToken}}
+
+### keyword만
+GET http://127.0.0.1:8080/api/v1/archives?keyword=부산&page=1&size=10
+Authorization: Bearer {{accessToken}}
+
+### emotion + keyword 복합
+GET http://127.0.0.1:8080/api/v1/archives?emotion=HAPPY&keyword=부산&page=1&size=10
+Authorization: Bearer {{accessToken}}
+
+### 인기순 조회
+GET http://127.0.0.1:8080/api/v1/archives?sortType=POPULAR&emotion=HAPPY&page=1&size=10
+Authorization: Bearer {{accessToken}}
+
+### 좋아요순 조회
+GET http://127.0.0.1:8080/api/v1/archives?sortType=LIKE&emotion=HAPPY&page=1&size=10
+Authorization: Bearer {{accessToken}}
+
+### 최신순 조회
+GET http://127.0.0.1:8080/api/v1/archives?sortType=LATEST&emotion=HAPPY&page=1&size=10
+Authorization: Bearer {{accessToken}}
+
+### 오래된순 조회
+GET http://127.0.0.1:8080/api/v1/archives?sortType=OLDEST&emotion=HAPPY&page=1&size=10
+Authorization: Bearer {{accessToken}}
+
+### 존재하지 않는 keyword (빈 결과 확인)
+GET http://127.0.0.1:8080/api/v1/archives?keyword=zzzzzzzzz&page=0&size=10
+Authorization: Bearer {{accessToken}}
+
+### 잘못된 emotion 값 (400 응답 확인)
+GET http://127.0.0.1:8080/api/v1/archives?emotion=INVALID&page=0&size=10
+Authorization: Bearer {{accessToken}}
+
+### 내 아카이브 조회
+GET http://127.0.0.1:8080/api/v1/archives/me?emotion=HAPPY&keyword=테스트&page=1&size=10
+Authorization: Bearer {{accessToken}}
+
+### 아카이브 상세 조회
+GET http://127.0.0.1:8080/api/v1/archives/55
+Authorization: Bearer {{accessToken}}
+
+### 아카이브 공개/비공개 전환
+PATCH http://127.0.0.1:8080/api/v1/archives/55/status
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "visibility": "PUBLIC"
+}
+
+### 아카이브 좋아요
+POST http://127.0.0.1:8080/api/v1/archives/2/like
+Authorization: Bearer {{accessToken}}
+
+### 아카이브 좋아요 삭제
+DELETE http://127.0.0.1:8080/api/v1/archives/1/like
+Authorization: Bearer {{accessToken}}
+
+### 아카이브 스크랩
+POST http://127.0.0.1:8080/api/v1/archives/3/scrap
+Authorization: Bearer {{accessToken}}
+
+### 아카이브 스크랩 삭제
+DELETE http://127.0.0.1:8080/api/v1/archives/1/scrap
+Authorization: Bearer {{accessToken}}
+
+### 내가 스크랩한 아카이브 목록 조회
+GET http://127.0.0.1:8080/api/v1/archives/scraps?page=0&size=10
+Authorization: Bearer {{accessToken}}
+
+### 현 위치 기반 반경 내 아카이브 글 조회
+GET http://127.0.0.1:8080/api/v1/archives/nearby?latitude=37.5516456&longitude=126.9722429&radius=50
+Authorization: Bearer {{accessToken}}

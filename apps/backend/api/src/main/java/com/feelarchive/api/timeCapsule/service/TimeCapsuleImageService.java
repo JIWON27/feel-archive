@@ -1,0 +1,133 @@
+package com.feelarchive.api.timeCapsule.service;
+
+import static com.feelarchive.domain.capsule.exception.TimeCapsuleExceptionCode.CAPSULE_EDIT_TIME_EXPIRED;
+import static com.feelarchive.domain.capsule.exception.TimeCapsuleExceptionCode.CAPSULE_FORBIDDEN;
+import static com.feelarchive.domain.capsule.exception.TimeCapsuleExceptionCode.CAPSULE_IMAGE_NOT_FOUND;
+import static com.feelarchive.domain.file.exception.FileExceptionCode.FILE_NOT_FOUND;
+import static com.feelarchive.domain.file.exception.FileExceptionCode.FILE_NOT_READABLE;
+
+import com.feelarchive.api.common.file.FileService;
+import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleImageDownloadResponse;
+import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleImageResponse;
+import com.feelarchive.common.excepion.FeelArchiveException;
+import com.feelarchive.domain.capsule.entity.CapsuleStatus;
+import com.feelarchive.domain.capsule.entity.TimeCapsule;
+import com.feelarchive.domain.capsule.entity.TimeCapsuleImage;
+import com.feelarchive.domain.capsule.repository.TimeCapsuleImageRepository;
+import com.feelarchive.domain.file.entity.FileMeta;
+import com.feelarchive.domain.file.exception.FileExceptionCode;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.UrlResource;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+@Service
+@RequiredArgsConstructor
+public class TimeCapsuleImageService {
+
+  private final TimeCapsuleReader capsuleReader;
+  private final FileService fileService;
+  private final TimeCapsuleImageRepository timeCapsuleImageRepository;
+
+  @Transactional
+  public List<TimeCapsuleImageResponse> uploads(Long timeCapsuleId, Long userId, List<MultipartFile> files) {
+    fileService.validateImageConstraints(files, 5, 5 * 1024 * 1024);
+
+    TimeCapsule timeCapsule = capsuleReader.getById(timeCapsuleId);
+    checkOwner(timeCapsule, userId);
+
+    List<TimeCapsuleImage> capsules = new ArrayList<>();
+
+    for (MultipartFile file : files) {
+      FileMeta fileMeta = fileService.upload("time-capsule/" + timeCapsuleId, file);
+      capsules.add(TimeCapsuleImage.builder()
+          .timeCapsule(timeCapsule)
+          .fileMeta(fileMeta)
+          .build());
+    }
+    List<TimeCapsuleImage> timeCapsuleImages = timeCapsuleImageRepository.saveAll(capsules);
+    return timeCapsuleImages.stream().map(
+        timeCapsuleImage -> TimeCapsuleImageResponse.of(timeCapsuleImage.getId(),
+            fileService.getAccessUrl(timeCapsuleImage.getFileMeta().getStorageKey()))).toList();
+  }
+
+  @Transactional
+  public void delete(Long timeCapsuleId, Long imageId, Long userId) {
+    TimeCapsuleImage image = getTimeCapsuleImage(imageId, timeCapsuleId);
+    TimeCapsule timeCapsule = image.getTimeCapsule();
+    checkOwner(timeCapsule, userId);
+
+    timeCapsuleImageRepository.delete(image);
+
+    FileMeta fileMeta = image.getFileMeta();
+    fileService.delete(fileMeta.getStorageKey());
+  }
+
+  @Transactional
+  public TimeCapsuleImageDownloadResponse download(Long timeCapsuleId, String fileName, Long userId) {
+    String storageKey = "time-capsule/" + timeCapsuleId + "/" + fileName;
+    TimeCapsuleImage image = getTimeCapsuleImage(storageKey);
+    TimeCapsule timeCapsule = image.getTimeCapsule();
+
+    checkOwner(timeCapsule, userId);
+    checkTimeCapsuleEditable(timeCapsule);
+
+    FileMeta fileMeta = image.getFileMeta();
+    Path fullPath = fileService.getFullPath(fileMeta.getStorageKey());
+
+    try {
+      UrlResource resource = new UrlResource(fullPath.toUri());
+      if (!resource.exists()) {
+        throw new FeelArchiveException(FILE_NOT_FOUND);
+      }
+      if (!resource.isReadable()) {
+        throw new FeelArchiveException(FILE_NOT_READABLE);
+      }
+
+      return TimeCapsuleImageDownloadResponse.of(fileMeta, resource);
+    } catch (MalformedURLException e) {
+      throw new FeelArchiveException(FileExceptionCode.INVALID_FILE_URI);
+    }
+  }
+
+  @Transactional(readOnly = true)
+  public List<TimeCapsuleImageResponse> getImages(TimeCapsule timeCapsule) {
+    List<TimeCapsuleImage> timeCapsuleImages = timeCapsuleImageRepository.findByTimeCapsule(
+        timeCapsule);
+    return timeCapsuleImages.stream()
+        .map(timeCapsuleImage -> TimeCapsuleImageResponse.of(
+            timeCapsuleImage.getId(), fileService.getAccessUrl(timeCapsuleImage.getFileMeta().getStorageKey())))
+        .toList();
+  }
+
+  private TimeCapsuleImage getTimeCapsuleImage(Long timeCapsuleId, Long imageId) {
+    return timeCapsuleImageRepository.findByIdAndTimeCapsule_Id(imageId, timeCapsuleId)
+        .orElseThrow(() -> new FeelArchiveException(CAPSULE_IMAGE_NOT_FOUND));
+  }
+
+  private TimeCapsuleImage getTimeCapsuleImage(String storageKey) {
+    return timeCapsuleImageRepository.findByFileMeta_StorageKey(storageKey)
+        .orElseThrow(() -> new FeelArchiveException(CAPSULE_IMAGE_NOT_FOUND));
+  }
+
+  private void checkOwner(TimeCapsule timeCapsule, Long userId) {
+    if (!timeCapsule.isOwner(userId)) {
+      throw new FeelArchiveException(CAPSULE_FORBIDDEN);
+    }
+  }
+
+  private void checkTimeCapsuleEditable(TimeCapsule capsule) {
+    if (capsule.getCapsuleStatus() == CapsuleStatus.OPENED) {
+      return;
+    }
+    if (!capsule.isEditable()) {
+      throw new FeelArchiveException(CAPSULE_EDIT_TIME_EXPIRED);
+    }
+  }
+
+}

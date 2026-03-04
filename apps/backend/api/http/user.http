@@ -1,0 +1,49 @@
+### 회원가입
+POST http://localhost:8080/api/v1/users
+Content-Type: application/json
+
+{
+  "name": "테스터",
+  "email": "test@test.com",
+  "password": "testpassword!",
+  "nickname": "test",
+  "birthDate": "2001-05-12",
+  "gender": "FEMALE",
+  "phone": "010-1234-5678"
+}
+
+### 회원정보 조회
+GET http://localhost:8080/api/v1/users/4
+Authorization: Bearer {{accessToken}}
+
+### 마이페이지 조회
+GET http://localhost:8080/api/v1/users/me
+Authorization: Bearer {{accessToken}}
+
+### 비밀번호 변경
+PATCH http://localhost:8080/api/v1/users/me/password
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "currentPassword" : "testpassword!",
+  "newPassword" : "newpassword!"
+}
+
+### 이메일 알림 알림 동의 변경
+PATCH http://localhost:8080/api/v1/users/me/settings/email-notification
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "enable": true
+}
+
+### 회원 탈퇴
+DELETE http://localhost:8080/api/v1/users
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "currentPassword" : "newpassword!"
+}

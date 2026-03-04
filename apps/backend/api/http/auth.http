@@ -1,0 +1,22 @@
+### 로그인
+POST http://localhost:8080/api/v1/login
+Content-Type: application/json
+
+{
+  "email": "test@test.com",
+  "password": "testpassword!"
+}
+> {%
+  client.global.set("accessToken", response.body.accessToken);
+  client.global.set("refreshToken", response.body.refreshToken);
+%}
+
+### 로그아웃
+DELETE http://localhost:8080/api/v1/logout
+Cookie: refreshToken={{refreshToken}}
+Authorization: Bearer {{accessToken}}
+
+### 토큰 재발급
+POST http://localhost:8080/api/v1/token/reIssue
+Cookie: refreshToken={{refreshToken}}
+Authorization: Bearer {{accessToken}}

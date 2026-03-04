@@ -1,0 +1,74 @@
+### 타임캡슐 생성
+POST http://localhost:8080/api/v1/time-capsule
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "emotion": "HAPPY",
+  "content": "2년 후의 나에게. 지금은 힘들지만 분명 더 나아질 거야. 화이팅!",
+  "openAt": "2028-01-12T00:00:00",
+  "location": {
+    "latitude": 37.5665,
+    "longitude": 126.9780,
+    "locationLabel": "서울 시청"
+  }
+}
+
+### 타임캡슐 목록 조회 (잠김)
+GET http://localhost:8080/api/v1/time-capsule?status=LOCKED&page=0&size=20
+Authorization: Bearer {{accessToken}}
+
+### 타임캡슐 목록 조회 (열림)
+GET http://localhost:8080/api/v1/time-capsule?status=OPENED&page=0&size=20
+Authorization: Bearer {{accessToken}}
+
+### 타임캡슐 목록 조회 (전체)
+GET http://localhost:8080/api/v1/time-capsule?page=0&size=20
+Authorization: Bearer {{accessToken}}
+
+### 타임캡슐 상세 조회
+GET http://localhost:8080/api/v1/time-capsule/1
+Authorization: Bearer {{accessToken}}
+
+### 타임캡슐 수정
+PUT http://localhost:8080/api/v1/time-capsule/1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "emotion": "CALM",
+  "content": "수정된 내용입니다. 조금 더 차분한 마음으로 다시 써봅니다.",
+  "openAt": "2027-06-15T12:00:00"
+}
+
+### 타임캡슐 삭제
+DELETE http://localhost:8080/api/v1/time-capsule/1
+Authorization: Bearer {{accessToken}}
+
+### 타임캡슐 이미지 등록
+POST http://127.0.0.1:8080/api/v1/time-capsule/2/images
+Authorization: Bearer {{accessToken}}
+Content-Type: multipart/form-data; boundary=----boundary
+
+------boundary
+Content-Disposition: form-data; name="images"; filename="test.png"
+Content-Type: image/png
+
+< ./test.png
+------boundary
+
+### 타임캡슐 이미지 삭제
+DELETE http://127.0.0.1:8080/api/v1/time-capsule/2/images/1
+Authorization: Bearer {{accessToken}}
+
+### 타임캡슐 이미지 다운로드
+GET http://127.0.0.1:8080/api/v1/time-capsule/2/images/1
+Authorization: Bearer {{accessToken}}
+
+### [테스트] 타임캡슐 알림 메일 전송
+POST http://127.0.0.1:8080/test/mail/time-capsule?name=테스터&email=mjo4260@naver.com
+Authorization: Bearer {{accessToken}}
+
+### [테스트] 타임캡슐 알림 이벤트 발행
+POST http://127.0.0.1:8080/test/mail/time-capsule-event?name=테스터&email=mjo4260@naver.com
+Authorization: Bearer {{accessToken}}

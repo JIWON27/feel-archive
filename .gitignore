@@ -1,0 +1,38 @@
+# 1. 운영체제(OS) 공통 파일
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# ==========================
+# 3. 실수 방지용 (Safety Net)
+# ==========================
+**/node_modules/
+**/npm-debug.log
+**/yarn-error.log
+**/pnpm-debug.log
+
+# 루트에서 gradle 빌드를 돌렸을 때 생기는 캐시 방지
+.gradle/
+build/
+**/build/
+.claude
+
+# 백엔드 파일 업로드 디렉토리 (로컬 런타임 생성 파일)
+upload/
+logs/

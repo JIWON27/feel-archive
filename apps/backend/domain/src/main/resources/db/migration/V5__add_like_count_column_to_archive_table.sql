@@ -1,0 +1,3 @@
+ALTER TABLE archive
+ADD COLUMN like_count INT NOT NULL DEFAULT 0;
+

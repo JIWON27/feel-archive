@@ -1,0 +1,933 @@
+{
+  "project": "feel-archive",
+  "version": "1.3",
+  "lastUpdated": "2026-02-19T00:00:00",
+  "tasks": [
+    {
+      "id": 1,
+      "category": "setup",
+      "description": "Next.js 14 프로젝트 초기화",
+      "steps": [
+        "create-next-app으로 프로젝트 생성 (App Router, TypeScript)",
+        "Tailwind CSS 설정",
+        "React Query 설치 및 Provider 설정",
+        "npm run dev 성공 확인"
+      ],
+      "passes": true,
+      "commit": "apps/frontend 프로젝트 세팅 완료 - Next.js 14, TypeScript, Tailwind CSS, React Query, Kakao Maps SDK",
+      "blockers": [],
+      "completedAt": "2026-01-20"
+    },
+    {
+      "id": 2,
+      "category": "setup",
+      "description": "Kakao Maps SDK 설정",
+      "steps": [
+        "Kakao Developers에서 JavaScript 키 발급",
+        "Next.js에 Script 컴포넌트로 SDK 로드",
+        "테스트 페이지에서 지도 렌더링 확인",
+        "마커 표시 테스트"
+      ],
+      "passes": true,
+      "commit": "Kakao Maps SDK 설정 완료 - layout.tsx에 Script 추가, 환경변수 설정",
+      "blockers": ["Kakao Developers 계정 및 앱 등록 필요 (사용자가 직접 발급 필요)"],
+      "completedAt": "2026-01-20"
+    },
+    {
+      "id": 3,
+      "category": "feature",
+      "description": "프론트엔드 로그인 페이지 구현",
+      "steps": [
+        "app/(auth)/login/page.tsx 생성",
+        "로그인 폼 컴포넌트 구현 (이메일, 비밀번호)",
+        "폼 유효성 검사 (react-hook-form + Zod)",
+        "API 호출 및 토큰 저장 (localStorage + httpOnly cookie)",
+        "로그인 성공 시 홈으로 리다이렉트"
+      ],
+      "passes": true,
+      "commit": "feat: 로그인 페이지 및 폼 구현 - react-hook-form, Zod 검증, LoginForm 컴포넌트",
+      "blockers": [],
+      "completedAt": "2026-01-26"
+    },
+    {
+      "id": 4,
+      "category": "feature",
+      "description": "프론트엔드 회원가입 페이지 구현",
+      "steps": [
+        "app/(auth)/signup/page.tsx 생성",
+        "회원가입 폼 컴포넌트 구현 (이름, 이메일, 비밀번호, 휴대폰, 닉네임, 성별, 생년월일)",
+        "폼 유효성 검사 (Zod 스키마: 이메일, 비밀번호 8-20자, 휴대폰 형식, 비밀번호 확인)",
+        "API 호출 및 성공 시 로그인 페이지로 이동"
+      ],
+      "passes": true,
+      "commit": "feat: 회원가입 페이지 및 폼 구현 - SignupForm 컴포넌트, 전체 필드 검증",
+      "blockers": [],
+      "completedAt": "2026-01-26"
+    },
+    {
+      "id": 5,
+      "category": "feature",
+      "description": "프론트엔드 인증 상태 관리 구현",
+      "steps": [
+        "Zustand store 생성 (auth-store.ts)",
+        "토큰 저장/조회/삭제 유틸 함수 (lib/utils/token.ts)",
+        "새로고침 시 인증 상태 복원 (AuthProvider)",
+        "axios interceptor로 Authorization 헤더 자동 추가 및 401 시 토큰 갱신"
+      ],
+      "passes": true,
+      "commit": "feat: 인증 상태 관리 구현 - Zustand store, token utils, Axios interceptors",
+      "blockers": [],
+      "completedAt": "2026-01-26"
+    },
+    {
+      "id": 6,
+      "category": "feature",
+      "description": "프론트엔드 Protected Route 구현",
+      "steps": [
+        "useProtectedRoute, usePublicOnlyRoute 훅 생성",
+        "인증되지 않은 사용자 로그인 페이지로 리다이렉트 (main layout)",
+        "로그인된 사용자 홈으로 리다이렉트 (auth layout)",
+        "인증이 필요한 페이지에 적용"
+      ],
+      "passes": true,
+      "commit": "feat: Protected Route 구현 - (main) layout과 (auth) layout에 인증 체크 적용",
+      "blockers": [],
+      "completedAt": "2026-01-26"
+    },
+    {
+      "id": 7,
+      "category": "feature",
+      "description": "프론트엔드 아카이브 작성 폼 구현",
+      "steps": [
+        "app/(main)/archives/new/page.tsx 생성",
+        "위치 선택 컴포넌트 (현재 위치 GPS / 지도에서 선택) - LocationPicker",
+        "감정 태그 단일 선택 UI",
+        "텍스트 입력 (최대 5000자)",
+        "이미지 업로드 (최대 5개, 인스타그램 스타일 그리드)",
+        "공개/비공개 토글",
+        "API 호출 및 저장 (아카이브 생성 후 이미지 자동 업로드)"
+      ],
+      "passes": true,
+      "commit": "feat: 아카이브 CRUD 및 이미지 업로드 구현",
+      "blockers": [],
+      "completedAt": "2026-01-28"
+    },
+    {
+      "id": 8,
+      "category": "feature",
+      "description": "프론트엔드 Kakao Maps 통합 구현",
+      "steps": [
+        "components/map/KakaoMap.tsx 생성",
+        "마커 렌더링 로직 구현 (CustomOverlay)",
+        "마커 클릭 시 아카이브 미리보기 표시",
+        "감정별 마커 색상 및 이모지 매핑",
+        "선택된 마커 강조 (scale 1.2)",
+        "무한 로딩 버그 수정 (스크립트 중복 로드 방지)",
+        "마커 클릭 이벤트 버그 수정 (DOM 요소로 직접 생성)"
+      ],
+      "passes": true,
+      "commit": "feat: WhatsApp 스타일 메인 페이지 및 Kakao 지도 통합",
+      "blockers": [],
+      "completedAt": "2026-01-27"
+    },
+    {
+      "id": 9,
+      "category": "feature",
+      "description": "프론트엔드 지도 뷰 페이지 구현 (메인 홈)",
+      "steps": [
+        "app/(main)/page.tsx를 WhatsApp 스타일 2단 레이아웃으로 변경",
+        "왼쪽: 아카이브 리스트 (400-450px, 무한 스크롤)",
+        "오른쪽: Kakao Maps (나머지 공간)",
+        "현재 위치 GPS 자동 감지",
+        "마커 클릭 시 하단 미리보기 카드",
+        "리스트-지도 양방향 동기화"
+      ],
+      "passes": true,
+      "commit": "feat: WhatsApp 스타일 메인 페이지 및 Kakao 지도 통합",
+      "blockers": [],
+      "completedAt": "2026-01-27",
+      "notes": "홈페이지를 지도 뷰로 통합 구현 (별도 explore 페이지 없음)"
+    },
+    {
+      "id": 10,
+      "category": "feature",
+      "description": "프론트엔드 피드 뷰 페이지 구현",
+      "steps": [
+        "피드 뷰 컴포넌트 구현 (app/(main)/archives/page.tsx)",
+        "아카이브 카드 컴포넌트 생성 (ArchiveCard)",
+        "무한 스크롤 구현 (react-query useInfiniteQuery)",
+        "필터 UI (감정, 정렬 옵션: 최신순/오래된순/인기순)",
+        "좋아요/스크랩 버튼 통합"
+      ],
+      "passes": true,
+      "commit": "feat: 아카이브 CRUD 구현 - 작성/수정/삭제/목록/상세, 감정 복수 선택, 위치 필수, 좋아요/스크랩",
+      "blockers": [],
+      "completedAt": "2026-01-26",
+      "notes": "지도 뷰는 별도 작업 (id: 9)"
+    },
+    {
+      "id": 11,
+      "category": "feature",
+      "description": "프론트엔드 아카이브 상세 페이지 구현",
+      "steps": [
+        "app/(main)/archives/[id]/page.tsx 생성",
+        "아카이브 상세 정보 표시 (내용, 위치, 감정, 작성일)",
+        "이미지 갤러리 표시",
+        "수정/삭제 버튼 (본인 글만, isOwner 체크)",
+        "좋아요/스크랩 버튼 with 카운트",
+        "삭제 확인 모달"
+      ],
+      "passes": true,
+      "commit": "feat: 아카이브 CRUD 구현 - 작성/수정/삭제/목록/상세, 감정 복수 선택, 위치 필수, 좋아요/스크랩",
+      "blockers": [],
+      "completedAt": "2026-01-26"
+    },
+    {
+      "id": 12,
+      "category": "feature",
+      "description": "프론트엔드 좋아요/스크랩 버튼 구현",
+      "steps": [
+        "useLikeArchive, useScrapArchive 훅 생성",
+        "토글 방식 구현 (추가/제거)",
+        "React Query로 자동 invalidation",
+        "아카이브 카드/상세 페이지에 통합",
+        "로딩 상태 처리"
+      ],
+      "passes": true,
+      "commit": "feat: 아카이브 CRUD 구현 - 작성/수정/삭제/목록/상세, 감정 복수 선택, 위치 필수, 좋아요/스크랩",
+      "blockers": [],
+      "completedAt": "2026-01-26"
+    },
+    {
+      "id": 13,
+      "category": "feature",
+      "description": "프론트엔드 내 스크랩 목록 페이지 구현",
+      "steps": [
+        "app/(main)/my/scraps/page.tsx 생성",
+        "스크랩한 아카이브 목록 표시 (ArchiveCard 재사용)",
+        "무한 스크롤 (useInfiniteQuery)",
+        "스크랩 해제 기능 (카드 내 버튼)",
+        "빈 상태 처리"
+      ],
+      "passes": true,
+      "commit": "feat: 아카이브 CRUD 구현 - 작성/수정/삭제/목록/상세, 감정 복수 선택, 위치 필수, 좋아요/스크랩",
+      "blockers": [],
+      "completedAt": "2026-01-26"
+    },
+    {
+      "id": 14,
+      "category": "feature",
+      "description": "프론트엔드 타임캡슐 작성 폼 구현",
+      "steps": [
+        "app/(main)/timecapsule/new/page.tsx 생성",
+        "감정 태그 단일 선택 (9가지 감정 그리드)",
+        "텍스트 입력 (5000자 제한)",
+        "공개 일시 선택 (datetime-local, 최소 1시간 후)",
+        "작성 후 30분 제한 안내",
+        "API 호출 및 저장 (types/timecapsule.ts, services/timecapsule-service.ts, hooks/use-timecapsule.ts)"
+      ],
+      "passes": true,
+      "commit": "feat: 타임캡슐 작성 폼 구현",
+      "blockers": [],
+      "completedAt": "2026-02-17"
+    },
+    {
+      "id": 15,
+      "category": "feature",
+      "description": "프론트엔드 내 타임캡슐 목록 페이지 구현",
+      "steps": [
+        "app/(main)/my/timecapsules/page.tsx 생성",
+        "잠금/열림 상태에 따른 UI 구분 (섹션 분리)",
+        "잠금 상태: 봉인 UI + 카운트다운 (일/시간/분)",
+        "열림 상태: 감정 이모지 + 내용 미리보기 + 확인 링크",
+        "무한 스크롤 (useInfiniteQuery)"
+      ],
+      "passes": true,
+      "commit": "feat: 내 타임캡슐 목록 페이지 구현",
+      "blockers": [],
+      "completedAt": "2026-02-17"
+    },
+    {
+      "id": 16,
+      "category": "feature",
+      "description": "프론트엔드 타임캡슐 상세 페이지 구현",
+      "steps": [
+        "app/(main)/timecapsule/[id]/page.tsx 생성",
+        "잠금 상태: 봉인 다크 UI + 카운트다운 (일/시간/분)",
+        "열림 상태: 감정 배너 + 내용 + 이미지 + 위치 표시",
+        "수정/삭제 버튼 (작성 후 30분 이내 + LOCKED 상태만)",
+        "삭제 확인 모달"
+      ],
+      "passes": true,
+      "commit": "feat: 타임캡슐 상세 페이지 구현",
+      "blockers": [],
+      "completedAt": "2026-02-17"
+    },
+    {
+      "id": 17,
+      "category": "feature",
+      "description": "프론트엔드 알림 표시 구현",
+      "steps": [
+        "components/layout/Header.tsx 생성 - 전역 헤더 (로고, 네비, 알림벨, 유저메뉴)",
+        "components/notification/NotificationDropdown.tsx 생성 - 미읽음 알림 드롭다운",
+        "app/(main)/notifications/page.tsx 생성 - 알림 전체 목록 페이지",
+        "hooks/use-notifications.ts - 알림 목록, 읽음 처리 훅",
+        "hooks/use-sse.ts - SSE 실시간 알림 (fetch + ReadableStream, event: time-capsule)",
+        "types/notification.ts - NotificationResponse, NotificationEvent 타입",
+        "services/notification-service.ts - 알림 API 서비스",
+        "알림 아이콘 읽지 않은 개수 배지 (최대 9+)",
+        "알림 클릭 시 타임캡슐 상세로 이동",
+        "SSE 수신 시 toast 팝업 표시 (클릭하면 타임캡슐 이동)"
+      ],
+      "passes": true,
+      "commit": "feat: SSE 기반 실시간 알림 및 알림 목록 페이지 구현",
+      "blockers": [],
+      "completedAt": "2026-02-17",
+      "notes": "SSE 이벤트명: 'time-capsule' (백엔드 SseService 기준)"
+    },
+    {
+      "id": 18,
+      "category": "feature",
+      "description": "프론트엔드 리포트 페이지 구현",
+      "steps": [
+        "app/(main)/my/report/page.tsx 생성",
+        "월 선택 UI",
+        "감정 분포 바 차트 또는 파이 차트 (Chart.js 또는 Recharts)",
+        "일별 감정 흐름 라인 차트",
+        "기록 빈도 통계 표시"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": []
+    },
+    {
+      "id": 19,
+      "category": "feature",
+      "description": "프론트엔드 로딩/에러/빈 상태 처리",
+      "steps": [
+        "Skeleton UI 컴포넌트 생성",
+        "ErrorBoundary 컴포넌트 생성",
+        "Toast 알림 시스템 구현",
+        "EmptyState 컴포넌트 생성",
+        "모든 페이지에 상태별 UI 적용"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": []
+    },
+    {
+      "id": 20,
+      "category": "feature",
+      "description": "프론트엔드 모바일 반응형 구현",
+      "steps": [
+        "Tailwind 반응형 클래스 적용",
+        "모바일 네비게이션 메뉴",
+        "터치 인터랙션 최적화",
+        "지도 뷰 모바일 UX 개선",
+        "모바일 기기에서 테스트"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": []
+    },
+    {
+      "id": 21,
+      "category": "setup",
+      "description": "프론트엔드 GitHub Actions CI 파이프라인 구축",
+      "steps": [
+        ".github/workflows/frontend.yml 생성",
+        "PR 생성 시 빌드 및 린트 검사 자동 실행",
+        "테스트 실패 시 PR 머지 차단"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": [],
+      "notes": "백엔드는 AWS CodeBuild(buildspec.yml + appspec.yml + scripts/deploy.sh)로 CI/CD 구축 완료. 프론트엔드 GitHub Actions는 미구현 상태이나 Vercel 자동 배포(task 22)로 대체."
+    },
+    {
+      "id": 22,
+      "category": "setup",
+      "description": "프론트엔드 Vercel 배포",
+      "steps": [
+        "Vercel 계정 연결 및 프로젝트 생성",
+        "환경변수 설정 (API URL 등)",
+        "main 브랜치 push 시 자동 배포",
+        "커스텀 도메인 연결 (선택)",
+        "배포 확인"
+      ],
+      "passes": true,
+      "commit": "chore: trigger vercel deploy",
+      "blockers": [],
+      "completedAt": "2026-02-23",
+      "notes": "Vercel 자동 배포 완료. next.config.mjs에서 NEXT_PUBLIC_API_URL 환경변수로 API 프록시 설정 (리버스 프록시 방식, commit: chore: Vercel 리버스 프록시 설정 추가). 백엔드는 AWS EC2(Docker) + CodeBuild + CodeDeploy 파이프라인 구축 완료."
+    },
+    {
+      "id": 23,
+      "category": "docs",
+      "description": "프론트엔드 URL 라우팅 문서 작성",
+      "steps": [
+        "docs/ROUTES.md 생성",
+        "모든 페이지 URL 및 설명 정리",
+        "인증/메인 라우트 그룹 설명",
+        "동적 라우팅 파라미터 정의",
+        "리다이렉트 규칙 문서화",
+        "네비게이션 구조 다이어그램"
+      ],
+      "passes": true,
+      "commit": "feat: WhatsApp 스타일 메인 페이지 및 Kakao 지도 통합",
+      "blockers": [],
+      "completedAt": "2026-01-27"
+    },
+    {
+      "id": 24,
+      "category": "feature",
+      "description": "홈페이지 WhatsApp 스타일 레이아웃 구현",
+      "steps": [
+        "components/archive/ArchiveListItem.tsx 생성 (리스트용 간단 카드)",
+        "app/(main)/page.tsx 2단 레이아웃으로 변경",
+        "왼쪽 사이드바: 검색, 리스트, 현재 위치 표시",
+        "오른쪽 지도: KakaoMap 통합",
+        "리스트-지도 양방향 동기화",
+        "선택된 아카이브 하단 미리보기",
+        "더블클릭으로 상세 페이지 이동"
+      ],
+      "passes": true,
+      "commit": "feat: WhatsApp 스타일 메인 페이지 및 Kakao 지도 통합",
+      "blockers": [],
+      "completedAt": "2026-01-27"
+    },
+    {
+      "id": 25,
+      "category": "refactor",
+      "description": "감정 선택을 복수에서 단일 선택으로 변경",
+      "steps": [
+        "SPEC.md 문서 수정 (복수 선택 → 단일 선택)",
+        "types/archive.ts 타입 정의 변경 (emotions[] → emotion)",
+        "lib/validations/archive.ts Zod 스키마 수정",
+        "ArchiveForm 컴포넌트: 멀티 선택 → 단일 선택 UI",
+        "ArchiveCard, ArchiveListItem: 복수 감정 표시 로직 제거",
+        "KakaoMap: emotions[0] → emotion 수정",
+        "상세/수정 페이지: 감정 표시 로직 수정",
+        "BACKEND_API_CHANGES_REQUIRED.md 업데이트"
+      ],
+      "passes": true,
+      "commit": "refactor: 감정 선택을 복수에서 단일 선택으로 변경",
+      "blockers": [],
+      "completedAt": "2026-01-27",
+      "notes": "사용자 피드백 반영 - 단일 감정 선택이 더 직관적"
+    },
+    {
+      "id": 26,
+      "category": "feature",
+      "description": "아카이브 이미지 업로드 기능 구현",
+      "steps": [
+        "ImageUploader 컴포넌트 생성 (인스타그램 스타일 그리드)",
+        "이미지 유효성 검사 (최대 5개, 파일당 5MB, 전체 20MB)",
+        "이미지 미리보기 및 삭제 기능",
+        "ArchiveForm에 이미지 업로더 통합",
+        "아카이브 생성 시 이미지 자동 업로드 (동시 플로우)",
+        "아카이브 수정 시 이미지 전체 교체 (기존 삭제 후 재업로드)",
+        "SPEC.md 업데이트 (이미지 제한사항 명시)"
+      ],
+      "passes": true,
+      "commit": "미커밋 (작업 완료)",
+      "blockers": [],
+      "completedAt": "2026-01-28",
+      "notes": "백엔드 이미지 API 이미 구현되어 있음. 파일당 5MB, 전체 20MB, 최대 5개 제한"
+    },
+    {
+      "id": 27,
+      "category": "feature",
+      "description": "지도 인터랙션 개선 - 아카이브 클릭 시 지도 이동 및 미리보기 위치 변경",
+      "steps": [
+        "ArchiveSummary 타입에 latitude/longitude 필드 추가",
+        "KakaoMap 컴포넌트에 targetCenter prop 추가",
+        "지도 마커를 실제 아카이브 좌표로 표시 (랜덤 위치 제거)",
+        "리스트에서 아카이브 클릭 시 지도가 해당 위치로 이동 (panTo)",
+        "미리보기 카드 위치를 지도 하단에서 상단으로 변경",
+        "GIS 데이터가 있는 아카이브만 마커 표시",
+        "SPEC.md 업데이트 (홈페이지 레이아웃 및 지도 마커 시스템 상세 설명)"
+      ],
+      "passes": true,
+      "commit": "feat: 아카이브 클릭 시 지도 이동 및 미리보기 카드 위치 변경",
+      "blockers": [],
+      "completedAt": "2026-01-28",
+      "notes": "리스트-지도 양방향 동기화 강화, 사용자 경험 개선"
+    },
+    {
+      "id": 28,
+      "category": "feature",
+      "description": "현재 위치 기반 주변 아카이브 자동 조회 기능 구현",
+      "steps": [
+        "types/archive.ts에 NearbyArchiveRequest와 ArchiveMarker 타입 추가",
+        "archive-service.ts에 getNearbyArchives API 함수 추가 (GET /api/v1/archives/nearby)",
+        "use-archives.ts에 useNearbyArchives 훅 추가",
+        "메인 페이지에서 현재 위치 가져온 후 자동으로 주변 아카이브 조회 (반경 50km)",
+        "주변 아카이브가 없으면 전체 목록으로 폴백",
+        "TASK_LIST.json 업데이트"
+      ],
+      "passes": true,
+      "commit": "feat: 현재 위치 기반 주변 아카이브 자동 조회 기능 구현",
+      "blockers": [],
+      "completedAt": "2026-02-12",
+      "notes": "백엔드 GET /api/v1/archives/nearby API 활용. SPEC.md에 이미 정의된 기능 (현재 위치 GPS 자동 감지)."
+    },
+    {
+      "id": 29,
+      "category": "fix",
+      "description": "주변 아카이브 API 호출 방식 수정 - Query Parameter 방식 대응",
+      "steps": [
+        "archive-service.ts: axios.request() → axios.get() with params로 변경",
+        "archive.http 파일 업데이트 (query parameter 방식)",
+        "BACKEND_API_CHANGES_REQUIRED.md 업데이트"
+      ],
+      "passes": true,
+      "commit": "fix: 주변 아카이브 API를 query parameter 방식으로 수정",
+      "blockers": [],
+      "completedAt": "2026-02-13",
+      "notes": "백엔드 API 변경에 따른 프론트엔드 대응 (GET 메서드 query parameter 방식)"
+    },
+    {
+      "id": 30,
+      "category": "fix",
+      "description": "주변 아카이브 API 응답 타입 변경 대응 - 전체 정보 포함",
+      "steps": [
+        "archive-service.ts: 반환 타입 ArchiveMarker[] → ArchiveSummary[]로 변경",
+        "메인 페이지: 주변 아카이브를 ArchiveSummary로 직접 사용 (변환 로직 제거)",
+        "주변 아카이브 우선 표시 로직 구현 (없으면 전체 목록 폴백)",
+        "BACKEND_API_CHANGES_REQUIRED.md 업데이트"
+      ],
+      "passes": true,
+      "commit": "fix: 주변 아카이브 API가 전체 정보를 포함하도록 수정",
+      "blockers": [],
+      "completedAt": "2026-02-13",
+      "notes": "백엔드 API 응답 타입 변경에 따른 프론트엔드 대응 (마커용 최소 정보 → 목록 표시용 전체 정보)"
+    },
+    {
+      "id": 31,
+      "category": "feature",
+      "description": "현재 위치 마커 지도에 표시",
+      "steps": [
+        "KakaoMap 컴포넌트에 userLocation prop 추가",
+        "현재 위치 전용 마커 생성 (Google Maps 스타일 파란색 원)",
+        "외곽 반투명 원 + 중앙 파란색 점 디자인",
+        "zIndex 100으로 다른 마커보다 위에 표시",
+        "메인 페이지에서 currentLocation을 userLocation prop으로 전달"
+      ],
+      "passes": true,
+      "commit": "feat: 현재 위치를 지도에 파란색 마커로 표시",
+      "blockers": [],
+      "completedAt": "2026-02-13",
+      "notes": "사용자가 지도에서 자신의 위치를 쉽게 파악할 수 있도록 개선"
+    },
+    {
+      "id": 32,
+      "category": "fix",
+      "description": "위치 권한 처리 개선 및 기본 위치 변경",
+      "steps": [
+        "위치 권한 거부 시 5초 타임아웃 후 자동 폴백",
+        "기본 위치를 서울 시청 → 용산 ITX역으로 변경",
+        "Geolocation API 옵션 개선 (timeout, maximumAge)",
+        "디버깅 로그 추가 후 정리",
+        "KakaoMap 컴포넌트 모든 기본 좌표를 용산 ITX역으로 변경"
+      ],
+      "passes": true,
+      "commit": "fix: 위치 권한 처리 개선 및 기본 위치를 용산 ITX역으로 변경",
+      "blockers": [],
+      "completedAt": "2026-02-13",
+      "notes": "Kakao Maps API 401 에러 해결 (localhost vs 127.0.0.1 플랫폼 설정)"
+    },
+    {
+      "id": 33,
+      "category": "feature",
+      "description": "프로필 페이지 구현",
+      "steps": [
+        "app/(main)/my/profile/page.tsx 생성",
+        "내 정보 표시 (닉네임, 이메일, 프로필 사진, 가입일)",
+        "통계 정보 표시 (작성한 아카이브 수, 스크랩 수, 타임캡슐 수)",
+        "프로필 수정 버튼 추가",
+        "로그아웃 버튼 추가"
+      ],
+      "passes": true,
+      "commit": "feat(mypage): 마이페이지 기능 구현 및 API 문서 수정",
+      "blockers": [],
+      "completedAt": "2026-02-27",
+      "notes": "프로필 조회 및 로그아웃 기능 포함. 통계 표시 및 프로필 수정은 미구현 (task 34 별도). 설정 기능(비번변경, 이메일알림, 탈퇴)은 동일 페이지에 통합."
+    },
+    {
+      "id": 34,
+      "category": "feature",
+      "description": "프로필 수정 기능 구현",
+      "steps": [
+        "app/(main)/my/profile/edit/page.tsx 생성",
+        "닉네임 수정 폼 (react-hook-form + Zod)",
+        "프로필 사진 업로드 (이미지 미리보기 + 삭제)",
+        "PATCH /api/members/me API 호출",
+        "수정 완료 시 프로필 페이지로 리다이렉트",
+        "React Query cache invalidation"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": []
+    },
+    {
+      "id": 35,
+      "category": "feature",
+      "description": "설정 페이지 구현",
+      "steps": [
+        "app/(main)/settings/page.tsx 생성",
+        "계정 설정 섹션 (비밀번호 변경, 이메일 표시)",
+        "로그아웃 버튼 (확인 모달)",
+        "회원탈퇴 버튼 (확인 모달 + 최종 확인 입력)",
+        "비밀번호 변경 API 연동 (백엔드 API 확인 필요)",
+        "회원탈퇴 API 연동 (백엔드 API 확인 필요)"
+      ],
+      "passes": true,
+      "commit": "feat(mypage): 마이페이지 기능 구현 및 API 문서 수정",
+      "blockers": [],
+      "completedAt": "2026-02-27",
+      "notes": "별도 /settings 페이지 대신 /my/profile에 통합 구현. 비밀번호 변경(PATCH /api/v1/users/me/password), 이메일 알림 토글(PATCH /api/v1/users/me/settings/email-notification, body: {enable: boolean}), 로그아웃, 회원탈퇴(DELETE /api/v1/users, body: {currentPassword}) 모두 구현 완료."
+    },
+    {
+      "id": 36,
+      "category": "feature",
+      "description": "404 에러 페이지 구현",
+      "steps": [
+        "app/not-found.tsx 생성",
+        "404 메시지 및 홈 버튼 표시",
+        "app/[...catchAll]/page.tsx로 동적 라우트 처리 (선택)",
+        "일관된 디자인 적용"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": []
+    },
+    {
+      "id": 37,
+      "category": "feature",
+      "description": "검색 기능 구현",
+      "steps": [
+        "홈페이지 왼쪽 사이드바에 검색 입력창 추가",
+        "검색 API 엔드포인트 확인 (GET /api/archives?keyword=...)",
+        "검색 결과 리스트 표시 (기존 ArchiveListItem 재사용)",
+        "검색어 하이라이트 (선택)",
+        "검색 결과 없음 상태 처리",
+        "감정/장소명 필터와 통합"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": ["백엔드 API 확인 필요: 검색 파라미터 지원 여부"]
+    },
+    {
+      "id": 38,
+      "category": "feature",
+      "description": "접근성 개선",
+      "steps": [
+        "모든 버튼에 aria-label 추가",
+        "키보드 네비게이션 지원 (Tab, Enter, Esc)",
+        "포커스 스타일 개선 (focus:ring)",
+        "이미지에 alt 속성 추가",
+        "폼 필드에 적절한 label 연결",
+        "스크린 리더 테스트 (macOS VoiceOver 또는 NVDA)"
+      ],
+      "passes": false,
+      "commit": null,
+      "blockers": []
+    },
+    {
+      "id": 39,
+      "category": "feature",
+      "description": "전역 헤더 컴포넌트 구현",
+      "steps": [
+        "components/layout/Header.tsx 생성 (로고, 네비게이션, 알림벨, 유저메뉴)",
+        "app/(main)/layout.tsx 업데이트 - Header 포함, pt-14 offset",
+        "app/(main)/page.tsx 업데이트 - 내장 헤더 제거, h-screen → h-full",
+        "글 쓰기/타임캡슐 작성 버튼 헤더에 추가",
+        "모바일 햄버거 메뉴 버튼 (향후 구현)"
+      ],
+      "passes": true,
+      "commit": "feat: 전역 헤더 컴포넌트 구현 - 네비게이션, 알림, 유저메뉴",
+      "blockers": [],
+      "completedAt": "2026-02-17",
+      "notes": "Header는 (main) layout에 고정 (fixed top-0), 컨텐츠는 pt-14로 offset"
+    },
+    {
+      "id": 40,
+      "category": "feature",
+      "description": "타임캡슐 이미지 업로드 UI 구현",
+      "steps": [
+        "타임캡슐 작성 폼(new/page.tsx)에 ImageUploader 컴포넌트 추가 (최대 5개)",
+        "useCreateTimeCapsule 훅 수정 - { data, images } 인수로 이미지 순차 업로드",
+        "이미지 업로드 실패 시 타임캡슐은 생성 유지, toast 에러 표시"
+      ],
+      "passes": true,
+      "commit": "feat(timecapsule): 타임캡슐 CRUD, 목록/상세 페이지 및 이미지 업로드 구현",
+      "blockers": [],
+      "completedAt": "2026-02-18"
+    },
+    {
+      "id": 41,
+      "category": "fix",
+      "description": "타임캡슐 목록 Pagination 1-indexed 대응",
+      "steps": [
+        "백엔드 WebConfig에 setOneIndexedParameters(true) 추가",
+        "hooks/use-timecapsule.ts: initialPageParam 0→1, getNextPageParam: lastPage.pageNo+1로 복원",
+        "백엔드 응답 날짜 형식 변경 대응 (yyyy.MM.dd HH:mm) - parseDotDate 헬퍼 추가",
+        "TimeCapsuleSummary 타입 수정: address → location?: LocationDetail"
+      ],
+      "passes": true,
+      "commit": "feat(timecapsule): 타임캡슐 CRUD, 목록/상세 페이지 및 이미지 업로드 구현",
+      "blockers": [],
+      "completedAt": "2026-02-18",
+      "notes": "백엔드 setOneIndexedParameters(true) 설정 후 프론트 복원. 날짜 포맷 파싱은 parseDotDate()로 처리"
+    },
+    {
+      "id": 42,
+      "category": "fix",
+      "description": "이미지 업로드 Location 헤더 ID 파싱 버그 수정",
+      "steps": [
+        "services/archive-service.ts: parseInt 전 segment.replace(/\\D/g, '') 적용",
+        "services/timecapsule-service.ts: 동일 방어 코드 적용, 대소문자 헤더 모두 체크",
+        "Location 헤더 값에 따옴표 등 비숫자 문자 포함 시에도 안전하게 ID 추출"
+      ],
+      "passes": true,
+      "commit": "fix(image): 이미지 업로드 ID 파싱 버그 수정 및 JWT 인증 이미지 컴포넌트 구현",
+      "blockers": [],
+      "completedAt": "2026-02-18",
+      "notes": "백엔드 public-base-url YAML 설정의 trailing \" 버그가 근본 원인 (백엔드 수정 완료)"
+    },
+    {
+      "id": 43,
+      "category": "feature",
+      "description": "JWT 인증 이미지 표시 컴포넌트(AuthImage) 구현",
+      "steps": [
+        "components/ui/AuthImage.tsx 생성 - apiClient로 이미지 fetch (JWT 헤더 자동 포함)",
+        "응답 Blob → URL.createObjectURL()로 변환 후 <img src>에 사용",
+        "unmount 시 URL.revokeObjectURL()로 메모리 누수 방지",
+        "로딩 중 skeleton, 오류 시 대체 텍스트 표시",
+        "아카이브/타임캡슐 상세 페이지 <img> 태그를 AuthImage로 교체",
+        "이미지 크기 조정: h-40 object-contain bg-gray-50"
+      ],
+      "passes": true,
+      "commit": "fix(image): 이미지 업로드 ID 파싱 버그 수정 및 JWT 인증 이미지 컴포넌트 구현",
+      "blockers": [],
+      "completedAt": "2026-02-18",
+      "notes": "타임캡슐 이미지 엔드포인트는 인증 필요(anyRequest().authenticated()). <img> 태그는 JWT 헤더 전송 불가하므로 JS fetch 방식으로 처리"
+    },
+    {
+      "id": 44,
+      "category": "fix",
+      "description": "피드/아카이브 작성 페이지 스크롤 버그 수정",
+      "steps": [
+        "app/(main)/layout.tsx: main 태그 overflow-hidden → overflow-y-auto 변경",
+        "기존 타임캡슐 페이지(h-full overflow-y-auto)는 영향 없음",
+        "아카이브 목록/작성 페이지(min-h-screen)의 스크롤 정상 작동"
+      ],
+      "passes": true,
+      "commit": "fix(layout): 피드 및 아카이브 작성 페이지 스크롤 버그 수정",
+      "blockers": [],
+      "completedAt": "2026-02-18",
+      "notes": "overflow-hidden이 min-h-screen 기반 페이지의 스크롤을 막고 있었음"
+    },
+    {
+      "id": 45,
+      "category": "feature",
+      "description": "헤더 감정 날씨 TOP3 폴링 기능 구현",
+      "steps": [
+        "services/emotion-service.ts 생성 - GET /api/v1/emotions/ranking API 호출",
+        "hooks/use-emotion-weather.ts 생성 - 5분 폴링 React Query 훅 (refetchInterval: 5분)",
+        "components/emotion/EmotionWeatherTicker.tsx 생성 - 슬라이드업 애니메이션 ticker",
+        "금·은·동 메달 CSS 원형 배지 디자인 (emoji 아이콘 대신 CSS border-radius + box-shadow)",
+        "Header.tsx 로고 오른쪽에 구분선과 함께 EmotionWeatherTicker 배치",
+        "3초마다 1위→2위→3위 슬라이드업 애니메이션으로 순환 표시",
+        "데이터 없을 시 ticker 미표시 (null 반환)"
+      ],
+      "passes": true,
+      "commit": "feat: 헤더 감정 날씨 TOP3 폴링 ticker 구현",
+      "blockers": [],
+      "completedAt": "2026-02-18",
+      "notes": "SSE 방식에서 5분 폴링으로 변경. 실시간성보다 서버 부하 절감 우선. 금(#F59E0B)/은(#9CA3AF)/동(#B45309) CSS 메달"
+    },
+    {
+      "id": 46,
+      "category": "feature",
+      "description": "아카이브 수정 기능 구현 (지연 연결 이미지 방식)",
+      "steps": [
+        "types/archive.ts: ArchiveUpdateRequest에 imageIds?: number[] 추가, location optional로 변경",
+        "services/archive-service.ts: update() 반환 타입 void → Promise<ArchiveDetail> 수정",
+        "hooks/use-archives.ts: useUpdateArchive 재작성 - 수정 완료 시 신규 파일 업로드 후 imageIds 확정하여 PATCH",
+        "components/archive/EditImageUploader.tsx 신규 생성 - 기존 이미지(AuthImage) + 새 파일(로컬 미리보기/NEW 뱃지) 분리 관리",
+        "components/archive/ArchiveForm.tsx: hideImageUploader prop 추가",
+        "app/(main)/archives/[id]/edit/page.tsx 전면 재작성 - imageState(existingImageIds, newFiles) 상태 관리, 이미지 안내 배너 추가",
+        "수정 완료 전까지 이미지는 서버에 전송되지 않음 (로컬 상태로만 관리)"
+      ],
+      "passes": true,
+      "commit": "feat: 아카이브 수정 기능 구현 - 지연 연결 이미지 방식 (수정 완료 시 일괄 반영)",
+      "blockers": [],
+      "completedAt": "2026-02-19",
+      "notes": "백엔드 syncImages()가 최종 imageIds 기준으로 이미지 연결/삭제 일괄 처리. 수정 취소 시 서버에 아무것도 남지 않음"
+    },
+    {
+      "id": 47,
+      "category": "fix",
+      "description": "isOwner Jackson 직렬화 버그 식별",
+      "steps": [
+        "백엔드 boolean isOwner 필드에 Lombok @Getter 적용 시 isOwner() getter 생성",
+        "Jackson이 is 접두사 제거하여 JSON을 'owner'로 직렬화 → 프론트 archive.isOwner가 undefined",
+        "API.md에 'isOwner'로 스펙 정의되어 있으므로 백엔드에 @JsonProperty(\"isOwner\") 추가 필요",
+        "프론트는 isOwner 유지, 백엔드 수정 대기"
+      ],
+      "passes": true,
+      "commit": "fix: isOwner Jackson 직렬화 버그 수정 및 아카이브 삭제 API 연동",
+      "blockers": [],
+      "completedAt": "2026-02-19",
+      "notes": "백엔드에서 @JsonProperty(\"isOwner\") 추가 완료. 프론트 변경 없이 정상 동작"
+    },
+    {
+      "id": 48,
+      "category": "feature",
+      "description": "LocationPicker 위치 메모 입력창 추가",
+      "steps": [
+        "components/archive/LocationPicker.tsx 수정",
+        "geocodedLabel 상태: 역지오코딩 결과 주소 보관",
+        "customLabel 상태: 사용자 직접 입력값 보관",
+        "위치 재선택 시 customLabel 초기화",
+        "역지오코딩 주소를 별도 표시 영역에 표시 (참고용)",
+        "입력창 placeholder에 역지오코딩 주소 표시",
+        "미입력 시 역지오코딩 주소를 locationLabel로 전송, 입력 시 입력값 우선"
+      ],
+      "passes": true,
+      "commit": "feat: 아카이브 수정 기능 구현 - 지연 연결 이미지 방식 (수정 완료 시 일괄 반영)",
+      "blockers": [],
+      "completedAt": "2026-02-19",
+      "notes": "백엔드 locationLabel은 사용자 메모용. 카카오 역지오코딩은 기본값으로만 사용"
+    },
+    {
+      "id": 49,
+      "category": "feature",
+      "description": "아카이브 상세 페이지 수정/삭제 버튼 SNS 케밥 메뉴로 변경",
+      "steps": [
+        "app/(main)/archives/[id]/page.tsx 수정",
+        "기존 [수정][삭제] 버튼 두 개 나열 → ··· 케밥 메뉴 버튼으로 변경",
+        "클릭 시 드롭다운: 수정(회색 + 연필 아이콘), 삭제(빨간색 + 휴지통 아이콘)",
+        "menuRef로 외부 클릭 감지 후 메뉴 자동 닫힘 (useEffect + mousedown)"
+      ],
+      "passes": true,
+      "commit": "feat: 아카이브 수정 기능 구현 - 지연 연결 이미지 방식 (수정 완료 시 일괄 반영)",
+      "blockers": [],
+      "completedAt": "2026-02-19",
+      "notes": "인스타그램/트위터 스타일 케밥 메뉴. 삭제는 빨간색으로 위험도 시각적 구분"
+    },
+    {
+      "id": 50,
+      "category": "fix",
+      "description": "아카이브 위치 정보 선택 사항으로 변경 및 위치 공유 토글 UI 추가",
+      "steps": [
+        "lib/validations/archive.ts: location 필드 .optional() 추가",
+        "types/archive.ts: ArchiveCreateRequest.location을 optional로 변경",
+        "components/archive/ArchiveForm.tsx: 위치 공유/공유 안함 토글 버튼 UI 추가 (shareLocation state)",
+        "공유 안함 선택 시 location 값 undefined로 초기화 (setValue)",
+        "shareLocation === true일 때만 LocationPicker 렌더링"
+      ],
+      "passes": true,
+      "commit": "feat(frontend): 아카이브 위치 정보 선택 사항으로 변경",
+      "blockers": [],
+      "completedAt": "2026-02-24",
+      "notes": "API.md 기준 location은 optional. 기존 프론트가 필수로 잘못 구현되어 있었음. 백엔드 변경 없음"
+    },
+    {
+      "id": 51,
+      "category": "fix",
+      "description": "LocationPicker stale closure 버그 수정",
+      "steps": [
+        "components/archive/LocationPicker.tsx 수정",
+        "map, marker useState → useRef(mapInstanceRef, markerRef)로 교체",
+        "handleLocationSelect → selectLocation으로 리네임, 내부에서 mapInstanceRef.current 직접 참조",
+        "클릭 이벤트 리스너 등록 시 stale closure로 map이 null이던 문제 해결"
+      ],
+      "passes": true,
+      "commit": "feat(frontend): 아카이브 위치 정보 선택 사항으로 변경",
+      "blockers": [],
+      "completedAt": "2026-02-24",
+      "notes": "useEffect 내 kakao.maps.load 콜백에서 setMap 호출 후 state가 아직 반영되지 않아 클릭 핸들러에서 map === null이 되는 stale closure 문제"
+    },
+    {
+      "id": 52,
+      "category": "fix",
+      "description": "ArchiveCard 위치 유무와 무관하게 카드 높이 통일",
+      "steps": [
+        "components/archive/ArchiveCard.tsx 수정",
+        "Link 컴포넌트에 block h-full 추가",
+        "카드 div에 flex flex-col h-full 추가",
+        "내용 미리보기 p 태그에 flex-1 추가 → 위치 정보 유무와 관계없이 footer가 항상 하단에 고정"
+      ],
+      "passes": true,
+      "commit": "feat(frontend): 아카이브 위치 정보 선택 사항으로 변경",
+      "blockers": [],
+      "completedAt": "2026-02-24",
+      "notes": "CSS Grid는 셀 높이를 자동 맞춤하지만 Link(a 태그)가 h-full 없으면 flex-col이 높이 기준을 못 잡음"
+    },
+    {
+      "id": 53,
+      "category": "fix",
+      "description": "아카이브 피드 검색/필터링 버그 수정 및 검색바 이동",
+      "steps": [
+        "types/archive.ts: ArchiveSearchCondition 필드 수정 (sort → sortType, 값 대문자, keyword 추가)",
+        "services/archive-service.ts: getList() params 중첩 객체 → flat query params로 수정 (emotion, keyword, sortType)",
+        "app/(main)/archives/page.tsx: 키워드 검색 input 추가, 정렬값 LATEST/OLDEST/POPULAR로 수정",
+        "app/(main)/page.tsx: 동작하지 않던 검색바 제거"
+      ],
+      "passes": true,
+      "commit": "fix(frontend): 아카이브 피드 필터링 버그 수정 및 검색 기능 추가",
+      "blockers": [],
+      "completedAt": "2026-02-24",
+      "notes": "백엔드 ArchiveSearchCondition 필드명(sortType)과 enum값(LATEST 등 대문자) 불일치 및 condition 중첩 객체 전송 문제 수정. 메인 검색바는 state 미연결 상태였음"
+    },
+    {
+      "id": 55,
+      "category": "feature",
+      "description": "아카이브 정렬 조건 LIKE(좋아요순) 추가",
+      "steps": [
+        "types/archive.ts: ArchiveSearchCondition.sortType에 'LIKE' 추가",
+        "app/(main)/archives/page.tsx: handleSortChange 타입에 'LIKE' 추가, 좋아요순 버튼 추가",
+        "app/(main)/my/archives/page.tsx: 정렬 드롭다운에 LIKE 옵션 추가"
+      ],
+      "passes": true,
+      "commit": "feat(archive): 아카이브 정렬 조건(인기순, 좋아요순) 추가",
+      "blockers": [],
+      "completedAt": "2026-02-27",
+      "notes": "백엔드 ArchiveSortType enum에 LIKE 추가됨에 따라 프론트 UI 반영"
+    },
+    {
+      "id": 56,
+      "category": "fix",
+      "description": "아카이브 무한 스크롤 페이지네이션 API 불일치 수정",
+      "steps": [
+        "types/archive.ts: PagingResponse 필드명 수정 (page → pageNo, size → pageSize) - 백엔드 응답 필드와 일치",
+        "hooks/use-archives.ts: useArchiveList, useMyArchiveList, useScrapList 세 곳의 getNextPageParam 수정",
+        "기존 lastPage.page + 1 → lastPage.pageNo + 1 로 변경 (setOneIndexedParameters(true) 대응)",
+        "원인: page 필드 undefined → NaN → Spring 기본값 page=0 반환 → 첫 페이지 반복"
+      ],
+      "passes": true,
+      "commit": "feat(archive): 아카이브 목록 조회 시 인기순/좋아요순 정렬 지원",
+      "blockers": [],
+      "completedAt": "2026-02-27",
+      "notes": "백엔드 WebConfig.setOneIndexedParameters(true) 설정으로 page는 1-based 입력. pageNo(1-based 응답)를 그대로 다음 요청에 쓰면 Spring이 첫 페이지로 해석하므로 pageNo+1 필요"
+    },
+    {
+      "id": 54,
+      "category": "feature",
+      "description": "내 아카이브 페이지 필터링 기능 추가 및 UX 개선",
+      "steps": [
+        "services/archive-service.ts: getMyList()에 condition 파라미터 추가 (flat query params)",
+        "hooks/use-archives.ts: useMyArchiveList()에 condition 파라미터 추가",
+        "app/(main)/my/archives/page.tsx 전면 재작성 - 감정 이모지 칩(가로 스크롤), 정렬 드롭다운, 검색 토글, 활성 필터 칩, 총 개수 표시, 빈 상태 분기"
+      ],
+      "passes": true,
+      "commit": "fix(frontend): 아카이브 피드 필터링 버그 수정 및 검색 기능 추가",
+      "blockers": [],
+      "completedAt": "2026-02-24",
+      "notes": "피드와 차별화: 감정 칩(이모지+가로스크롤), 검색 토글 방식, 정렬 드롭다운, 총 개수 표시, 필터 활성 상태 칩"
+    }
+  ]
+}
