@@ -1,6 +1,7 @@
 package com.feelarchive.api.config;
 
 import com.feelarchive.api.config.auth.AuthenticationFilter;
+import com.feelarchive.api.filter.AccessLogFilter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +26,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
   private final AuthenticationFilter authenticationFilter;
+  private final AccessLogFilter accessLogFilter;
 
   @Value("${app.client.base-url}")
   private String clientUrl;
@@ -43,7 +45,8 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.GET, "/api/v1/archives/*/images/*").permitAll()
             .anyRequest().authenticated()
         )
-        .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
+        .addFilterAfter(accessLogFilter, AuthenticationFilter.class);
 
     return http.build();
   }
