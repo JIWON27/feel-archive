@@ -1,8 +1,8 @@
 package com.feelarchive.api;
 
-import com.feelarchive.api.common.file.FileProperties;
 import com.feelarchive.api.config.auth.CookieProperties;
 import com.feelarchive.api.config.auth.TokenProperties;
+import com.feelarchive.api.file.service.FileProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

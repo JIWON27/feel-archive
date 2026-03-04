@@ -1,4 +1,4 @@
-package com.feelarchive.api.common.file;
+package com.feelarchive.api.file.service;
 
 import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;

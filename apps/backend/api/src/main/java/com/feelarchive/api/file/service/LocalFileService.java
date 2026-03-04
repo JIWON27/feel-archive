@@ -1,4 +1,4 @@
-package com.feelarchive.api.common.file;
+package com.feelarchive.api.file.service;
 
 
 import static com.feelarchive.domain.file.exception.FileExceptionCode.DELETE_FAILED;
