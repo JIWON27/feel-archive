@@ -56,4 +56,5 @@ docker run -d \
   -e AWS_S3_BUCKET=$AWS_S3_BUCKET \
   -e BATCH_SIZE=$BATCH_SIZE \
   -e JAVA_OPTS="$JAVA_OPTS" \
+  -v /var/log/feel-archive:/var/log/feel-archive \
   $AWS_ACCOUNT_ID.dkr.ecr.ap-northeast-2.amazonaws.com/feel-archive:latest
