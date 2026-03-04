@@ -22,6 +22,7 @@ APP_SERVER_URL=$(aws ssm get-parameter --name "APP_SERVER_URL" --query Parameter
 APP_CLIENT_URL=$(aws ssm get-parameter --name "APP_CLIENT_URL" --query Parameter.Value --output text)
 AWS_S3_BUCKET=$(aws ssm get-parameter --name "S3_BUCKET" --query Parameter.Value --output text)
 BATCH_SIZE=$(aws ssm get-parameter --name "BATCH_SIZE" --query Parameter.Value --output text)
+JAVA_OPTS=$(aws ssm get-parameter --name "JAVA_OPTS" --query Parameter.Value --output text)
 
 # ECR 로그인
 aws ecr get-login-password --region ap-northeast-2 | \
@@ -54,4 +55,5 @@ docker run -d \
   -e APP_CLIENT_URL=$APP_CLIENT_URL \
   -e AWS_S3_BUCKET=$AWS_S3_BUCKET \
   -e BATCH_SIZE=$BATCH_SIZE \
+  -e JAVA_OPTS="$JAVA_OPTS" \
   $AWS_ACCOUNT_ID.dkr.ecr.ap-northeast-2.amazonaws.com/feel-archive:latest
