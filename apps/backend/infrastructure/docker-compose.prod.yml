@@ -11,7 +11,7 @@ services:
       - ./logs/mysql:/var/log/mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: feel_archive
+      MYSQL_DATABASE: feelarchive
     command:
       - --innodb_buffer_pool_size=128M
       - --performance_schema=OFF
