@@ -8,7 +8,7 @@ import static com.feelarchive.domain.file.exception.FileExceptionCode.FILE_NOT_R
 
 import com.feelarchive.api.archive.controller.response.ArchiveImageDownloadResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveImageResponse;
-import com.feelarchive.api.common.file.FileService;
+import com.feelarchive.api.file.service.FileService;
 import com.feelarchive.common.excepion.FeelArchiveException;
 import com.feelarchive.domain.archive.entity.Archive;
 import com.feelarchive.domain.archive.entity.ArchiveImage;

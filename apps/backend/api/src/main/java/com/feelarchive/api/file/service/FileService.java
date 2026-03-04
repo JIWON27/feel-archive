@@ -1,4 +1,4 @@
-package com.feelarchive.api.common.file;
+package com.feelarchive.api.file.service;
 
 import com.feelarchive.domain.file.entity.FileMeta;
 import java.nio.file.Path;

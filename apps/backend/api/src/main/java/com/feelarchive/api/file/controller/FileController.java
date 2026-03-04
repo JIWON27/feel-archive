@@ -1,23 +1,15 @@
-package com.feelarchive.api.common.file;
+package com.feelarchive.api.file.controller;
 
-import com.feelarchive.api.archive.controller.response.ArchiveImageDownloadResponse;
 import com.feelarchive.api.archive.controller.response.ArchiveImageResponse;
 import com.feelarchive.api.archive.service.ArchiveImageService;
-import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleImageDownloadResponse;
 import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleImageResponse;
 import com.feelarchive.api.timeCapsule.service.TimeCapsuleImageService;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
-import org.springframework.core.io.Resource;
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,11 +17,10 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-@Profile("local")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1")
-public class LocalFileController {
+public class FileController {
 
   private final ArchiveImageService archiveImageService;
   private final TimeCapsuleImageService timeCapsuleImageService;
@@ -43,26 +34,6 @@ public class LocalFileController {
     List<ArchiveImageResponse> responses = archiveImageService.uploads(id, userId, images);
     return ResponseEntity.ok().body(responses);
   }
-
-  @GetMapping("/archives/{archiveId}/{fileName}")
-  public ResponseEntity<Resource> downloadArchiveImages(
-      @AuthenticationPrincipal Long userId,
-      @PathVariable Long archiveId,
-      @PathVariable String fileName)
-  {
-    ArchiveImageDownloadResponse response = archiveImageService.download(archiveId, fileName, userId);
-
-    ContentDisposition contentDisposition = ContentDisposition.builder("inline")
-        .filename(response.getFileMeta().getOriginalName(), StandardCharsets.UTF_8)
-        .build();
-
-    return ResponseEntity.ok()
-        .contentType(MediaType.parseMediaType(response.getFileMeta().getContentType()))
-        .contentLength(response.getFileMeta().getSizeBytes())
-        .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
-        .body(response.getResource());
-  }
-
 
   @DeleteMapping("/archives/{archiveId}/images/{imageId}")
   public ResponseEntity<Void> deleteArchiveImages(
@@ -93,24 +64,4 @@ public class LocalFileController {
     timeCapsuleImageService.delete(timeCapsuleId, imageId, userId);
     return ResponseEntity.noContent().build();
   }
-
-  @GetMapping("/time-capsule/{timeCapsuleId}/{fileName}")
-  public ResponseEntity<Resource> downloadTimeCapsuleImages(
-      @AuthenticationPrincipal Long userId,
-      @PathVariable Long timeCapsuleId,
-      @PathVariable String fileName)
-  {
-    TimeCapsuleImageDownloadResponse response = timeCapsuleImageService.download(timeCapsuleId, fileName, userId);
-
-    ContentDisposition contentDisposition = ContentDisposition.builder("inline")
-        .filename(response.fileMeta().getOriginalName(), StandardCharsets.UTF_8)
-        .build();
-
-    return ResponseEntity.ok()
-        .contentType(MediaType.parseMediaType(response.fileMeta().getContentType()))
-        .contentLength(response.fileMeta().getSizeBytes())
-        .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
-        .body(response.resource());
-  }
-
 }

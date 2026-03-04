@@ -6,7 +6,7 @@ import static com.feelarchive.domain.capsule.exception.TimeCapsuleExceptionCode.
 import static com.feelarchive.domain.file.exception.FileExceptionCode.FILE_NOT_FOUND;
 import static com.feelarchive.domain.file.exception.FileExceptionCode.FILE_NOT_READABLE;
 
-import com.feelarchive.api.common.file.FileService;
+import com.feelarchive.api.file.service.FileService;
 import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleImageDownloadResponse;
 import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleImageResponse;
 import com.feelarchive.common.excepion.FeelArchiveException;

@@ -1,4 +1,4 @@
-package com.feelarchive.api.common.file;
+package com.feelarchive.api.file.service;
 
 import com.feelarchive.common.excepion.FeelArchiveException;
 import com.feelarchive.domain.file.entity.FileMeta;
