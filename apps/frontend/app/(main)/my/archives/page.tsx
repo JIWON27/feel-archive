@@ -201,7 +201,7 @@ export default function MyArchivesPage() {
               )}
               {condition.keyword && (
                 <span className="flex items-center gap-1 px-2 py-0.5 bg-gray-100 text-gray-700 rounded-full">
-                  "{condition.keyword}"
+                  &quot;{condition.keyword}&quot;
                   <button onClick={clearKeyword} className="ml-1 hover:text-gray-500">×</button>
                 </span>
               )}

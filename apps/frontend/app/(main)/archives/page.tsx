@@ -109,7 +109,7 @@ export default function ArchivesPage() {
             </form>
             {condition.keyword && (
               <div className="mt-1 flex items-center gap-2 text-xs text-gray-500">
-                <span>"{condition.keyword}" 검색 중</span>
+                <span>&quot;{condition.keyword}&quot; 검색 중</span>
                 <button
                   onClick={() => {
                     setKeywordInput('');
