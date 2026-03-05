@@ -20,7 +20,7 @@ function NavItem({
   label: string;
   currentPath: string;
 }) {
-  const isActive = currentPath === href || (href !== '/' && currentPath.startsWith(href));
+  const isActive = currentPath === href || (href !== '/home' && currentPath.startsWith(href));
   return (
     <Link
       href={href}
@@ -66,7 +66,7 @@ export function Header() {
       <div className="flex items-center justify-between h-full px-4 max-w-full">
         {/* 로고 + 감정 날씨 (가로 배치) */}
         <div className="flex items-center gap-3">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/home" className="flex items-center gap-2">
             <span className="text-xl">🗂️</span>
             <span className="font-bold text-gray-900 text-base">Feel-Archive</span>
           </Link>
@@ -76,7 +76,7 @@ export function Header() {
 
         {/* 네비게이션 */}
         <nav className="hidden md:flex items-center gap-1">
-          <NavItem href="/" label="홈" currentPath={pathname} />
+          <NavItem href="/home" label="홈" currentPath={pathname} />
           <NavItem href="/archives" label="피드" currentPath={pathname} />
           <NavItem href="/my/timecapsules" label="타임캡슐" currentPath={pathname} />
           <NavItem href="/my/archives" label="내 아카이브" currentPath={pathname} />

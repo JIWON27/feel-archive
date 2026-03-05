@@ -67,7 +67,7 @@ export const usePublicOnlyRoute = () => {
 
     // 인증된 사용자는 홈으로
     if (isAuthenticated && hasToken) {
-      router.replace('/');
+      router.replace('/home');
     }
   }, [isAuthenticated, logout, router]);
 
