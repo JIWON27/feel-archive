@@ -44,7 +44,7 @@ public class MailService {
       MimeMessageHelper messageHelper = new MimeMessageHelper(message);
 
       String timeAgoText = String.valueOf(ChronoUnit.DAYS.between(event.createAt(), event.openedAt()));
-      String viewUrl = String.format("%s/time-capsule/%d", baseUrl, event.timeCapsuleId());
+      String viewUrl = String.format("%s/timecapsule/%d", baseUrl, event.timeCapsuleId());
 
       messageHelper.setTo(event.email());
       messageHelper.setSubject("[필아카이브] 타임캡슐이 열렸습니다!");
@@ -52,8 +52,8 @@ public class MailService {
       Context context = new Context();
       context.setVariable("timeAgoText", timeAgoText);
       context.setVariable("userName", event.name());
-      context.setVariable("createdAt", DateUtils.formatToDate(event.createAt()));
-      context.setVariable("openedAt", DateUtils.formatToDate(event.openedAt()));
+      context.setVariable("createdAt", DateUtils.formatToDateTime(event.createAt()));
+      context.setVariable("openedAt", DateUtils.formatToDateTime(event.openedAt()));
       context.setVariable("viewUrl", viewUrl);
 
       String htmlContent = templateEngine.process("mail/time-capsule-noti", context);

@@ -41,8 +41,8 @@ export default function NewTimeCapsulePage() {
     if (!emotion) return;
 
     // datetime-local 입력값은 "YYYY-MM-DDTHH:mm" 형식
-    // 백엔드 LocalDateTime은 "YYYY-MM-DDTHH:mm:ss" 형식 기대 (타임존 없음, 로컬 시간 그대로)
-    const openAtFormatted = openAt.length === 16 ? `${openAt}:00` : openAt;
+    // KST 오프셋(+09:00) 포함하여 전송 → 백엔드가 OffsetDateTime으로 처리
+    const openAtFormatted = `${openAt.length === 16 ? `${openAt}:00` : openAt}+09:00`;
 
     createCapsule({
       data: { emotion, content, openAt: openAtFormatted },
