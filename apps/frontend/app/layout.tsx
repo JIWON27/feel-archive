@@ -5,7 +5,29 @@ import Providers from "@/lib/providers";
 
 export const metadata: Metadata = {
   title: "Feel-Archive",
-  description: "공간 기반 감정 아카이빙 플랫폼",
+  description: "공간 기반 감정 아카이빙 플랫폼. 내 감정을 기록하고, 누군가의 위로를 발견하세요.",
+  openGraph: {
+    title: "Feel-Archive",
+    description: "공간 기반 감정 아카이빙 플랫폼. 내 감정을 기록하고, 누군가의 위로를 발견하세요.",
+    url: "https://feel-archive.vercel.app",
+    siteName: "Feel-Archive",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Feel-Archive - 공간 기반 감정 아카이빙 플랫폼",
+      },
+    ],
+    locale: "ko_KR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Feel-Archive",
+    description: "공간 기반 감정 아카이빙 플랫폼. 내 감정을 기록하고, 누군가의 위로를 발견하세요.",
+    images: ["/og-image.png"],
+  },
 };
 
 export default function RootLayout({
