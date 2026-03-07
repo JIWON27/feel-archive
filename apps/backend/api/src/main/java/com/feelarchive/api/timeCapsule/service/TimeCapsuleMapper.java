@@ -5,6 +5,7 @@ import com.feelarchive.api.timeCapsule.controller.request.TimeCapsuleRequest;
 import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleDetailResponse;
 import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleImageResponse;
 import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleSummaryResponse;
+import com.feelarchive.api.utils.DateUtils;
 import com.feelarchive.domain.archive.entity.vo.Location;
 import com.feelarchive.domain.capsule.entity.CapsuleStatus;
 import com.feelarchive.domain.capsule.entity.TimeCapsule;
@@ -12,7 +13,6 @@ import com.feelarchive.domain.user.entity.User;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -75,13 +75,10 @@ public interface TimeCapsuleMapper {
     return capsule.getCapsuleStatus() == CapsuleStatus.OPENED || capsule.isEditable();
   }
 
-  private String formatDate(LocalDateTime dateTime) {
-    if (Objects.isNull(dateTime)) {
+  private String formatDate(LocalDateTime time) {
+    if (Objects.isNull(time)) {
       return null;
     }
-    return dateTime
-        .atOffset(ZoneOffset.UTC)
-        .withOffsetSameInstant(ZoneOffset.of("+09:00"))
-        .format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"));
+    return DateUtils.formatToDateTime(time);
   }
 }

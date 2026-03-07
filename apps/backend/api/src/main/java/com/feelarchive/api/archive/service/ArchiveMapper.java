@@ -12,6 +12,7 @@ import com.feelarchive.domain.user.entity.User;
 import com.feelarchive.domain.user.entity.vo.Nickname;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -54,6 +55,9 @@ public interface ArchiveMapper {
 
   @Named("toKst")
   default String toKst(LocalDateTime time) {
+    if (Objects.isNull(time)) {
+      return null;
+    }
     return DateUtils.formatToDateTime(time);
   }
 
