@@ -10,16 +10,26 @@ import com.feelarchive.domain.capsule.entity.CapsuleStatus;
 import com.feelarchive.domain.capsule.entity.TimeCapsule;
 import com.feelarchive.domain.user.entity.User;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring")
 public interface TimeCapsuleMapper {
 
-  TimeCapsule toEntity(TimeCapsuleRequest timeCapsuleRequest, User user);
+  @Mapping(target = "openAt", source = "request.openAt", qualifiedByName = "toUtc")
+  TimeCapsule toEntity(TimeCapsuleRequest request, User user);
+
+  @Named("toUtc")
+  default LocalDateTime toUtc(OffsetDateTime offsetDateTime) {
+      return offsetDateTime.withOffsetSameInstant(ZoneOffset.UTC).toLocalDateTime();
+  }
 
   default TimeCapsuleSummaryResponse toSummary(TimeCapsule capsule) {
     boolean isVisible = isTimeCapsuleVisible(capsule);
@@ -69,6 +79,9 @@ public interface TimeCapsuleMapper {
     if (Objects.isNull(dateTime)) {
       return null;
     }
-    return dateTime.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"));
+    return dateTime
+        .atOffset(ZoneOffset.UTC)
+        .withOffsetSameInstant(ZoneOffset.of("+09:00"))
+        .format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"));
   }
 }

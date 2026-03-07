@@ -10,6 +10,7 @@ import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleImageRespo
 import com.feelarchive.api.timeCapsule.controller.response.TimeCapsuleSummaryResponse;
 import com.feelarchive.api.timeCapsule.event.TimeCapsuleOpenedEvent;
 import com.feelarchive.api.user.service.UserReader;
+import com.feelarchive.api.utils.DateUtils;
 import com.feelarchive.common.excepion.FeelArchiveException;
 import com.feelarchive.domain.capsule.entity.CapsuleStatus;
 import com.feelarchive.domain.capsule.entity.TimeCapsule;
@@ -71,8 +72,8 @@ public class TimeCapsuleService {
     if (!timeCapsule.isEditable()) {
       throw new FeelArchiveException(CAPSULE_EDIT_TIME_EXPIRED);
     }
-
-    timeCapsule.update(request.emotion(), request.content(), request.openAt());
+    LocalDateTime openAt = DateUtils.toUtc(request.openAt());
+    timeCapsule.update(request.emotion(), request.content(), openAt);
   }
 
   @Transactional
