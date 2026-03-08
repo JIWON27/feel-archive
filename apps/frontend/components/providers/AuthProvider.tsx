@@ -12,13 +12,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    // 앱 시작 시 localStorage에서 인증 상태 복원
-    initialize();
-    setIsInitialized(true);
+    // silent refresh로 인증 상태 복원 후 렌더
+    initialize().finally(() => setIsInitialized(true));
   }, [initialize]);
 
-  // 초기화가 완료될 때까지 아무것도 렌더링하지 않음
-  // 이렇게 하면 리다이렉트 깜빡임을 방지할 수 있음
+  // silent refresh 완료 전까지 렌더 블록 (리다이렉트 깜빡임 방지)
   if (!isInitialized) {
     return null;
   }

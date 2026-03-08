@@ -1,49 +1,51 @@
 import { create } from 'zustand';
-import { tokenUtils } from '@/lib/utils/token';
+import axios from 'axios';
+import { LoginResponse } from '@/types/auth';
 
 interface AuthState {
   isAuthenticated: boolean;
   userId: number | null;
+  accessToken: string | null;
   login: (userId: number, accessToken: string) => void;
   logout: () => void;
-  initialize: () => void;
+  setTokens: (userId: number, accessToken: string) => void;
+  initialize: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
   userId: null,
+  accessToken: null,
 
-  // 로그인: 토큰과 userId를 저장하고 상태 업데이트
   login: (userId: number, accessToken: string) => {
-    tokenUtils.setAccessToken(accessToken);
-    tokenUtils.setUserId(userId);
-    set({ isAuthenticated: true, userId });
+    set({ isAuthenticated: true, userId, accessToken });
   },
 
-  // 로그아웃: 모든 인증 정보 삭제
   logout: () => {
-    tokenUtils.clearAll();
-    set({ isAuthenticated: false, userId: null });
+    set({ isAuthenticated: false, userId: null, accessToken: null });
   },
 
-  // 초기화: localStorage에서 인증 상태 복원
-  initialize: () => {
-    const accessToken = tokenUtils.getAccessToken();
-    const userId = tokenUtils.getUserId();
+  // 401 interceptor에서 토큰 갱신 후 store 업데이트용
+  setTokens: (userId: number, accessToken: string) => {
+    set({ isAuthenticated: true, userId, accessToken });
+  },
 
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[Auth] Initializing auth state:', {
-        hasToken: !!accessToken,
-        userId,
-      });
+  // 앱 시작 시 silent refresh로 인증 상태 복원
+  initialize: async () => {
+    // 이전 버전 레거시 localStorage 데이터 제거
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('userId');
     }
-
-    if (accessToken && userId) {
-      set({ isAuthenticated: true, userId });
-    } else {
-      // 토큰이나 userId 중 하나라도 없으면 전체 삭제
-      tokenUtils.clearAll();
-      set({ isAuthenticated: false, userId: null });
+    try {
+      const { data } = await axios.post<LoginResponse>(
+        '/api/v1/token/reIssue',
+        {},
+        { withCredentials: true }
+      );
+      set({ isAuthenticated: true, userId: data.userId, accessToken: data.accessToken });
+    } catch {
+      set({ isAuthenticated: false, userId: null, accessToken: null });
     }
   },
 }));

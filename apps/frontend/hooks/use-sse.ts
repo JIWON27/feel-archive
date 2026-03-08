@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { NotificationEvent } from '@/types/notification';
-import { tokenUtils } from '@/lib/utils/token';
+import { useAuthStore } from '@/stores/auth-store';
 import { useNotificationStore } from '@/stores/notification-store';
 
 const API_BASE_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080';
@@ -11,7 +11,7 @@ export function useSseNotification(enabled: boolean) {
   useEffect(() => {
     if (!enabled) return;
 
-    const token = tokenUtils.getAccessToken();
+    const token = useAuthStore.getState().accessToken;
     if (!token) return;
 
     let aborted = false;

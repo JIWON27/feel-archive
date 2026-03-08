@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/auth-store';
-import { tokenUtils } from '@/lib/utils/token';
 
 /**
  * Protected route hook
@@ -12,25 +11,6 @@ export const useProtectedRoute = () => {
   const { isAuthenticated, logout } = useAuthStore();
 
   useEffect(() => {
-    // localStorage와 store 상태 동기화 확인
-    const hasToken = tokenUtils.isAuthenticated();
-
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[Protected Route] Auth check:', {
-        storeAuth: isAuthenticated,
-        hasToken,
-      });
-    }
-
-    // store는 인증됨이지만 실제 토큰이 없는 경우 (불일치 상태)
-    if (isAuthenticated && !hasToken) {
-      console.warn('[Protected Route] Auth state mismatch - clearing store');
-      logout();
-      router.replace('/login');
-      return;
-    }
-
-    // 인증되지 않은 경우
     if (!isAuthenticated) {
       router.replace('/login');
     }
@@ -45,31 +25,13 @@ export const useProtectedRoute = () => {
  */
 export const usePublicOnlyRoute = () => {
   const router = useRouter();
-  const { isAuthenticated, logout } = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
 
   useEffect(() => {
-    // localStorage와 store 상태 동기화 확인
-    const hasToken = tokenUtils.isAuthenticated();
-
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[Public Only Route] Auth check:', {
-        storeAuth: isAuthenticated,
-        hasToken,
-      });
-    }
-
-    // store는 인증됨이지만 실제 토큰이 없는 경우 (불일치 상태)
-    if (isAuthenticated && !hasToken) {
-      console.warn('[Public Only Route] Auth state mismatch - clearing store');
-      logout();
-      return;
-    }
-
-    // 인증된 사용자는 홈으로
-    if (isAuthenticated && hasToken) {
+    if (isAuthenticated) {
       router.replace('/home');
     }
-  }, [isAuthenticated, logout, router]);
+  }, [isAuthenticated, router]);
 
   return { isAuthenticated };
 };
