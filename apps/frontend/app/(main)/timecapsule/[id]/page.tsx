@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useTimeCapsuleDetail, useDeleteTimeCapsule } from '@/hooks/use-timecapsule';
 import { CapsuleStatus } from '@/types/timecapsule';
+import { useCountdown } from '@/hooks/use-countdown';
 import { AuthImage } from '@/components/ui/AuthImage';
 import { useEmotions } from '@/hooks/use-emotions';
 import { EMOTION_EMOJI } from '@/types/emotion';
@@ -34,6 +35,10 @@ export default function TimeCapsuleDetailPage() {
   const { data: capsule, isLoading, error } = useTimeCapsuleDetail(id);
   const { mutate: deleteCapsule, isPending: isDeleting } = useDeleteTimeCapsule();
   const { getLabel } = useEmotions();
+
+  // 훅은 early return 전에 항상 호출 (Rules of Hooks)
+  const openDate = capsule ? parseDotDate(capsule.openAt) : new Date();
+  const { diffDays, diffHours, diffMins, diffSecs, isExpired } = useCountdown(openDate);
 
   // 수정 가능 여부: 작성 후 30분 이내 && LOCKED 상태
   const canEdit = (() => {
@@ -68,12 +73,6 @@ export default function TimeCapsuleDetailPage() {
   }
 
   const isLocked = capsule.status === CapsuleStatus.LOCKED;
-  const openDate = parseDotDate(capsule.openAt);
-  const now = new Date();
-  const diffMs = openDate.getTime() - now.getTime();
-  const diffDays = Math.floor(diffMs / 86400000);
-  const diffHours = Math.floor((diffMs % 86400000) / 3600000);
-  const diffMins = Math.floor((diffMs % 3600000) / 60000);
 
   return (
     <div className="h-full overflow-y-auto bg-gray-50">
@@ -122,7 +121,7 @@ export default function TimeCapsuleDetailPage() {
             {/* 카운트다운 */}
             <div className="p-6 text-center border-b border-gray-100">
               <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">열리기까지</p>
-              {diffMs > 0 ? (
+              {!isExpired ? (
                 <div className="flex items-center justify-center gap-4">
                   {diffDays > 0 && (
                     <div className="text-center">
@@ -131,12 +130,16 @@ export default function TimeCapsuleDetailPage() {
                     </div>
                   )}
                   <div className="text-center">
-                    <p className="text-3xl font-bold text-gray-900">{diffHours}</p>
+                    <p className="text-3xl font-bold text-gray-900">{String(diffHours).padStart(2, '0')}</p>
                     <p className="text-xs text-gray-500">시간</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-3xl font-bold text-gray-900">{diffMins}</p>
+                    <p className="text-3xl font-bold text-gray-900">{String(diffMins).padStart(2, '0')}</p>
                     <p className="text-xs text-gray-500">분</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-3xl font-bold text-primary">{String(diffSecs).padStart(2, '0')}</p>
+                    <p className="text-xs text-gray-500">초</p>
                   </div>
                 </div>
               ) : (
