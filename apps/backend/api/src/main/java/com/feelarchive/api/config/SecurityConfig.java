@@ -2,6 +2,7 @@ package com.feelarchive.api.config;
 
 import com.feelarchive.api.config.auth.AuthenticationFilter;
 import com.feelarchive.api.filter.AccessLogFilter;
+import jakarta.servlet.DispatcherType;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,6 +43,8 @@ public class SecurityConfig {
         .authorizeHttpRequests(authorize -> authorize
             .requestMatchers("/api/v1/login").permitAll()
             .requestMatchers("/api/v1/users").permitAll()
+            .requestMatchers("/api/v1/token/reIssue").permitAll()
+            .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
             .requestMatchers(HttpMethod.GET, "/api/v1/archives/*/images/*").permitAll()
             .anyRequest().authenticated()
         )

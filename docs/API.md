@@ -1,6 +1,6 @@
 # Feel-Archive API 문서
 
-> **최종 업데이트**: 2026-02-27
+> **최종 업데이트**: 2026-03-09
 > **Base URL**: `http://localhost:8080` (개발)
 > **API 버전**: v1
 >
@@ -17,7 +17,8 @@
 - [좋아요/스크랩 (Like/Scrap)](#좋아요스크랩-likescrap)
 - [타임캡슐 (TimeCapsule)](#타임캡슐-timecapsule)
 - [알림 (Notification)](#알림-notification)
-- [실시간 감정 날씨 (Emotion Weather)](#실시간-감정-날씨-emotion-weather)
+- [감정 (Emotion)](#감정-emotion)
+- [감정 날씨 (Emotion Weather)](#감정-날씨-emotion-weather)
 - [리포트 (Report)](#리포트-report)
 - [공통 사항](#공통-사항)
 
@@ -81,6 +82,7 @@ Content-Type: application/json
 **Response (200 OK)**
 ```json
 {
+  "userId": 123,
   "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 }
@@ -165,6 +167,7 @@ Cookie: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 **Response (200 OK)**
 ```json
 {
+  "userId": 123,
   "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 }
@@ -570,7 +573,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
       "latitude": 37.5665,
       "longitude": 126.9780,
       "address": "서울특별시 중구 세종대로 110",
-      "createdAt": "2026-02-15T14:30:00",
+      "createdAt": "2026-02-15 14:30",
       "likeCount": 5,
       "isLiked": false,
       "isScraped": true,
@@ -640,8 +643,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
     "userId": 123,
     "nickname": "길동이"
   },
-  "createdAt": "2026-02-15T14:30:00",
-  "updatedAt": "2026-02-15T14:30:00"
+  "createdAt": "2026-02-15 14:30",
+  "updatedAt": "2026-02-15 14:30"
 }
 ```
 
@@ -688,7 +691,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
     "latitude": 37.5665,
     "longitude": 126.9780,
     "address": "서울특별시 중구 세종대로 110",
-    "createdAt": "2026-02-15T14:30:00",
+    "createdAt": "2026-02-15 14:30",
     "likeCount": 5,
     "isLiked": false,
     "isScraped": false,
@@ -869,8 +872,8 @@ Content-Type: application/json
     "userId": 123,
     "nickname": "길동이"
   },
-  "createdAt": "2026-02-15T14:30:00",
-  "updatedAt": "2026-02-19T10:00:00"
+  "createdAt": "2026-02-15 14:30",
+  "updatedAt": "2026-02-19 10:00"
 }
 ```
 
@@ -1244,7 +1247,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
       "latitude": 37.5665,
       "longitude": 126.9780,
       "address": "서울특별시 중구 세종대로 110",
-      "createdAt": "2026-02-15T14:30:00",
+      "createdAt": "2026-02-15 14:30",
       "likeCount": 5,
       "isLiked": false,
       "isScraped": true,
@@ -1304,7 +1307,7 @@ Content-Type: application/json
 {
   "emotion": "HAPPY",
   "content": "1년 후의 나에게...",
-  "openAt": "2027-02-15T00:00:00",
+  "openAt": "2027-02-15T00:00:00+09:00",
   "location": {
     "latitude": 37.5665,
     "longitude": 126.9780,
@@ -1328,6 +1331,7 @@ Location: /api/v1/time-capsule/789
 - 작성 후 30분 이내에만 수정 가능
 - 30분 후에는 완전 잠금 (수정/삭제 불가)
 - `openAt` 시점이 되면 자동으로 열람 가능 및 알림 발송
+- `openAt` 형식: ISO 8601 OffsetDateTime (반드시 타임존 오프셋 포함, 예: `2027-02-15T00:00:00+09:00`)
 
 ---
 
@@ -1359,16 +1363,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
   "content": [
     {
       "id": 789,
-      "emotion": "HAPPY",
-      "contentPreview": "1년 후의 나에게...",
-      "location": {
-        "address": "서울시청",
-        "latitude": 37.5665,
-        "longitude": 126.9780
-      },
+      "emotion": null,
+      "contentPreview": null,
+      "location": null,
       "status": "LOCKED",
-      "openAt": "2027-02-15T00:00:00",
-      "createdAt": "2026-02-15T10:00:00"
+      "openAt": "2027-02-15 00:00",
+      "createdAt": "2026-02-15 10:00"
     }
   ],
   "pageNo": 1,
@@ -1378,6 +1378,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
   "last": true
 }
 ```
+
+**참고사항**
+- LOCKED 상태 타임캡슐: 작성 후 30분 내(수정 가능 기간)에는 `emotion`, `contentPreview`, `location` 조회 가능
+- LOCKED 상태 타임캡슐: 30분 경과 후에는 `emotion`, `contentPreview`, `location`이 모두 `null` 반환 (위 예시)
 
 **Status Codes**
 - `200 OK`: 조회 성공
@@ -1423,22 +1427,22 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
     "longitude": 126.9780
   },
   "status": "OPENED",
-  "openAt": "2027-02-15T00:00:00",
-  "createdAt": "2026-02-15T10:00:00"
+  "openAt": "2027-02-15 00:00",
+  "createdAt": "2026-02-15 10:00"
 }
 ```
 
-**Response (200 OK) - 잠금 상태 (status: LOCKED)**
+**Response (200 OK) - 잠금 상태 (status: LOCKED, 30분 경과 후)**
 ```json
 {
   "id": 789,
-  "emotion": "HAPPY",
+  "emotion": null,
   "content": null,
   "images": [],
   "location": null,
   "status": "LOCKED",
-  "openAt": "2027-02-15T00:00:00",
-  "createdAt": "2026-02-15T10:00:00"
+  "openAt": "2027-02-15 00:00",
+  "createdAt": "2026-02-15 10:00"
 }
 ```
 
@@ -1449,8 +1453,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 - `404 Not Found`: 존재하지 않는 타임캡슐 ID
 
 **참고사항**
-- 잠금 상태(`status: LOCKED`)에서는 `content`가 `null`로 반환됩니다
-- `openAt`: 타임캡슐이 열리는 예정 시각 (작성 시 지정한 공개 일시)
+- 잠금 상태(`status: LOCKED`)에서 30분 내(수정 가능 기간)에는 `emotion`, `content`, `images`, `location` 조회 가능
+- 잠금 상태에서 30분 경과 후에는 `emotion`, `content`, `images`, `location`이 모두 `null`/빈 배열 반환
+- `openAt`: 타임캡슐이 열리는 예정 시각 (KST 기준 `yyyy-MM-dd HH:mm` 형식)
 
 ---
 
@@ -1489,7 +1494,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 Content-Type: application/json
 
 {
-  "content": "수정된 내용"
+  "emotion": "CALM",
+  "content": "수정된 내용",
+  "openAt": "2027-06-01T00:00:00+09:00"
 }
 ```
 
@@ -1702,7 +1709,7 @@ GET /api/v1/notifications
 **인증 필요**: ✅ Yes (Bearer Token)
 
 **Query Parameters**
-- `page` (int, optional, default: 0): 페이지 번호
+- `page` (int, optional, default: 1): 페이지 번호 (1부터 시작)
 - `size` (int, optional, default: 20): 페이지 크기
 - `sort` (string, optional, default: "createdAt,desc"): 정렬 기준
 - `isRead` (boolean, optional): 읽음/안읽음 필터
@@ -1712,7 +1719,7 @@ GET /api/v1/notifications
 
 **Request Example**
 ```http
-GET /api/v1/notifications?page=0&size=20&isRead=false HTTP/1.1
+GET /api/v1/notifications?page=1&size=20&isRead=false HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
@@ -1956,6 +1963,46 @@ Content-Type: application/json
 
 ---
 
+## 감정 (Emotion)
+
+### 1. 감정 목록 조회
+
+지원하는 감정 목록과 레이블을 조회합니다. 감정 선택 UI에 사용됩니다.
+
+**Endpoint**
+```
+GET /api/v1/emotions
+```
+
+**인증 필요**: ✅ Yes (Bearer Token)
+
+**Request Example**
+```http
+GET /api/v1/emotions HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Response (200 OK)**
+```json
+[
+  { "name": "HAPPY",    "label": "행복한",  "sortOrder": 1 },
+  { "name": "SAD",      "label": "슬픈",    "sortOrder": 2 },
+  { "name": "ANXIOUS",  "label": "불안한",  "sortOrder": 3 },
+  { "name": "ANGRY",    "label": "화난",    "sortOrder": 4 },
+  { "name": "CALM",     "label": "차분한",  "sortOrder": 5 },
+  { "name": "EXCITED",  "label": "신난",    "sortOrder": 6 },
+  { "name": "LONELY",   "label": "외로운",  "sortOrder": 7 },
+  { "name": "GRATEFUL", "label": "감사한",  "sortOrder": 8 },
+  { "name": "TIRED",    "label": "지친",    "sortOrder": 9 }
+]
+```
+
+**Status Codes**
+- `200 OK`: 조회 성공
+- `401 Unauthorized`: 인증 토큰 없음 또는 유효하지 않음
+
+---
+
 ## 감정 날씨 (Emotion Weather)
 
 ### 1. 오늘의 감정 날씨 조회
@@ -2144,17 +2191,15 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 #### Emotion (감정)
 ```
-HAPPY      행복
-SAD        슬픔
-ANXIOUS    불안함
+HAPPY      행복한
+SAD        슬픈
+ANXIOUS    불안한
 ANGRY      화난
 CALM       차분한
 EXCITED    신난
 LONELY     외로운
 GRATEFUL   감사한
-PEACEFUL   평온
-THRILLED   설렘
-NOSTALGIC  그리움
+TIRED      지친
 ```
 
 #### Gender (성별)
@@ -2195,6 +2240,16 @@ PRIVATE  비공개
 ---
 
 ## 변경 이력
+
+### 2026-03-09 (v1.0.0 최종)
+- Auth: 로그인/토큰 재발급 Response에 `userId` 필드 추가 (LoginResponse 실제 DTO 반영)
+- Emotion: `GET /api/v1/emotions` (감정 목록 조회) 섹션 신규 추가
+- Emotion: Enum 값 수정 (PEACEFUL/THRILLED/NOSTALGIC 삭제 → TIRED 추가)
+- Notification: `page` 기본값 0 → 1 수정 (`setOneIndexedParameters(true)` 반영)
+- TimeCapsule: POST/PUT 요청 `openAt` 형식을 OffsetDateTime (+09:00 포함)으로 명시
+- TimeCapsule: PUT 요청 예시를 전체 필수 필드 포함 예시로 수정
+- TimeCapsule: 목록/상세 응답의 LOCKED 상태 예시 수정 (30분 경과 시 emotion/content/location이 null)
+- 날짜 형식 통일: 아카이브/타임캡슐 응답의 날짜 형식을 실제 형식(`yyyy-MM-dd HH:mm`, KST)으로 수정
 
 ### 2026-02-18 (2차)
 - Emotion Weather: `GET /api/v1/emotions/ranking` (오늘의 감정 날씨 Top 3 조회) 추가

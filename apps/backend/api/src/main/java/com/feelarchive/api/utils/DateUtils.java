@@ -3,7 +3,9 @@ package com.feelarchive.api.utils;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 public class DateUtils {
@@ -16,14 +18,22 @@ public class DateUtils {
     throw new IllegalStateException("DateUtils 클래스로 인스턴스화가 필요없습니다.");
   }
 
+  public static LocalDateTime toUtc(OffsetDateTime offsetDateTime) {
+    return offsetDateTime.withOffsetSameInstant(ZoneOffset.UTC).toLocalDateTime();
+  }
+
   public static String formatToDate(LocalDateTime time) {
     if (time == null) return "";
-    return time.format(YYYY_MM_DD);
+    return time.atOffset(ZoneOffset.UTC)
+        .atZoneSameInstant(KST)
+        .format(YYYY_MM_DD);
   }
 
   public static String formatToDateTime(LocalDateTime time) {
     if (time == null) return "";
-    return time.format(YYYY_MM_DD_HH_MM);
+    return time.atOffset(ZoneOffset.UTC)
+        .atZoneSameInstant(KST)
+        .format(YYYY_MM_DD_HH_MM);
   }
 
   public static String formatToCustomDate(LocalDateTime time, String pattern) {

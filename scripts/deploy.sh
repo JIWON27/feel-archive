@@ -7,6 +7,8 @@ echo "Feel Archive 배포 스크립트 실행."
 export AWS_DEFAULT_REGION=ap-northeast-2
 # Account ID 동적으로 가져오기
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+IMAGE_TAG=$(aws ssm get-parameter --name "APP_VERSION" --query Parameter.Value --output text)
+IMAGE=$AWS_ACCOUNT_ID.dkr.ecr.ap-northeast-2.amazonaws.com/feel-archive:$IMAGE_TAG
 
 # SSM에서 값 가져오기
 DB_URL=$(aws ssm get-parameter --name "DB_URL" --with-decryption --query Parameter.Value --output text)
@@ -20,7 +22,7 @@ MAIL_PASSWORD=$(aws ssm get-parameter --name "MAIL_PASSWORD" --with-decryption -
 KAKAO_REST_API_KEY=$(aws ssm get-parameter --name "KAKAO_REST_API_KEY" --with-decryption --query Parameter.Value --output text)
 APP_SERVER_URL=$(aws ssm get-parameter --name "APP_SERVER_URL" --query Parameter.Value --output text)
 APP_CLIENT_URL=$(aws ssm get-parameter --name "APP_CLIENT_URL" --query Parameter.Value --output text)
-AWS_S3_BUCKET=$(aws ssm get-parameter --name "S3_BUCKET" --query Parameter.Value --output text)
+AWS_S3_BUCKET=$(aws ssm get-parameter --name "S3_BUCKET" --with-decryption --query Parameter.Value --output text)
 BATCH_SIZE=$(aws ssm get-parameter --name "BATCH_SIZE" --query Parameter.Value --output text)
 JAVA_OPTS=$(aws ssm get-parameter --name "JAVA_OPTS" --query Parameter.Value --output text)
 
@@ -34,7 +36,10 @@ docker stop feel-archive || true
 docker rm feel-archive || true
 
 # 새 이미지 pull
-docker pull $AWS_ACCOUNT_ID.dkr.ecr.ap-northeast-2.amazonaws.com/feel-archive:latest
+docker pull $IMAGE
+
+# 사용하지 않는 이미지 삭제
+docker image prune -af
 
 # 새 컨테이너 실행
 docker run -d \
@@ -57,4 +62,4 @@ docker run -d \
   -e BATCH_SIZE=$BATCH_SIZE \
   -e JAVA_OPTS="$JAVA_OPTS" \
   -v /var/log/feel-archive:/var/log/feel-archive \
-  $AWS_ACCOUNT_ID.dkr.ecr.ap-northeast-2.amazonaws.com/feel-archive:latest
+  $IMAGE
