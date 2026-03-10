@@ -23,7 +23,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus.local.yml:/etc/prometheus/prometheus.yml
     networks:
       - feel-archive-net
 
@@ -32,7 +32,7 @@ services:
     container_name: feel-grafana
     restart: always
     ports:
-      - "3001:3000"
+      - "3002:3000"
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
     networks:
