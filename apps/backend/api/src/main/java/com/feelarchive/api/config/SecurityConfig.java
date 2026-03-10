@@ -45,6 +45,7 @@ public class SecurityConfig {
             .requestMatchers("/api/v1/users").permitAll()
             .requestMatchers("/api/v1/token/reIssue").permitAll()
             .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
+            .requestMatchers("/actuator/prometheus").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/v1/archives/*/images/*").permitAll()
             .anyRequest().authenticated()
         )
