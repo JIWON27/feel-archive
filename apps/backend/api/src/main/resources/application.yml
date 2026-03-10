@@ -17,3 +17,15 @@ app:
     api-prefix: ${app.server.base-url}/api/v1/
   time-capsule:
     batch-size: ${BATCH_SIZE}
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,metrics,info,prometheus"
+  endpoint:
+    health:
+      show-details: always
+
+
