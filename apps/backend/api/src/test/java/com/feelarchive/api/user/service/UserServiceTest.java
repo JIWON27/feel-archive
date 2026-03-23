@@ -43,6 +43,12 @@ class UserServiceTest {
   @InjectMocks
   private UserService userService;
 
+  @Test
+  @DisplayName("실패 케이스 확인용 - 삭제 예정")
+  void intentionalFail() {
+    assertThat(1).isEqualTo(2);
+  }
+
   @Nested
   @DisplayName("회원가입")
   class RegisterUser {
