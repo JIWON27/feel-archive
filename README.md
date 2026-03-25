@@ -2,6 +2,13 @@
 
 > **공간 기반 감정 아카이빙 플랫폼** — 감정을 느낀 바로 그 순간, 그 장소를 지도 위에 기록하세요.
 
+서비스 URL : https://www.feel-archive.site/
+
+## 아키텍처
+
+![Feel-ARchive](./Feel-Archive-architecture.svg)
+
+
 ---
 ## 기술 스택
 
