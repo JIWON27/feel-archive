@@ -1,51 +1,92 @@
-# Feel-Archive 서비스
+# Feel-Archive
 
-## 📝 개요
+> **공간 기반 감정 아카이빙 플랫폼** — 감정을 느낀 바로 그 순간, 그 장소를 지도 위에 기록하세요.
 
-Feel-Archive는 감정을 느낀 '바로 그 순간, 그 장소'를 지도 위에 기록하는 위치 기반 감정 아카이빙 서비스입니다.
+서비스 URL : https://www.feel-archive.site/
 
-복잡한 장소 검색 없이 현재 위치를 기반으로 직관적인 감정 기록을 남깁니다.
-사용자는 나만의 감정 흐름을 시각적으로 회고할 수 있으며, 공유된 아카이브를 통해 타인의 감정 해소 경험을 탐색하고 공감할 수 있습니다.
+## 아키텍처
 
-위치 기록을 원치 않을 경우, 위치 정보를 제외한 순수 감정 일기로도 활용 가능합니다.
+![Feel-ARchive](./Feel-Archive-architecture.svg)
 
-## ✨ 주요 기능
 
-### 감정 아카이브
-- 아카이브 기능
-    - 텍스트, 사진과 함께 당시의 감정 상태를 기록.
-    - 글 작성 시 별도의 검색 없이 현재 위치를 자동으로 기록.
-    - (사용자 선택) 위치 기록 On/Off 토글 기능 제공.
+---
+## 기술 스택
 
-### 지도 및 시각화
-- 감정 지도
-    - 기록을 남긴 장소마다 마커가 생성
-- 히트맵 (고민)
-    - 자주 감정을 기록한 지역을 색상으로 시각화.
+### Backend
+| 분류 | 기술 |
+|------|------|
+| Language / Framework | Java 17, Spring Boot 3.4.x |
+| Security | Spring Security + JWT (Access/Refresh Token) |
+| DB | MySQL 8.4 + Spring Data JPA + QueryDSL |
+| GIS | Hibernate Spatial + JTS (Java Topology Suite) |
+| Cache | Redis |
+| Migration | Flyway |
+| External API | Kakao Maps (Spring Cloud OpenFeign) |
+| Storage | AWS S3 |
+| Deploy | AWS EC2 (Docker) + ECR + CodeBuild + CodeDeploy |
+| Secrets | AWS SSM Parameter Store |
 
-### 소통 및 탐색 
-- 주변 아카이브 글 탐색
-    -  내 주변 반경 N km 안에서 다른 사람들은 어떤 이야기를 남겼는지 탐색.
-    - 조회순, 인기순 등 정렬
-- 공감하기
-- 경험 스크랩
-    - 타인의 경험이나 장소가 마음에 들 경우 스크랩하여 '가고 싶은 장소'로 저장하고, 내 지도 위에서 표출
+### Frontend
+| 분류 | 기술 |
+|------|------|
+| Framework | Next.js 14 (App Router), TypeScript |
+| Styling | Tailwind CSS |
+| State / Fetching | Zustand + TanStack Query + Axios |
+| Deploy | Vercel |
 
-작성중...
-<br>
+---
 
-## 🛠️ 기술 스택
+## 백엔드 아키텍처
 
-* **Language**: Java 17+
-* **Framework**: Spring Boot 3.4.x
-* **Security**: Spring Security
-* **Batch**: Spring Batch
-* **DB**: MySQL 8.4
-* **ORM**: Spring Data JPA, QueryDSL
-* **Migration**: Flyway
-* **Cache**: Redis 
-* **Message Queue**: Kafka (or SQS)
-* **Infra**: AWS, Docker, Github Actions or Jenkins
-* **Monitoring**: Prometheus & Grafana
-* **API Docs**: Spring REST Docs or Swagger
-* **기타** : 카카오 로컬 API
+
+
+### 폴더 구조
+```
+feel-archive/                  # 모노레포 루트
+├── apps/
+│   ├── backend/               # Spring Boot 멀티모듈
+│   │   ├── api/               # HTTP 계층
+│   │   ├── domain/            # 도메인 계층
+│   │   ├── common/            # 공통 예외
+│   │   ├── external/          # Kakao Maps 외부 라이브러리
+│   │   ├── batch/             # 배치
+│   │   └── infrastructure/    # docker-compose (로컬/프로덕션)
+│   └── frontend/              # Next.js 14
+├── docs/
+│   ├── SPEC.md                # 서비스 기획 명세
+│   └── API.md                 # API 명세
+├── buildspec.yml              # AWS CodeBuild 스펙
+├── appspec.yml                # AWS CodeDeploy 스펙
+└── scripts/deploy.sh          # EC2 배포 스크립트
+```
+
+
+## CI/CD 파이프라인
+
+### Backend
+```
+GitHub PR (feature → develop)
+  → GitHub Actions (ci.yml)
+      → Gradle 테스트 실행
+      → 통과 시 머지 버튼 활성화
+
+GitHub Push (develop → main)
+  → AWS CodePipeline
+      → AWS CodeBuild (buildspec.yml)
+          → Gradle 빌드 + Docker 이미지 빌드
+          → ECR Push
+      → AWS CodeDeploy (appspec.yml)
+          → EC2 배포 (scripts/deploy.sh)
+              → SSM Parameter Store에서 환경변수 로드
+              → Docker 컨테이너 실행
+```
+
+### Frontend
+```
+GitHub Push (main) → Vercel 자동 배포
+```
+
+## 문서
+
+- [서비스 기획 명세 (SPEC.md)](./docs/SPEC.md)
+- [API 명세 (API.md)](./docs/API.md)
