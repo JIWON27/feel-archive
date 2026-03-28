@@ -28,6 +28,10 @@ spring:
           auth: true
           starttls:
             enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
   cloud:
     aws:
       s3:
@@ -42,3 +46,8 @@ security:
   cookie:
     refresh-samesite: None
     refresh-secure: true
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: false
