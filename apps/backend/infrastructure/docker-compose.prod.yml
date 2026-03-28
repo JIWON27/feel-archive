@@ -20,7 +20,8 @@ services:
       - --max_connections=30
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
-      - --skip-character-set-client-handshake
+      - --binlog_expire_logs_seconds=86400
+      - --max_binlog_size=100M
     networks:
       - feel-archive-net
 
@@ -43,6 +44,8 @@ services:
       - "9090:9090"
     command:
       - --storage.tsdb.retention.time=3d
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
     volumes:
       - ./prometheus.prod.yml:/etc/prometheus/prometheus.yml
       - ./prometheus-data:/prometheus
