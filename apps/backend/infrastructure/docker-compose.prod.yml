@@ -2,7 +2,7 @@ services:
   mysql:
     image: mysql:8.4
     container_name: feel-mysql
-    mem_limit: 350m
+    mem_limit: 250m
     restart: always
     ports:
       - "13306:3306"
@@ -18,7 +18,9 @@ services:
       - --table_open_cache=64
       - --thread_cache_size=4
       - --max_connections=30
-      - --log-error=/var/log/mysql/error.log
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
     networks:
       - feel-archive-net
 
@@ -39,8 +41,11 @@ services:
     mem_limit: 50m
     ports:
       - "9090:9090"
+    command:
+      - --storage.tsdb.retention.time=3d
     volumes:
       - ./prometheus.prod.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus-data:/prometheus
     networks:
       - feel-archive-net
 
