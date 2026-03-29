@@ -82,8 +82,8 @@
       <file>${PROD_APP_LOG_DIR}/app.log</file>
       <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
         <fileNamePattern>${PROD_APP_LOG_DIR}/app.%d{yyyy-MM-dd}.log</fileNamePattern>
-        <maxHistory>30</maxHistory>
-        <totalSizeCap>500MB</totalSizeCap>
+        <maxHistory>3</maxHistory>
+        <totalSizeCap>5MB</totalSizeCap>
       </rollingPolicy>
       <encoder><pattern>${LOG_PATTERN}</pattern></encoder>
     </appender>
@@ -97,8 +97,8 @@
       </filter>
       <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
         <fileNamePattern>${PROD_ERROR_LOG_DIR}/error.%d{yyyy-MM-dd}.log</fileNamePattern>
-        <maxHistory>30</maxHistory>
-        <totalSizeCap>300MB</totalSizeCap>
+        <maxHistory>5</maxHistory>
+        <totalSizeCap>10MB</totalSizeCap>
       </rollingPolicy>
       <encoder><pattern>${LOG_PATTERN}</pattern></encoder>
     </appender>
@@ -107,12 +107,13 @@
       <file>${PROD_HTTP_LOG_DIR}/http.log</file>
       <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
         <fileNamePattern>${PROD_HTTP_LOG_DIR}/http.%d{yyyy-MM-dd}.log</fileNamePattern>
-        <maxHistory>30</maxHistory>
-        <totalSizeCap>500MB</totalSizeCap>
+        <maxHistory>3</maxHistory>
+        <totalSizeCap>5MB</totalSizeCap>
       </rollingPolicy>
       <encoder><pattern>${HTTP_LOG_PATTERN}</pattern></encoder>
     </appender>
 
+    <logger name="p6spy" level="OFF" additivity="false" />
     <logger name="HTTP_ACCESS" level="INFO" additivity="false">
       <appender-ref ref="HTTP_FILE"/>
     </logger>
