@@ -28,19 +28,13 @@ export interface NotificationEvent {
   createdAt: string;
 }
 
-// 알림 목록 응답 (Spring Page)
+// 알림 목록 응답 (백엔드 PagingResponse)
 export interface NotificationPageResponse {
   content: NotificationResponse[];
-  pageable: {
-    pageNumber: number;
-    pageSize: number;
-  };
+  pageNo: number;    // 1-based
+  pageSize: number;
   totalElements: number;
   totalPages: number;
   last: boolean;
   first: boolean;
-  size: number;
-  number: number;
-  numberOfElements: number;
-  empty: boolean;
 }

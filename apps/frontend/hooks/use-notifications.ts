@@ -13,13 +13,13 @@ export const notificationKeys = {
 export function useNotificationList(isRead?: boolean) {
   return useInfiniteQuery({
     queryKey: notificationKeys.list({ isRead }),
-    queryFn: async ({ pageParam = 0 }) => {
+    queryFn: async ({ pageParam = 1 }) => {
       return notificationService.getList({ page: pageParam, size: 20, isRead });
     },
-    initialPageParam: 0,
+    initialPageParam: 1,
     getNextPageParam: (lastPage) => {
       if (lastPage.last) return undefined;
-      return lastPage.number + 1;
+      return lastPage.pageNo + 1;
     },
   });
 }
