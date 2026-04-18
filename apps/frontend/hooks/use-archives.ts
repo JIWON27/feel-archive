@@ -33,18 +33,16 @@ export const archiveKeys = {
 export const useArchiveList = (condition?: ArchiveSearchCondition) => {
   return useInfiniteQuery({
     queryKey: archiveKeys.list(condition),
-    queryFn: ({ pageParam = 0 }) =>
+    queryFn: ({ pageParam = 1 }) =>
       archiveService.getList({
         page: pageParam,
         size: 20,
         condition,
       }),
-    // setOneIndexedParameters(true): page=1→Spring page 0, page=2→Spring page 1
-    // pageNo는 현재 1-based 페이지 번호 → 다음 요청은 pageNo+1
     getNextPageParam: (lastPage) => {
       return lastPage.last ? undefined : lastPage.pageNo + 1;
     },
-    initialPageParam: 0,
+    initialPageParam: 1,
   });
 };
 
@@ -52,7 +50,7 @@ export const useArchiveList = (condition?: ArchiveSearchCondition) => {
 export const useMyArchiveList = (condition?: ArchiveSearchCondition) => {
   return useInfiniteQuery({
     queryKey: [...archiveKeys.myLists(), condition],
-    queryFn: ({ pageParam = 0 }) =>
+    queryFn: ({ pageParam = 1 }) =>
       archiveService.getMyList({
         page: pageParam,
         size: 20,
@@ -61,7 +59,7 @@ export const useMyArchiveList = (condition?: ArchiveSearchCondition) => {
     getNextPageParam: (lastPage) => {
       return lastPage.last ? undefined : lastPage.pageNo + 1;
     },
-    initialPageParam: 0,
+    initialPageParam: 1,
   });
 };
 
@@ -69,7 +67,7 @@ export const useMyArchiveList = (condition?: ArchiveSearchCondition) => {
 export const useScrapList = () => {
   return useInfiniteQuery({
     queryKey: archiveKeys.scrapLists(),
-    queryFn: ({ pageParam = 0 }) =>
+    queryFn: ({ pageParam = 1 }) =>
       archiveService.getScrapList({
         page: pageParam,
         size: 20,
@@ -77,7 +75,7 @@ export const useScrapList = () => {
     getNextPageParam: (lastPage) => {
       return lastPage.last ? undefined : lastPage.pageNo + 1;
     },
-    initialPageParam: 0,
+    initialPageParam: 1,
   });
 };
 
