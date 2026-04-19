@@ -6,7 +6,7 @@
 
 ## 아키텍처
 
-![Feel-ARchive](./Feel-Archive-architecture.svg)
+![Feel-ARchive](./docs/architecture-v1.0.0.png)
 
 
 ---
